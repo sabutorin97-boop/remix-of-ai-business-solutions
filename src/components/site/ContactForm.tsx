@@ -27,7 +27,7 @@ export function ContactForm() {
   };
 
   return (
-    <section id="contact" className="container mx-auto px-4 md:px-6 py-20">
+    <section id="contact" className="container mx-auto px-4 md:px-6 py-20 scroll-mt-20">
       <div className="max-w-3xl mx-auto">
         <div className="text-center">
           <div className="inline-block rounded-full glass px-3 py-1 text-xs text-muted-foreground">Заявка</div>
