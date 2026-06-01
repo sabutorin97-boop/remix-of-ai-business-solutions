@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Globe, Bot, ShoppingBag } from "lucide-react";
+import { ArrowRight, Globe, Bot, Database, Zap } from "lucide-react";
 
 const services = [
   {
@@ -17,10 +17,10 @@ const services = [
     to: "/telegram-bots" as const,
   },
   {
-    icon: ShoppingBag,
-    title: "Авито под ключ",
+    icon: Database,
+    title: "CRM для компании",
     description:
-      "Прокачанные аккаунты, автоворонки и автоответы. Заявки на потоке, без рутины.",
+      "CRM-система под ваш бизнес: воронка продаж, клиенты, задачи и аналитика. Интеграция с сайтом, ботом и AI.",
     to: "/avito" as const,
   },
 ];
@@ -59,6 +59,32 @@ export function Services() {
           </Link>
         ))}
       </div>
+
+      <a
+        href="#calculator"
+        className="group mt-6 block glass rounded-3xl p-7 md:p-9 border border-primary/30 hover:border-primary/60 transition-all hover:-translate-y-1 bg-[linear-gradient(135deg,hsl(262_85%_62%/0.08),hsl(245_80%_58%/0.08))]"
+      >
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-brand text-primary-foreground shadow-glow">
+              <Zap className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="inline-block rounded-full bg-primary/15 text-primary px-2.5 py-0.5 text-[11px] font-medium mb-2">
+                Итоговый продукт · −25%
+              </div>
+              <h3 className="text-2xl font-semibold">Автоворонка продаж</h3>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">
+                Сайт + Telegram-бот + CRM + AI в одной системе. Трафик → заявка → бот → CRM → продажа. Считаем под ваш бизнес в калькуляторе.
+              </p>
+            </div>
+          </div>
+          <div className="inline-flex items-center gap-1 text-sm font-medium text-foreground self-start md:self-center">
+            Рассчитать
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </div>
+        </div>
+      </a>
     </section>
   );
 }
