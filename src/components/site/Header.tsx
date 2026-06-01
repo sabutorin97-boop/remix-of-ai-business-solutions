@@ -73,18 +73,14 @@ export function Header() {
                 itemRefs.current[i] = el;
               }}
               onMouseEnter={() => setHoverIdx(i)}
-              className="relative z-10 rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors duration-300 hover:text-foreground opacity-0 animate-fade-in"
-              style={{ animationDelay: `${80 + i * 70}ms`, animationFillMode: "forwards" }}
+              className="relative z-10 rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors duration-300 hover:text-foreground"
             >
               {n.label}
             </a>
           ))}
         </nav>
 
-        <div
-          className="hidden md:block opacity-0 animate-fade-in"
-          style={{ animationDelay: "400ms", animationFillMode: "forwards" }}
-        >
+        <div className="hidden md:block">
           <a
             href="https://t.me/sabutorin45"
             target="_blank"
