@@ -14,9 +14,36 @@ type Case = {
   description?: string;
   url?: string;
   featured?: boolean;
+  image?: string;
 };
 
 const cases: Case[] = [
+  {
+    cat: "Сайты",
+    tag: "Маркетплейс",
+    metric: "Каталог + корзина + оплата",
+    client: "E-commerce проект",
+    title: "Маркетплейс с каталогом товаров и корзиной",
+    tags: ["E-commerce", "Корзина", "Каталог", "Оплата"],
+    description:
+      "Полноценный маркетплейс: каталог товаров с фильтрами, корзина, оформление заказа и интеграция с платёжной системой. Готов к масштабированию.",
+    url: "https://cart-product-marketplace.lovable.app",
+    featured: true,
+    image: "/cases/marketplace.jpg",
+  },
+  {
+    cat: "Сайты",
+    tag: "CRM",
+    metric: "Воронка + клиенты + аналитика",
+    client: "CRM · автоматизация",
+    title: "CRM-система с воронкой продаж",
+    tags: ["CRM", "Воронка продаж", "Автоматизация", "Аналитика"],
+    description:
+      "CRM с полной воронкой продаж, управлением клиентами, задачами и аналитикой. В планах: подключение сайта, Telegram-бота и AI-ассистента.",
+    url: "https://pixel-perfect-clone-82870.lovable.app",
+    featured: true,
+    image: "/cases/crm.jpg",
+  },
   {
     cat: "Telegram-боты",
     tag: "Наш бот",
