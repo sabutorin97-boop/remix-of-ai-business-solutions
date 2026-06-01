@@ -198,7 +198,7 @@ export function Calculator() {
             ))}
             {effectiveBundle && (
               <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs text-primary font-medium">
-                Автоворонка продаж
+                Автоворонка продаж · Автоматизация для бизнеса
               </span>
             )}
           </div>

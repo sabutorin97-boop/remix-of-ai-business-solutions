@@ -71,11 +71,11 @@ export function Services() {
             </div>
             <div>
               <div className="inline-block rounded-full bg-primary/15 text-primary px-2.5 py-0.5 text-[11px] font-medium mb-2">
-                Итоговый продукт · −25%
+                Автоматизация для бизнеса · −25%
               </div>
               <h3 className="text-2xl font-semibold">Автоворонка продаж</h3>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-                Сайт + Telegram-бот + CRM + AI в одной системе. Трафик → заявка → бот → CRM → продажа. Считаем под ваш бизнес в калькуляторе.
+                Итог трёх продуктов вместе: Сайт + Telegram-бот + CRM + AI как единая автоматизация для бизнеса. Трафик → заявка → бот → CRM → продажа.
               </p>
             </div>
           </div>
