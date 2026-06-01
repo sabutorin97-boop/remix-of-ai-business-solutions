@@ -4,15 +4,16 @@ import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
-const serviceTypes = ["Сайт", "Telegram-бот", "Авито под ключ"] as const;
+const serviceTypes = ["Сайт", "Telegram-бот", "CRM для компании"] as const;
 type Service = (typeof serviceTypes)[number];
 const siteTypes = ["Лендинг", "Корпоративный", "Каталог", "Квиз-воронка", "AI-воронка"] as const;
-const integrations = ["CRM", "Telegram", "Оплаты", "Аналитика", "Авито"] as const;
+const integrations = ["Оплаты", "Telegram", "AI-ассистент", "Аналитика", "Email-рассылки"] as const;
 
+// Базовые цены — средние по таблице рынка РФ 2025–2026
 const serviceBase: Record<Service, number> = {
-  "Сайт": 40000,
-  "Telegram-бот": 35000,
-  "Авито под ключ": 30000,
+  "Сайт": 30000,           // средний полный лендинг
+  "Telegram-бот": 42000,    // средний бот (оплата, рассылки)
+  "CRM для компании": 90000, // CRM-система с воронкой и аналитикой
 };
 
 const activeBtn =
@@ -57,7 +58,7 @@ export function Calculator() {
   const effectiveBundle = bundle && services.length === serviceTypes.length;
 
   const calc = useMemo(() => {
-    const baseSite = { Лендинг: 1, Корпоративный: 1.5, Каталог: 1.8, "Квиз-воронка": 1.2, "AI-воронка": 1.6 }[site];
+    const baseSite = { Лендинг: 1, Корпоративный: 2.4, Каталог: 3.0, "Квиз-воронка": 0.8, "AI-воронка": 1.7 }[site];
 
     let servicesSum = 0;
     for (const s of services) {
@@ -78,7 +79,7 @@ export function Calculator() {
     const integrationsCost = picks.length * 6000;
 
     const ours = Math.round(((servicesSum + pagesCost + integrationsCost) * bundleDiscount) / 1000) * 1000;
-    const market = Math.round((ours * 3.1) / 1000) * 1000;
+    const market = Math.round((ours * 3.0) / 1000) * 1000;
     const save = market > 0 ? Math.round(((market - ours) / market) * 100) : 0;
     return { ours, market, save, bundleDiscount };
   }, [services, site, pages, picks, hasSite, effectiveBundle]);
@@ -129,7 +130,7 @@ export function Calculator() {
                   effectiveBundle ? activeBtn : idleBtn
                 }`}
               >
-                Полная система (все 3)
+                Автоворонка продаж (сайт + бот + CRM)
               </button>
               <span className="text-xs text-muted-foreground">— выгоднее на 25%</span>
             </div>
@@ -197,7 +198,7 @@ export function Calculator() {
             ))}
             {effectiveBundle && (
               <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs text-primary font-medium">
-                Полная система
+                Автоворонка продаж
               </span>
             )}
           </div>
@@ -220,7 +221,7 @@ export function Calculator() {
             </span>
             {calc.bundleDiscount < 1 && (
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
-                {effectiveBundle ? "Полная система" : "Комплекс"} −{Math.round((1 - calc.bundleDiscount) * 100)}%
+                {effectiveBundle ? "Автоворонка" : "Комплекс"} −{Math.round((1 - calc.bundleDiscount) * 100)}%
               </span>
             )}
           </div>
