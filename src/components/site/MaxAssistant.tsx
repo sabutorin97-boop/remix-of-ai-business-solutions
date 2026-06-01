@@ -313,7 +313,7 @@ export function MaxAssistant() {
               <span className="text-gradient">−20%</span> на запуск + бесплатный AI-аудит воронки
             </h3>
             <p className="mt-3 text-sm text-muted-foreground">
-              Заберите скидку 20% на AI-сайт, Telegram-бота или «Авито под ключ» — плюс бесплатный
+              Заберите скидку 20% на AI-сайт, Telegram-бота или CRM для компании — плюс бесплатный
               аудит текущих заявок и план роста за 24 часа. Только при обращении сегодня.
             </p>
             <ul className="mt-5 space-y-2 text-sm">

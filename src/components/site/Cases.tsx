@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
 
-type Cat = "Все" | "Сайты" | "Telegram-боты" | "Авито";
+type Cat = "Все" | "Сайты" | "Telegram-боты" | "CRM";
 
 type Case = {
-  cat: "Сайты" | "Telegram-боты" | "Авито";
+  cat: "Сайты" | "Telegram-боты" | "CRM";
   tag: string;
   metric: string;
   client: string;
@@ -83,12 +83,12 @@ const cases: Case[] = [
   { cat: "Сайты", tag: "Сайт", metric: "+312% заявок за 2 месяца", client: "СтройПрофи · Москва", title: "Лендинг для строительной компании", tags: ["Лендинг", "AI-квиз", "CRM"] },
   { cat: "Telegram-боты", tag: "Бот", metric: "1200+ диалогов в месяц", client: "KuhniLab", title: "Telegram-бот для салона кухонь", tags: ["Telegram", "AI-консультант"] },
   { cat: "Сайты", tag: "Сайт", metric: "Стоимость лида −58%", client: "ОкнаПро", title: "AI-воронка для производителя окон", tags: ["Воронка", "AI", "Аналитика"] },
-  { cat: "Авито", tag: "Авито", metric: "+4 заявки в день стабильно", client: "MebelFort", title: "Авито под ключ для мебельной фабрики", tags: ["Авито", "Автоворонка"] },
+  { cat: "CRM", tag: "CRM", metric: "Воронка + клиенты + автоматизация", client: "MebelFort", title: "CRM для мебельной фабрики", tags: ["CRM", "Воронка продаж", "Автоматизация"] },
   { cat: "Сайты", tag: "Сайт", metric: "Запуск за 4 дня", client: "Анна К.", title: "Сайт для эксперта-коуча", tags: ["Личный бренд", "Платежи"] },
   { cat: "Telegram-боты", tag: "Бот", metric: "−70% нагрузки на менеджеров", client: "ServisePro", title: "AI-бот поддержки для сервиса", tags: ["AI", "GPT", "Поддержка"] },
 ];
 
-const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "Авито"];
+const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "CRM"];
 
 export function CasesSection() {
   const [cat, setCat] = useState<Cat>("Все");
