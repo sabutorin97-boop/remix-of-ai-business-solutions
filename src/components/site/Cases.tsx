@@ -138,8 +138,13 @@ export function CasesSection() {
                 {c.featured && <Sparkles className="h-3 w-3" />}
                 {c.tag}
               </span>
-              <span className="text-muted-foreground">{c.client}</span>
+            <span className="text-muted-foreground">{c.client}</span>
             </div>
+            {c.image && (
+              <div className="mt-4 rounded-xl overflow-hidden border border-border">
+                <img src={c.image} alt={c.title} className="w-full h-40 object-cover" loading="lazy" />
+              </div>
+            )}
             <div className="mt-5 text-2xl font-bold text-gradient">{c.metric}</div>
             <h3 className="mt-3 text-lg font-semibold">{c.title}</h3>
             {c.description && (
