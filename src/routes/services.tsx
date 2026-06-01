@@ -7,9 +7,9 @@ export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "Услуги — AI-Profigrup" },
-      { name: "description", content: "AI-сайты, Telegram-боты, Авито под ключ и полная автоматизация бизнеса." },
+      { name: "description", content: "AI-сайты, Telegram-боты, CRM для компании и автоворонки продаж — автоматизация для бизнеса под ключ." },
       { property: "og:title", content: "Услуги AI-Profigrup" },
-      { property: "og:description", content: "Что мы делаем: AI-сайты, боты, Авито." },
+      { property: "og:description", content: "Что мы делаем: AI-сайты, Telegram-боты, CRM и автоворонки продаж." },
       { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/services" },
     ],
     links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/services" }],
