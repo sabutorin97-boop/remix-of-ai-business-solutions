@@ -87,7 +87,7 @@ export function Calculator() {
   const fmt = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 
   return (
-    <section className="container mx-auto px-4 md:px-6 py-20">
+    <section id="calculator" className="container mx-auto px-4 md:px-6 py-20 scroll-mt-20">
       <div className="text-center max-w-2xl mx-auto">
         <div className="inline-block rounded-full glass px-3 py-1 text-xs text-muted-foreground">Калькулятор</div>
         <h2 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">
