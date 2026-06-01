@@ -33,7 +33,7 @@ export function Footer() {
           <div>
             <div className="text-sm font-semibold mb-3">Связаться</div>
             <a
-              href="https://t.me/sabutorin45"
+              href="https://t.me/AiProfiGrup_bot"
               target="_blank"
               rel="noreferrer"
               aria-label="Написать в Telegram"

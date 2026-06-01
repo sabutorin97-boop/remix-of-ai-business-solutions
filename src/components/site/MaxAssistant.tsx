@@ -115,8 +115,8 @@ function MaxChatPanel({ onClose }: { onClose: () => void }) {
         {error && (
           <div className="text-xs text-destructive">
             Не удалось получить ответ. Напишите напрямую в Telegram:{" "}
-            <a href="https://t.me/sabutorin45" target="_blank" rel="noreferrer" className="underline">
-              @sabutorin45
+            <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="underline">
+              @AiProfiGrup_bot
             </a>
           </div>
         )}
@@ -322,7 +322,7 @@ export function MaxAssistant() {
               <li className="flex items-start gap-2"><Sparkles className="mt-0.5 h-4 w-4 text-primary" />Скидка действует до конца недели</li>
             </ul>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <a href="https://t.me/sabutorin45" target="_blank" rel="noreferrer" className="flex-1" onClick={() => setShowPromo(false)}>
+              <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="flex-1" onClick={() => setShowPromo(false)}>
                 <Button className="w-full bg-gradient-brand text-primary-foreground rounded-full shadow-glow">
                   <Send className="mr-2 h-4 w-4" /> Забрать скидку в Telegram
                 </Button>

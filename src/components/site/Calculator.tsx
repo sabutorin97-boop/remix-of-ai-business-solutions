@@ -226,7 +226,7 @@ export function Calculator() {
             )}
           </div>
 
-          <a href="https://t.me/sabutorin45" target="_blank" rel="noreferrer" className="mt-auto pt-8">
+          <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="mt-auto pt-8">
             <Button className="w-full bg-gradient-brand text-primary-foreground rounded-full shadow-glow">
               <Send className="mr-2 h-4 w-4" /> Получить точный расчёт в Telegram
             </Button>
