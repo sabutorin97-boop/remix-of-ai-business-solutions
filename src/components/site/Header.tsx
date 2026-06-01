@@ -1,18 +1,23 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Send, Menu, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const nav = [
-  { to: "/services", label: "Услуги" },
-  { to: "/cases", label: "Кейсы" },
+  { hash: "services", label: "Услуги" },
+  { hash: "calculator", label: "Калькулятор" },
+  { hash: "cases", label: "Кейсы" },
+  { hash: "contact", label: "Контакты" },
   { to: "/blog", label: "Блог" },
-  { to: "/contact", label: "Контакты" },
 ] as const;
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === "/";
+  const hrefFor = (n: (typeof nav)[number]) =>
+    "hash" in n ? (isHome ? `#${n.hash}` : `/#${n.hash}`) : n.to;
   const [pillStyle, setPillStyle] = useState<{ left: number; width: number; opacity: number }>({
     left: 0,
     width: 0,
@@ -61,19 +66,18 @@ export function Header() {
             }}
           />
           {nav.map((n, i) => (
-            <Link
-              key={n.to}
-              to={n.to}
+            <a
+              key={n.label}
+              href={hrefFor(n)}
               ref={(el) => {
                 itemRefs.current[i] = el;
               }}
               onMouseEnter={() => setHoverIdx(i)}
               className="relative z-10 rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors duration-300 hover:text-foreground opacity-0 animate-fade-in"
               style={{ animationDelay: `${80 + i * 70}ms`, animationFillMode: "forwards" }}
-              activeProps={{ className: "text-foreground" }}
             >
               {n.label}
-            </Link>
+            </a>
           ))}
         </nav>
 
@@ -106,14 +110,14 @@ export function Header() {
         <div className="md:hidden border-t border-border/40 bg-background/95 px-4 py-4 animate-fade-in">
           <div className="flex flex-col gap-2">
             {nav.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
+              <a
+                key={n.label}
+                href={hrefFor(n)}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               >
                 {n.label}
-              </Link>
+              </a>
             ))}
             <a
               href="https://t.me/sabutorin45"

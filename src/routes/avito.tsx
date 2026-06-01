@@ -3,21 +3,21 @@ import { Check } from "lucide-react";
 import { FinalCta } from "@/components/site/FinalCta";
 
 const features = [
-  "Прокачка и оформление аккаунта",
-  "Автоответы и автоворонки",
-  "AI-консультант в чатах Авито",
-  "Регулярные публикации и аналитика",
-  "Стабильный поток заявок",
-  "Без рутины менеджеров",
+  "Воронка продаж с этапами под ваш бизнес",
+  "База клиентов, сделки и задачи",
+  "Интеграция с сайтом, ботом и оплатами",
+  "AI-ассистент: подсказки и автозаполнение",
+  "Аналитика и отчёты в реальном времени",
+  "Доступ с любого устройства",
 ];
 
 export const Route = createFileRoute("/avito")({
   head: () => ({
     meta: [
-      { title: "Авито под ключ — AI-Profigrup" },
-      { name: "description", content: "Прокачанные аккаунты, автоворонки и автоответы на Авито. Заявки на потоке." },
-      { property: "og:title", content: "Авито под ключ от AI-Profigrup" },
-      { property: "og:description", content: "+4 заявки в день стабильно — без рутины." },
+      { title: "CRM для компании — AI-Profigrup" },
+      { name: "description", content: "CRM-система под ваш бизнес: воронка продаж, клиенты, задачи и аналитика. Интеграция с сайтом и ботом." },
+      { property: "og:title", content: "CRM для компании от AI-Profigrup" },
+      { property: "og:description", content: "Воронка, клиенты, задачи, аналитика и AI — всё в одной системе." },
       { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/avito" },
     ],
     links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/avito" }],
@@ -27,10 +27,10 @@ export const Route = createFileRoute("/avito")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
-          name: "Авито под ключ",
+          name: "CRM для компании",
           provider: { "@type": "Organization", name: "AI-Profigrup", url: "https://ai-profigrup-studia.lovable.app" },
           areaServed: "RU",
-          description: "Прокачка аккаунтов, автоворонки и AI-ответы на Авито.",
+          description: "CRM-система с воронкой продаж, клиентами, задачами, аналитикой и AI-ассистентом.",
           url: "https://ai-profigrup-studia.lovable.app/avito",
         }),
       },
@@ -42,10 +42,10 @@ export const Route = createFileRoute("/avito")({
         <div className="max-w-3xl">
           <div className="inline-block rounded-full glass px-3 py-1 text-xs text-muted-foreground">Услуга</div>
           <h1 className="mt-4 text-5xl md:text-6xl font-bold tracking-tight">
-            <span className="text-gradient">Авито</span> под ключ
+            <span className="text-gradient">CRM</span> для компании
           </h1>
           <p className="mt-4 text-muted-foreground text-lg">
-            Заявки на потоке без рутины менеджеров. Прокачанный аккаунт + автоворонки + AI-ответы.
+            Воронка продаж, клиенты, задачи, аналитика и AI-ассистент. Интеграция с сайтом и ботом — единая система продаж.
           </p>
         </div>
         <div className="mt-12 grid gap-3 md:grid-cols-2">
