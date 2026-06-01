@@ -51,7 +51,7 @@ export function Hero() {
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
-              <a href="https://t.me/sabutorin45" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
+              <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   className="w-full sm:w-auto bg-gradient-brand text-primary-foreground hover:opacity-90 shadow-glow rounded-full"

@@ -20,7 +20,7 @@ export function ContactForm() {
     setSending(true);
     setTimeout(() => {
       toast.success("Заявка отправлена! Открываю Telegram для связи.");
-      window.open("https://t.me/sabutorin45", "_blank");
+      window.open("https://t.me/AiProfiGrup_bot", "_blank");
       setSending(false);
       (e.target as HTMLFormElement).reset();
     }, 400);
@@ -76,7 +76,7 @@ export function ContactForm() {
           <p className="text-center text-xs text-muted-foreground">
             Или напишите напрямую в{" "}
             <a
-              href="https://t.me/sabutorin45"
+              href="https://t.me/AiProfiGrup_bot"
               target="_blank"
               rel="noreferrer"
               aria-label="Написать в Telegram"

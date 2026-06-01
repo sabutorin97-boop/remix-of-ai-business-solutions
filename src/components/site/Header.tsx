@@ -82,7 +82,7 @@ export function Header() {
 
         <div className="hidden md:block">
           <a
-            href="https://t.me/sabutorin45"
+            href="https://t.me/AiProfiGrup_bot"
             target="_blank"
             rel="noreferrer"
             aria-label="Написать в Telegram"
@@ -116,7 +116,7 @@ export function Header() {
               </a>
             ))}
             <a
-              href="https://t.me/sabutorin45"
+              href="https://t.me/AiProfiGrup_bot"
               target="_blank"
               rel="noreferrer"
               aria-label="Написать в Telegram"

@@ -79,7 +79,7 @@ export function Quiz() {
                 </span>
               ))}
             </div>
-            <a href="https://t.me/sabutorin45" target="_blank" rel="noreferrer" className="mt-8 inline-block">
+            <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="mt-8 inline-block">
               <Button className="bg-gradient-brand text-primary-foreground rounded-full shadow-glow">
                 <Send className="mr-2 h-4 w-4" /> Отправить в Telegram
               </Button>

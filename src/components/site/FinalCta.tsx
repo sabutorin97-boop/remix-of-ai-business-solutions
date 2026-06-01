@@ -14,7 +14,7 @@ export function FinalCta() {
             Расскажите о задаче — за 24 часа подготовим персональное предложение и план запуска.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a href="https://t.me/sabutorin45" target="_blank" rel="noreferrer">
+            <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer">
               <Button size="lg" className="bg-gradient-brand text-primary-foreground rounded-full shadow-glow">
                 <Send className="mr-2 h-4 w-4" /> Консультация в Telegram
               </Button>
