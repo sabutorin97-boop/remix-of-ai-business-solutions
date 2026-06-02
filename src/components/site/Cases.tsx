@@ -110,12 +110,12 @@ const cases: Case[] = [
     featured: true,
     image: "/cases/automation-full.jpg",
   },
-  { cat: "Сайты", tag: "Сайт", metric: "+312% заявок за 2 месяца", client: "СтройПрофи · Москва", title: "Лендинг для строительной компании", tags: ["Лендинг", "AI-квиз", "CRM"] },
-  { cat: "Telegram-боты", tag: "Бот", metric: "1200+ диалогов в месяц", client: "KuhniLab", title: "Telegram-бот для салона кухонь", tags: ["Telegram", "AI-консультант"] },
-  { cat: "Сайты", tag: "Сайт", metric: "Стоимость лида −58%", client: "ОкнаПро", title: "AI-воронка для производителя окон", tags: ["Воронка", "AI", "Аналитика"] },
-  { cat: "CRM", tag: "CRM", metric: "Воронка + клиенты + автоматизация", client: "MebelFort", title: "CRM для мебельной фабрики", tags: ["CRM", "Воронка продаж", "Автоматизация"] },
-  { cat: "Сайты", tag: "Сайт", metric: "Запуск за 4 дня", client: "Анна К.", title: "Сайт для эксперта-коуча", tags: ["Личный бренд", "Платежи"] },
-  { cat: "Telegram-боты", tag: "Бот", metric: "−70% нагрузки на менеджеров", client: "ServisePro", title: "AI-бот поддержки для сервиса", tags: ["AI", "GPT", "Поддержка"] },
+  { cat: "Сайты", tag: "Сайт", metric: "+312% заявок за 2 месяца", client: "СтройПрофи · Москва", title: "Лендинг для строительной компании", tags: ["Лендинг", "AI-квиз", "CRM"], image: "/cases/stroy.jpg" },
+  { cat: "Telegram-боты", tag: "Бот", metric: "1200+ диалогов в месяц", client: "KuhniLab", title: "Telegram-бот для салона кухонь", tags: ["Telegram", "AI-консультант"], image: "/cases/kuhni.jpg" },
+  { cat: "Сайты", tag: "Сайт", metric: "Стоимость лида −58%", client: "ОкнаПро", title: "AI-воронка для производителя окон", tags: ["Воронка", "AI", "Аналитика"], image: "/cases/okna.jpg" },
+  { cat: "CRM", tag: "CRM", metric: "Воронка + клиенты + автоматизация", client: "MebelFort", title: "CRM для мебельной фабрики", tags: ["CRM", "Воронка продаж", "Автоматизация"], image: "/cases/mebel-crm.jpg" },
+  { cat: "Сайты", tag: "Сайт", metric: "Запуск за 4 дня", client: "Анна К.", title: "Сайт для эксперта-коуча", tags: ["Личный бренд", "Платежи"], image: "/cases/coach.jpg" },
+  { cat: "Telegram-боты", tag: "Бот", metric: "−70% нагрузки на менеджеров", client: "ServisePro", title: "AI-бот поддержки для сервиса", tags: ["AI", "GPT", "Поддержка"], image: "/cases/support-bot.jpg" },
 ];
 
 const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "CRM"];
