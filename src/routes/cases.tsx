@@ -10,6 +10,8 @@ export const Route = createFileRoute("/cases")({
       { property: "og:title", content: "Кейсы AI-Profigrup" },
       { property: "og:description", content: "Цифры, а не красивые слова." },
       { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/cases" },
+      { property: "og:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/8d334c79-0957-4315-9536-f032f6c399be/og-cases.jpg" },
+      { name: "twitter:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/8d334c79-0957-4315-9536-f032f6c399be/og-cases.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/cases" }],
   }),

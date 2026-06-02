@@ -20,6 +20,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "AI-Profigrup — AI-сайты и автоматизация" },
       { property: "og:description", content: "Сайты, Telegram-боты и AI-системы для бизнеса за 3–7 дней." },
       { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/" },
+      { property: "og:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/186177fd-296a-4506-af67-9c63e3a0665f/og-home.jpg" },
+      { name: "twitter:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/186177fd-296a-4506-af67-9c63e3a0665f/og-home.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/" }],
   }),
