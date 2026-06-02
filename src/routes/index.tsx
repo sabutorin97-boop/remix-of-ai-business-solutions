@@ -6,6 +6,7 @@ import { Compare } from "@/components/site/Compare";
 import { Calculator } from "@/components/site/Calculator";
 import { Quiz } from "@/components/site/Quiz";
 import { CasesSection } from "@/components/site/Cases";
+import { Testimonials } from "@/components/site/Testimonials";
 import { Process } from "@/components/site/Process";
 import { Faq } from "@/components/site/Faq";
 import { LeadMagnet } from "@/components/site/LeadMagnet";
@@ -39,6 +40,7 @@ function Index() {
       <Calculator />
       <Quiz />
       <CasesSection />
+      <Testimonials />
       <Faq />
       <LeadMagnet />
       <ContactForm />
