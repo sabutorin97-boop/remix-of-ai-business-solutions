@@ -6,6 +6,8 @@ import { Compare } from "@/components/site/Compare";
 import { Calculator } from "@/components/site/Calculator";
 import { Quiz } from "@/components/site/Quiz";
 import { CasesSection } from "@/components/site/Cases";
+import { Process } from "@/components/site/Process";
+import { Faq } from "@/components/site/Faq";
 import { ContactForm } from "@/components/site/ContactForm";
 import { FinalCta } from "@/components/site/FinalCta";
 
@@ -29,10 +31,12 @@ function Index() {
       <Hero />
       <Metrics />
       <Services />
+      <Process />
       <Compare />
       <Calculator />
       <Quiz />
       <CasesSection />
+      <Faq />
       <ContactForm />
       <FinalCta />
     </>
