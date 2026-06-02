@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
+import ownSiteAsset from "@/assets/own-site.png.asset.json";
 
 type Cat = "Все" | "Сайты" | "Telegram-боты" | "CRM";
 
@@ -56,6 +57,19 @@ const cases: Case[] = [
     url: "https://t.me/AiProfiGrup_bot",
     featured: true,
     image: "/cases/bot-profigrup.jpg",
+  },
+  {
+    cat: "Сайты",
+    tag: "Наш сайт",
+    metric: "Запуск за 5 дней",
+    client: "AI-Profigrup · этот сайт",
+    title: "Сайт студии с AI-ассистентом и калькулятором",
+    tags: ["AI-ассистент Max", "Калькулятор", "Квиз-воронка", "SSR/SEO", "TanStack Start"],
+    description:
+      "То, что вы сейчас смотрите. AI-ассистент Max консультирует прямо на странице, калькулятор считает стоимость в реальном времени, квиз собирает заявки, SSR даёт быструю загрузку и индексацию.",
+    url: "https://ai-profigrup-studia.lovable.app",
+    featured: true,
+    image: ownSiteAsset.url,
   },
   {
     cat: "Telegram-боты",
