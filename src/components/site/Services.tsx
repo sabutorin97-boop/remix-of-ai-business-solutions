@@ -8,6 +8,8 @@ const services = [
     description:
       "Premium сайты, лендинги и квиз-воронки за 3–7 дней. С AI-ассистентами и интеграциями.",
     to: "/ai-websites" as const,
+    price: "от 30 000 ₽",
+    term: "3–7 дней",
   },
   {
     icon: Bot,
@@ -15,6 +17,8 @@ const services = [
     description:
       "Боты для продаж, поддержки и автоматизации воронок. С AI и интеграцией CRM.",
     to: "/telegram-bots" as const,
+    price: "от 42 000 ₽",
+    term: "5–10 дней",
   },
   {
     icon: Database,
@@ -22,6 +26,8 @@ const services = [
     description:
       "CRM-система под ваш бизнес: воронка продаж, клиенты, задачи и аналитика. Интеграция с сайтом, ботом и AI.",
     to: "/avito" as const,
+    price: "от 90 000 ₽",
+    term: "7–14 дней",
   },
 ];
 
@@ -52,6 +58,14 @@ export function Services() {
             </div>
             <h3 className="mt-5 text-xl font-semibold">{s.title}</h3>
             <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                {s.price}
+              </span>
+              <span className="rounded-full bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
+                {s.term}
+              </span>
+            </div>
             <div className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-foreground">
               Подробнее
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
