@@ -11,6 +11,8 @@ export const Route = createFileRoute("/services")({
       { property: "og:title", content: "Услуги AI-Profigrup" },
       { property: "og:description", content: "Что мы делаем: AI-сайты, Telegram-боты, CRM и автоворонки продаж." },
       { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/services" },
+      { property: "og:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/70fcce3d-0e5e-44c0-b718-ca2d1c5c2647/og-services.jpg" },
+      { name: "twitter:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/70fcce3d-0e5e-44c0-b718-ca2d1c5c2647/og-services.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/services" }],
   }),
