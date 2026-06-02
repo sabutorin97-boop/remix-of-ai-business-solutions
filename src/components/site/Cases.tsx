@@ -58,19 +58,6 @@ const cases: Case[] = [
     image: "/cases/bot-profigrup.jpg",
   },
   {
-    cat: "Сайты",
-    tag: "Наш сайт",
-    metric: "Запуск за 5 дней",
-    client: "AI-Profigrup · этот сайт",
-    title: "Сайт студии с AI-ассистентом и калькулятором",
-    tags: ["AI-ассистент Max", "Калькулятор", "Квиз-воронка", "SSR/SEO", "TanStack Start"],
-    description:
-      "То, что вы сейчас смотрите. AI-ассистент Max консультирует прямо на странице, калькулятор считает стоимость в реальном времени, квиз собирает заявки, SSR даёт быструю загрузку и индексацию.",
-    url: "https://ai-profigrup-studia.lovable.app",
-    featured: true,
-    image: ownSiteAsset.url,
-  },
-  {
     cat: "Telegram-боты",
     tag: "Наш бот",
     metric: "Персональный нутрициолог 24/7",
