@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { MaxAssistant } from "@/components/site/MaxAssistant";
+import { YandexMetrika } from "@/components/site/YandexMetrika";
 
 import appCss from "../styles.css?url";
 
@@ -89,6 +90,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <YandexMetrika />
         <Scripts />
       </body>
     </html>

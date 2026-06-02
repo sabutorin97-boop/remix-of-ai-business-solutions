@@ -8,6 +8,7 @@ import { Quiz } from "@/components/site/Quiz";
 import { CasesSection } from "@/components/site/Cases";
 import { Process } from "@/components/site/Process";
 import { Faq } from "@/components/site/Faq";
+import { LeadMagnet } from "@/components/site/LeadMagnet";
 import { ContactForm } from "@/components/site/ContactForm";
 import { FinalCta } from "@/components/site/FinalCta";
 
@@ -37,6 +38,7 @@ function Index() {
       <Quiz />
       <CasesSection />
       <Faq />
+      <LeadMagnet />
       <ContactForm />
       <FinalCta />
     </>
