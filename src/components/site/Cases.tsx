@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
-import ownSiteAsset from "@/assets/own-site.png.asset.json";
 
 type Cat = "Все" | "Сайты" | "Telegram-боты" | "CRM";
 
