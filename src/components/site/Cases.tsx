@@ -131,7 +131,7 @@ const cases: Case[] = [
   { cat: "Telegram-боты", tag: "Бот", metric: "−70% нагрузки на менеджеров", client: "ServisePro", title: "AI-бот поддержки для сервиса", tags: ["AI", "GPT", "Поддержка"], image: "/cases/support-bot.jpg" },
 ];
 
-const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "CRM"];
+const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "CRM", "AI-агенты"];
 
 export function CasesSection() {
   const [cat, setCat] = useState<Cat>("Все");
