@@ -3,10 +3,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
 import ownSiteAsset from "@/assets/own-site.png.asset.json";
 
-type Cat = "Все" | "Сайты" | "Telegram-боты" | "CRM";
+type Cat = "Все" | "Сайты" | "Telegram-боты" | "CRM" | "AI-агенты";
 
 type Case = {
-  cat: "Сайты" | "Telegram-боты" | "CRM";
+  cat: "Сайты" | "Telegram-боты" | "CRM" | "AI-агенты";
   tag: string;
   metric: string;
   client: string;
@@ -110,6 +110,19 @@ const cases: Case[] = [
     featured: true,
     image: "/cases/automation-full.jpg",
   },
+  {
+    cat: "AI-агенты",
+    tag: "AI-агент",
+    metric: "Цена индивидуально",
+    client: "AI-Profigrup · собственный кейс",
+    title: "AI-агент помощник 24/7",
+    tags: ["OpenAI", "Claude", "24/7", "База знаний", "CRM"],
+    description:
+      "Голосовой и текстовой агент на базе OpenAI/Claude, который консультирует клиентов, квалифицирует лиды, работает с базой знаний и интегрируется с сайтом, Telegram-ботом или CRM. Работает без выходных и обеда.",
+    url: "https://t.me/AiProfiGrup_bot",
+    featured: true,
+    image: "/cases/agent-24-7.jpg",
+  },
   { cat: "Сайты", tag: "Сайт", metric: "+312% заявок за 2 месяца", client: "СтройПрофи · Москва", title: "Лендинг для строительной компании", tags: ["Лендинг", "AI-квиз", "CRM"], image: "/cases/stroy.jpg" },
   { cat: "Telegram-боты", tag: "Бот", metric: "1200+ диалогов в месяц", client: "KuhniLab", title: "Telegram-бот для салона кухонь", tags: ["Telegram", "AI-консультант"], image: "/cases/kuhni.jpg" },
   { cat: "Сайты", tag: "Сайт", metric: "Стоимость лида −58%", client: "ОкнаПро", title: "AI-воронка для производителя окон", tags: ["Воронка", "AI", "Аналитика"], image: "/cases/okna.jpg" },
@@ -118,7 +131,7 @@ const cases: Case[] = [
   { cat: "Telegram-боты", tag: "Бот", metric: "−70% нагрузки на менеджеров", client: "ServisePro", title: "AI-бот поддержки для сервиса", tags: ["AI", "GPT", "Поддержка"], image: "/cases/support-bot.jpg" },
 ];
 
-const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "CRM"];
+const cats: Cat[] = ["Все", "Сайты", "Telegram-боты", "CRM", "AI-агенты"];
 
 export function CasesSection() {
   const [cat, setCat] = useState<Cat>("Все");
