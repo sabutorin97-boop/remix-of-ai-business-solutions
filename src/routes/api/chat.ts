@@ -2,7 +2,9 @@ import "@tanstack/react-start";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { z } from "zod";
-import { createKieProvider } from "@/lib/ai-gateway";
+import { createOpenRouterProvider } from "@/lib/ai-gateway";
+
+const CHAT_MODEL = "anthropic/claude-haiku-4.5";
 
 const SYSTEM_PROMPT = `Ты — Макс, AI-ассистент студии AI-Profigrup. Общайся профессионально, дружелюбно и уважительно, без панибратства, без заискивания и без излишних восторгов. Объясняй простым языком, понятным обычному заказчику без технической подготовки.
 
@@ -118,11 +120,11 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Payload Too Large", { status: 413 });
         }
 
-        const key = process.env.KIE_API_KEY;
-        if (!key) return new Response("Missing KIE_API_KEY", { status: 500 });
+        const key = process.env.OPENROUTER_API_KEY;
+        if (!key) return new Response("Missing OPENROUTER_API_KEY", { status: 500 });
 
-        const provider = createKieProvider(key, "gemini-3-flash");
-        const model = provider("gemini-3-flash");
+        const provider = createOpenRouterProvider(key);
+        const model = provider(CHAT_MODEL);
         const result = streamText({
           model,
           system: SYSTEM_PROMPT,

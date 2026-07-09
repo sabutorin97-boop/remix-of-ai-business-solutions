@@ -1,15 +1,14 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 /**
- * KIE.ai OpenAI-compatible provider.
- * Each model is exposed under its own path prefix:
- *   https://api.kie.ai/{model-slug}/v1/chat/completions
- * The model name in the request body is ignored by KIE (path decides).
+ * OpenRouter OpenAI-compatible provider.
+ * Model slug goes in the request body (e.g. "anthropic/claude-haiku-4.5"),
+ * unlike KIE.ai where it was baked into the URL path.
  */
-export const createKieProvider = (apiKey: string, modelSlug = "gemini-3-flash") =>
+export const createOpenRouterProvider = (apiKey: string) =>
   createOpenAICompatible({
-    name: "kie",
-    baseURL: `https://api.kie.ai/${modelSlug}/v1`,
+    name: "openrouter",
+    baseURL: "https://openrouter.ai/api/v1",
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
