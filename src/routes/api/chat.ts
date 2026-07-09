@@ -4,7 +4,19 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { z } from "zod";
 import { createOpenRouterProvider } from "@/lib/ai-gateway";
 
-const CHAT_MODEL = "deepseek/deepseek-v4-flash";
+// DeepSeek V4 Flash было опробовано как более дешёвая альтернатива, но на
+// реальном системном промпте ошибочно отклоняло явно профильные вопросы
+// (~ в половине тестов, ~в 100% с отключённым reasoning) — недостаточно
+// надёжно для клиентского бота. Haiku прошёл все тесты корректно; при
+// реальном объёме трафика сайта разница в цене несущественна.
+const CHAT_MODEL = "anthropic/claude-haiku-4.5";
+
+// Жёсткий лимит символов в ответе. Проверено на практике: модель системно
+// игнорирует лимит, заявленный только в промпте (просили 250 — получали до
+// ~450, подняли до 550 в промпте — получали до 862), особенно на вопросах
+// с перечислением услуг. Поэтому длина обрезается здесь, в коде, а число
+// в SYSTEM_PROMPT — лишь мягкий ориентир, чтобы обрезка срабатывала реже.
+const HARD_CHAR_LIMIT = 550;
 
 const SYSTEM_PROMPT = `Ты — Макс, AI-ассистент студии AI-Profigrup. Общайся профессионально, дружелюбно и уважительно, без панибратства, без заискивания и без излишних восторгов. Объясняй простым языком, понятным обычному заказчику без технической подготовки.
 
@@ -22,12 +34,12 @@ const SYSTEM_PROMPT = `Ты — Макс, AI-ассистент студии AI-
 - Сроки запуска: 3–7 дней.
 - Экономия до 70% по сравнению с классическими студиями.
 - Действующая акция: −20% на запуск + бесплатный AI-аудит воронки.
-- Точные цены не называй — давай вилки и предлагай рассчитать стоимость через квиз на сайте или связаться с основателем в Telegram: https://t.me/AiProfiGrup_bot.
+- Цены (точные и даже примерные вилки в рублях) не называй никогда — это меняется без твоего ведома. Только предлагай рассчитать стоимость через квиз на сайте или связаться с основателем в Telegram: https://t.me/AiProfiGrup_bot.
 
 ФОРМАТ ОТВЕТОВ:
-- СТРОГО не больше 250 символов на ответ, включая пробелы. Это жёсткий лимит — всегда укладывайся в него, даже если пришлось пожертвовать деталями.
-- Кратко (1–3 коротких предложения), по делу, без воды.
-- Список используй только если он короче обычного текста и укладывается в лимит символов.
+- 500 символов — это потолок, а не цель: если по делу хватает 1–2 предложений, не растягивай ответ до потолка. Без воды.
+- Если ответ — это шаблон отказа не по теме, сразу останавливайся после него, не добавляй других тем.
+- Если уместно — короткий список (до 4 пунктов).
 - В конце уместно предложить следующий шаг: пройти квиз, оставить заявку или написать в Telegram.
 - Никогда не выдумывай услуги, кейсы, цифры или сроки, которых нет в этих инструкциях или на сайте.`;
 
@@ -130,9 +142,45 @@ export const Route = createFileRoute("/api/chat")({
           model,
           system: SYSTEM_PROMPT,
           messages: await convertToModelMessages(messages),
-          // Технический предохранитель поверх лимита в 250 символов из промпта —
-          // не даёт модели уйти в длинный ответ, даже если инструкция не сработает.
-          maxOutputTokens: 200,
+          // Токенный предохранитель на случай патологически длинной генерации —
+          // фактическую границу в HARD_CHAR_LIMIT символов держит experimental_transform ниже.
+          maxOutputTokens: 450,
+          experimental_transform: ({ stopStream }) => {
+            let emitted = 0;
+            let cut = false;
+            return new TransformStream({
+              transform(chunk, controller) {
+                if (cut) {
+                  if (chunk.type === "finish-step" || chunk.type === "finish") {
+                    controller.enqueue(chunk);
+                  }
+                  return;
+                }
+                if (chunk.type === "text-delta") {
+                  const remaining = HARD_CHAR_LIMIT - emitted;
+                  if (chunk.text.length > remaining) {
+                    cut = true;
+                    if (remaining > 0) {
+                      // Обрезаем по границе последнего слова, а не посреди него,
+                      // и добавляем многоточие — иначе ответ выглядит сломанным.
+                      let slice = chunk.text.slice(0, remaining);
+                      const lastSpace = slice.lastIndexOf(" ");
+                      if (lastSpace > remaining * 0.5) {
+                        slice = slice.slice(0, lastSpace);
+                      }
+                      slice = slice.replace(/[\s,;:—-]+$/, "");
+                      controller.enqueue({ ...chunk, text: `${slice}…` });
+                    }
+                    controller.enqueue({ type: "text-end", id: chunk.id });
+                    stopStream();
+                    return;
+                  }
+                  emitted += chunk.text.length;
+                }
+                controller.enqueue(chunk);
+              },
+            });
+          },
         });
         return result.toUIMessageStreamResponse({ originalMessages: messages });
       },
