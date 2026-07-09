@@ -2,14 +2,14 @@ import "@tanstack/react-start";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { z } from "zod";
-import { createOpenRouterProvider } from "@/lib/ai-gateway";
+import { createKieProvider } from "@/lib/ai-gateway";
 
-// DeepSeek V4 Flash было опробовано как более дешёвая альтернатива, но на
-// реальном системном промпте ошибочно отклоняло явно профильные вопросы
-// (~ в половине тестов, ~в 100% с отключённым reasoning) — недостаточно
-// надёжно для клиентского бота. Haiku прошёл все тесты корректно; при
-// реальном объёме трафика сайта разница в цене несущественна.
-const CHAT_MODEL = "anthropic/claude-haiku-4.5";
+// OpenRouter (DeepSeek V4 Flash, затем Claude Haiku 4.5) было опробовано, но
+// на проде Timeweb Cloud Apps OpenRouter отвечает 403 "Access denied by
+// security policy" на каждый запрос с IP этого хостинга (тот же класс
+// проблемы, что и WAF-блок openrouter.ai в проекте Threads automation).
+// kie.ai с этих IP работает без проблем — вернулись на него для чат-бота.
+const CHAT_MODEL_SLUG = "gemini-3-flash";
 
 // Жёсткий лимит символов в ответе. Проверено на практике: модель системно
 // игнорирует лимит, заявленный только в промпте (просили 250 — получали до
@@ -133,11 +133,11 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Payload Too Large", { status: 413 });
         }
 
-        const key = process.env.OPENROUTER_API_KEY;
-        if (!key) return new Response("Missing OPENROUTER_API_KEY", { status: 500 });
+        const key = process.env.KIE_API_KEY;
+        if (!key) return new Response("Missing KIE_API_KEY", { status: 500 });
 
-        const provider = createOpenRouterProvider(key);
-        const model = provider(CHAT_MODEL);
+        const provider = createKieProvider(key, CHAT_MODEL_SLUG);
+        const model = provider(CHAT_MODEL_SLUG);
         const result = streamText({
           model,
           system: SYSTEM_PROMPT,

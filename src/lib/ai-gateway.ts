@@ -1,14 +1,21 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 /**
- * OpenRouter OpenAI-compatible provider.
- * Model slug goes in the request body (e.g. "anthropic/claude-haiku-4.5"),
- * unlike KIE.ai where it was baked into the URL path.
+ * KIE.ai OpenAI-compatible provider.
+ * Each model is exposed under its own path prefix:
+ *   https://api.kie.ai/{model-slug}/v1/chat/completions
+ * The model name in the request body is ignored by KIE (path decides).
+ *
+ * Used instead of OpenRouter because OpenRouter's Cloudflare-fronted edge
+ * returns a hard 403 "Access denied by security policy" for calls
+ * originating from Timeweb Cloud Apps IPs (same class of issue as the
+ * Threads-automation project's openrouter.ai WAF block) — confirmed live,
+ * reproducible on every request, not transient.
  */
-export const createOpenRouterProvider = (apiKey: string) =>
+export const createKieProvider = (apiKey: string, modelSlug = "gemini-3-flash") =>
   createOpenAICompatible({
-    name: "openrouter",
-    baseURL: "https://openrouter.ai/api/v1",
+    name: "kie",
+    baseURL: `https://api.kie.ai/${modelSlug}/v1`,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
