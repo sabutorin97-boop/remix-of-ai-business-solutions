@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
-import ownSiteAsset from "@/assets/own-site.png.asset.json";
 
 type Cat = "Все" | "Сайты" | "Telegram-боты" | "CRM" | "AI-агенты";
 
@@ -69,7 +68,7 @@ const cases: Case[] = [
       "То, что вы сейчас смотрите. AI-ассистент Max консультирует прямо на странице, калькулятор считает стоимость в реальном времени, квиз собирает заявки, SSR даёт быструю загрузку и индексацию.",
     url: "https://ai-profigrup-studia.lovable.app",
     featured: true,
-    image: ownSiteAsset.url,
+    image: "/cases/own-site.jpg",
   },
   {
     cat: "Telegram-боты",
