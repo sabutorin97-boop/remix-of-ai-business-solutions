@@ -41,19 +41,19 @@ export function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Link
           to="/"
-          className="flex items-center gap-3 animate-fade-in transition-transform duration-300 hover:scale-[1.02]"
+          className="flex shrink-0 items-center gap-3 animate-fade-in transition-transform duration-300 hover:scale-[1.02]"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-brand text-sm font-bold text-primary-foreground shadow-glow">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-brand text-sm font-bold text-primary-foreground shadow-glow">
             AI
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight text-foreground">AI-Profigrup</div>
-            <div className="text-[11px] text-muted-foreground">АИ-студия разработки</div>
+            <div className="whitespace-nowrap text-sm font-semibold tracking-tight text-foreground">AI-Profigrup</div>
+            <div className="whitespace-nowrap text-[11px] text-muted-foreground">АИ-студия разработки</div>
           </div>
         </Link>
 
         <nav
-          className="relative hidden items-center gap-1 md:flex"
+          className="relative hidden items-center gap-1 lg:flex"
           onMouseLeave={() => setHoverIdx(null)}
         >
           <span
@@ -80,7 +80,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <a
             href="https://t.me/AiProfiGrup_bot"
             target="_blank"
@@ -94,7 +94,7 @@ export function Header() {
         </div>
 
         <button
-          className="md:hidden rounded-md p-2 text-foreground transition-transform active:scale-90"
+          className="lg:hidden rounded-md p-2 text-foreground transition-transform active:scale-90"
           onClick={() => setOpen((v) => !v)}
           aria-label="Меню"
         >
@@ -103,7 +103,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-border/40 bg-background/95 px-4 py-4">
+        <div className="lg:hidden border-t border-border/40 bg-background px-4 py-4">
           <div className="flex flex-col gap-2">
             {nav.map((n) => (
               <a
