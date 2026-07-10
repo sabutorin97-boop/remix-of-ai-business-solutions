@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 export function ContactForm() {
-  const [agree, setAgree] = useState(true);
+  const [agree, setAgree] = useState(false);
   const [sending, setSending] = useState(false);
 
   const submit = (e: FormEvent) => {

@@ -12,6 +12,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { MaxAssistant } from "@/components/site/MaxAssistant";
 import { YandexMetrika } from "@/components/site/YandexMetrika";
+import { CookieConsent } from "@/components/site/CookieConsent";
 
 import appCss from "../styles.css?url";
 
@@ -111,6 +112,7 @@ function RootComponent() {
         <Footer />
       </div>
       <MaxAssistant />
+      <CookieConsent />
       <Toaster />
     </QueryClientProvider>
   );

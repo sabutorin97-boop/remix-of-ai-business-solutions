@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 
 import { Send, Sparkles, X, Gift, MessageCircle } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
+import { Link } from "@tanstack/react-router";
 import assistantAvatar from "@/assets/assistant-avatar.jpg";
 import { Button } from "@/components/ui/button";
 
@@ -201,7 +202,14 @@ function MaxChatPanel({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      <form onSubmit={submit} className="border-t border-border/60 p-3 flex gap-2 bg-background/40">
+      <p className="px-4 pt-2 text-[10px] leading-relaxed text-muted-foreground border-t border-border/60 bg-background/40">
+        Отправляя сообщение, вы соглашаетесь с{" "}
+        <Link to="/privacy" target="_blank" className="underline underline-offset-4 hover:text-foreground">
+          Политикой обработки персональных данных
+        </Link>
+        .
+      </p>
+      <form onSubmit={submit} className="p-3 pt-2 flex gap-2 bg-background/40">
         <input
           autoFocus
           value={input}

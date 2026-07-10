@@ -15,7 +15,7 @@ const bullets = [
 ];
 
 export function LeadMagnet() {
-  const [agree, setAgree] = useState(true);
+  const [agree, setAgree] = useState(false);
   const [sent, setSent] = useState(false);
 
   const submit = (e: FormEvent<HTMLFormElement>) => {

@@ -18,6 +18,9 @@
  *   ymGoal("tg_click");
  */
 
+import { useEffect, useState } from "react";
+import { PDN_CONSENT_EVENT, hasPdnConsent } from "@/components/site/CookieConsent";
+
 const ID = import.meta.env.VITE_YANDEX_METRIKA_ID as string | undefined;
 
 declare global {
@@ -31,8 +34,19 @@ export function ymGoal(goal: string, params?: Record<string, unknown>) {
   window.ym(Number(ID), "reachGoal", goal, params);
 }
 
+// Метрика (в т.ч. webvisor — запись сессий) — персональные данные по 152-ФЗ,
+// поэтому подключается только после явного согласия в баннере CookieConsent.
 export function YandexMetrika() {
-  if (!ID) return null;
+  const [consented, setConsented] = useState(false);
+
+  useEffect(() => {
+    setConsented(hasPdnConsent());
+    const onChange = () => setConsented(hasPdnConsent());
+    window.addEventListener(PDN_CONSENT_EVENT, onChange);
+    return () => window.removeEventListener(PDN_CONSENT_EVENT, onChange);
+  }, []);
+
+  if (!ID || !consented) return null;
   const code = `
 (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
 m[i].l=1*new Date();
