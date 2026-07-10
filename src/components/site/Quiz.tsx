@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useLeadSubmit } from "@/hooks/use-lead-submit";
+
+const DEFAULT_TELEGRAM_LINK = "https://t.me/AiProfiGrup_bot";
 
 const steps = [
   { q: "Какой у вас бизнес?", options: ["Строительство/ремонт", "Мебель/кухни/окна", "Услуги/локальный бизнес", "Эксперт/коуч/консультант", "Другое"] },
@@ -16,6 +19,8 @@ const steps = [
 export function Quiz() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [telegramLink, setTelegramLink] = useState(DEFAULT_TELEGRAM_LINK);
+  const { submitLead } = useLeadSubmit();
   const done = step >= steps.length;
 
   const pct = done ? 100 : Math.round((step / steps.length) * 100);
@@ -24,6 +29,18 @@ export function Quiz() {
     setAnswers((a) => [...a.slice(0, step), opt]);
     setStep((s) => s + 1);
   };
+
+  useEffect(() => {
+    if (!done || answers.length < steps.length) return;
+    void submitLead({
+      source: "quiz",
+      contact: answers[answers.length - 1],
+      sourceDetails: { answers },
+    }).then((result) => {
+      if (result) setTelegramLink(result.telegramDeepLink);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   return (
     <section id="quiz" className="container mx-auto px-4 md:px-6 py-20">
@@ -79,14 +96,14 @@ export function Quiz() {
                 </span>
               ))}
             </div>
-            <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="mt-8 inline-block">
+            <a href={telegramLink} target="_blank" rel="noreferrer" className="mt-8 inline-block">
               <Button className="bg-gradient-brand text-primary-foreground rounded-full shadow-glow">
                 <Send className="mr-2 h-4 w-4" /> Отправить в Telegram
               </Button>
             </a>
             <div className="mt-4">
               <button
-                onClick={() => { setStep(0); setAnswers([]); }}
+                onClick={() => { setStep(0); setAnswers([]); setTelegramLink(DEFAULT_TELEGRAM_LINK); }}
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
                 Начать заново

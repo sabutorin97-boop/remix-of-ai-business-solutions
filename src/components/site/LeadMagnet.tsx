@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { useLeadSubmit } from "@/hooks/use-lead-submit";
 
 const PDF_URL = "/lead-magnet-10-oshibok.pdf";
 
@@ -17,6 +18,8 @@ const bullets = [
 export function LeadMagnet() {
   const [agree, setAgree] = useState(false);
   const [sent, setSent] = useState(false);
+  const [contact, setContact] = useState("");
+  const { submitLead } = useLeadSubmit();
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,7 +30,9 @@ export function LeadMagnet() {
     setSent(true);
     toast.success("Готово! Ссылка на PDF открыта.");
     window.open(PDF_URL, "_blank");
+    void submitLead({ source: "lead_magnet", contact, sourceDetails: { pdf: PDF_URL } });
     (e.currentTarget as HTMLFormElement).reset();
+    setContact("");
   };
 
   return (
@@ -69,6 +74,8 @@ export function LeadMagnet() {
               placeholder="name@mail.com или @username"
               className="mt-2 bg-secondary/60 border-border"
               maxLength={120}
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
             />
           </div>
           <label className="flex items-start gap-3 text-xs text-muted-foreground">

@@ -6,24 +6,37 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useLeadSubmit } from "@/hooks/use-lead-submit";
 
 export function ContactForm() {
   const [agree, setAgree] = useState(false);
   const [sending, setSending] = useState(false);
+  const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
+  const [message, setMessage] = useState("");
+  const { submitLead } = useLeadSubmit();
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!agree) {
       toast.error("Нужно согласие на обработку данных");
       return;
     }
     setSending(true);
-    setTimeout(() => {
-      toast.success("Заявка отправлена! Открываю Telegram для связи.");
-      window.open("https://t.me/AiProfiGrup_bot", "_blank");
-      setSending(false);
-      (e.target as HTMLFormElement).reset();
-    }, 400);
+    const result = await submitLead({
+      source: "contact_form",
+      name: name || undefined,
+      contact,
+      message: message || undefined,
+    });
+    setSending(false);
+    if (!result) return;
+    toast.success("Заявка отправлена! Открываю Telegram для связи.");
+    window.open(result.telegramDeepLink, "_blank");
+    (e.target as HTMLFormElement).reset();
+    setName("");
+    setContact("");
+    setMessage("");
   };
 
   return (
@@ -42,15 +55,33 @@ export function ContactForm() {
         <form onSubmit={submit} className="mt-10 glass rounded-3xl p-6 md:p-8 space-y-5">
           <div>
             <label className="text-sm font-medium">Как к вам обращаться *</label>
-            <Input required placeholder="Ваше имя" className="mt-2 bg-secondary/60 border-border" />
+            <Input
+              required
+              placeholder="Ваше имя"
+              className="mt-2 bg-secondary/60 border-border"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div>
             <label className="text-sm font-medium">Telegram / телефон / e-mail *</label>
-            <Input required placeholder="@username, +7..., name@mail.com" className="mt-2 bg-secondary/60 border-border" />
+            <Input
+              required
+              placeholder="@username, +7..., name@mail.com"
+              className="mt-2 bg-secondary/60 border-border"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+            />
           </div>
           <div>
             <label className="text-sm font-medium">Кратко о задаче (необязательно)</label>
-            <Textarea placeholder="Что нужно сделать?" rows={4} className="mt-2 bg-secondary/60 border-border" />
+            <Textarea
+              placeholder="Что нужно сделать?"
+              rows={4}
+              className="mt-2 bg-secondary/60 border-border"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
           <label className="flex items-start gap-3 text-xs text-muted-foreground">
             <Checkbox checked={agree} onCheckedChange={(v) => setAgree(!!v)} className="mt-0.5" />

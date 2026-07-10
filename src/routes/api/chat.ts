@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { z } from "zod";
 import { createKieProvider } from "@/lib/ai-gateway";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 // OpenRouter (DeepSeek V4 Flash, затем Claude Haiku 4.5) было опробовано, но
 // на проде Timeweb Cloud Apps OpenRouter отвечает 403 "Access denied by
@@ -66,34 +67,8 @@ const BodySchema = z.object({
   messages: z.array(UIMessageSchema).min(1).max(MAX_MESSAGES),
 });
 
-// Простой in-memory rate-limit по IP (на инстанс воркера)
 const RL_WINDOW_MS = 60_000;
 const RL_MAX = 15;
-const rlMap = new Map<string, { count: number; reset: number }>();
-
-function rateLimit(ip: string): { ok: boolean; retryAfter?: number } {
-  const now = Date.now();
-  const entry = rlMap.get(ip);
-  if (!entry || entry.reset < now) {
-    rlMap.set(ip, { count: 1, reset: now + RL_WINDOW_MS });
-    return { ok: true };
-  }
-  if (entry.count >= RL_MAX) {
-    return { ok: false, retryAfter: Math.ceil((entry.reset - now) / 1000) };
-  }
-  entry.count += 1;
-  return { ok: true };
-}
-
-function getClientIp(request: Request): string {
-  const h = request.headers;
-  return (
-    h.get("cf-connecting-ip") ||
-    h.get("x-real-ip") ||
-    (h.get("x-forwarded-for") || "").split(",")[0].trim() ||
-    "unknown"
-  );
-}
 
 export const Route = createFileRoute("/api/chat")({
   server: {
@@ -101,7 +76,7 @@ export const Route = createFileRoute("/api/chat")({
       POST: async ({ request }: { request: Request }) => {
         // Rate-limit
         const ip = getClientIp(request);
-        const rl = rateLimit(ip);
+        const rl = rateLimit("chat", ip, { windowMs: RL_WINDOW_MS, max: RL_MAX });
         if (!rl.ok) {
           return new Response("Too Many Requests", {
             status: 429,

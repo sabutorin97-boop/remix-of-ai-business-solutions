@@ -3,6 +3,7 @@ import { Send } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useLeadSubmit } from "@/hooks/use-lead-submit";
 
 const serviceTypes = ["Сайт", "Telegram-бот", "CRM для компании"] as const;
 type Service = (typeof serviceTypes)[number];
@@ -26,6 +27,7 @@ export function Calculator() {
   const [site, setSite] = useState<(typeof siteTypes)[number]>("Лендинг");
   const [pages, setPages] = useState(5);
   const [picks, setPicks] = useState<string[]>(["CRM", "Telegram"]);
+  const { submitLead } = useLeadSubmit();
 
   const toggleService = (s: Service) =>
     setServices((prev) => {
@@ -85,6 +87,22 @@ export function Calculator() {
   }, [services, site, pages, picks, hasSite, effectiveBundle]);
 
   const fmt = (n: number) => n.toLocaleString("ru-RU") + " ₽";
+
+  const requestPrecise = async () => {
+    const result = await submitLead({
+      source: "calculator",
+      contact: "Telegram",
+      sourceDetails: {
+        services,
+        site: hasSite ? site : undefined,
+        pages: hasSite ? pages : undefined,
+        integrations: picks,
+        priceOurs: calc.ours,
+        priceMarket: calc.market,
+      },
+    });
+    window.open(result?.telegramDeepLink ?? "https://t.me/AiProfiGrup_bot", "_blank");
+  };
 
   return (
     <section id="calculator" className="container mx-auto px-4 md:px-6 py-20 scroll-mt-20">
@@ -226,11 +244,12 @@ export function Calculator() {
             )}
           </div>
 
-          <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="mt-auto pt-8">
-            <Button className="w-full bg-gradient-brand text-primary-foreground rounded-full shadow-glow">
-              <Send className="mr-2 h-4 w-4" /> Получить точный расчёт в Telegram
-            </Button>
-          </a>
+          <Button
+            onClick={requestPrecise}
+            className="mt-auto w-full bg-gradient-brand text-primary-foreground rounded-full shadow-glow"
+          >
+            <Send className="mr-2 h-4 w-4" /> Получить точный расчёт в Telegram
+          </Button>
           <p className="mt-3 text-xs text-muted-foreground">
             Расчёт предварительный. Точная цена — после короткого брифа в Telegram.
           </p>
