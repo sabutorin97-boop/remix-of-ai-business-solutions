@@ -393,7 +393,7 @@ export function MaxAssistant() {
           ref={widgetRef}
           style={{
             position: "fixed",
-            ...(pos ? { left: pos.x, top: pos.y } : { right: 20, bottom: 20 }),
+            ...(pos ? { left: pos.x, top: pos.y } : { right: 20, bottom: "calc(20px + var(--pdn-banner-offset, 0px))" }),
             zIndex: 60,
             touchAction: "none",
             cursor: dragging ? "grabbing" : "grab",
