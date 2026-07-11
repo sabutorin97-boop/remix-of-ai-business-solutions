@@ -21,6 +21,7 @@ import { Route as AiWebsitesRouteImport } from './routes/ai-websites'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiDebugTelegramPingRouteImport } from './routes/api/debug/telegram-ping'
 
 const TelegramBotsRoute = TelegramBotsRouteImport.update({
   id: '/telegram-bots',
@@ -82,6 +83,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDebugTelegramPingRoute = ApiDebugTelegramPingRouteImport.update({
+  id: '/api/debug/telegram-ping',
+  path: '/api/debug/telegram-ping',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/telegram-bots': typeof TelegramBotsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/telegram-bots': typeof TelegramBotsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/telegram-bots': typeof TelegramBotsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/telegram-bots'
     | '/api/chat'
     | '/api/lead'
+    | '/api/debug/telegram-ping'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/telegram-bots'
     | '/api/chat'
     | '/api/lead'
+    | '/api/debug/telegram-ping'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/telegram-bots'
     | '/api/chat'
     | '/api/lead'
+    | '/api/debug/telegram-ping'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   TelegramBotsRoute: typeof TelegramBotsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLeadRoute: typeof ApiLeadRoute
+  ApiDebugTelegramPingRoute: typeof ApiDebugTelegramPingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/debug/telegram-ping': {
+      id: '/api/debug/telegram-ping'
+      path: '/api/debug/telegram-ping'
+      fullPath: '/api/debug/telegram-ping'
+      preLoaderRoute: typeof ApiDebugTelegramPingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   TelegramBotsRoute: TelegramBotsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLeadRoute: ApiLeadRoute,
+  ApiDebugTelegramPingRoute: ApiDebugTelegramPingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
