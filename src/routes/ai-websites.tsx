@@ -19,8 +19,8 @@ export const Route = createFileRoute("/ai-websites")({
       { property: "og:title", content: "AI-сайты от AI-Profigrup" },
       { property: "og:description", content: "Сайты с AI, которые приводят клиентов." },
       { property: "og:url", content: "https://aiprofigrup.ru/ai-websites" },
-      { property: "og:image", content: "https://aiprofigrup.ru/__l5e/assets-v1/9c0b85e9-74df-4d79-b41f-1bd89f33f395/og-ai-websites.jpg" },
-      { name: "twitter:image", content: "https://aiprofigrup.ru/__l5e/assets-v1/9c0b85e9-74df-4d79-b41f-1bd89f33f395/og-ai-websites.jpg" },
+      { property: "og:image", content: "https://aiprofigrup.ru/cases/own-site.jpg" },
+      { name: "twitter:image", content: "https://aiprofigrup.ru/cases/own-site.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://aiprofigrup.ru/ai-websites" }],
     scripts: [
