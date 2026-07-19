@@ -66,7 +66,7 @@ const cases: Case[] = [
     tags: ["AI-ассистент Max", "Калькулятор", "Квиз-воронка", "SSR/SEO", "TanStack Start"],
     description:
       "То, что вы сейчас смотрите. AI-ассистент Max консультирует прямо на странице, калькулятор считает стоимость в реальном времени, квиз собирает заявки, SSR даёт быструю загрузку и индексацию.",
-    url: "https://ai-profigrup-studia.lovable.app",
+    url: "https://aiprofigrup.ru",
     featured: true,
     image: "/cases/own-site.jpg",
   },

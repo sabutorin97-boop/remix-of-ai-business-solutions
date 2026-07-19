@@ -13,9 +13,9 @@ export const Route = createFileRoute("/blog")({
       { name: "description", content: "Статьи об AI-разработке, Telegram-ботах и автоматизации продаж." },
       { property: "og:title", content: "Блог AI-Profigrup" },
       { property: "og:description", content: "Полезные статьи об AI в бизнесе." },
-      { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/blog" },
+      { property: "og:url", content: "https://aiprofigrup.ru/blog" },
     ],
-    links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/blog" }],
+    links: [{ rel: "canonical", href: "https://aiprofigrup.ru/blog" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/blog")({
           "@context": "https://schema.org",
           "@type": "Blog",
           name: "Блог AI-Profigrup",
-          url: "https://ai-profigrup-studia.lovable.app/blog",
+          url: "https://aiprofigrup.ru/blog",
           description: "Статьи об AI-разработке, Telegram-ботах и автоматизации продаж.",
         }),
       },

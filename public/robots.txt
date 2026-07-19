@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ai-profigrup-studia.lovable.app/sitemap.xml
+Sitemap: https://aiprofigrup.ru/sitemap.xml

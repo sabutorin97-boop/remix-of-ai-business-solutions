@@ -8,9 +8,9 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Свяжитесь с AI-Profigrup в Telegram. Отвечу лично в течение часа." },
       { property: "og:title", content: "Контакты AI-Profigrup" },
       { property: "og:description", content: "Telegram — отвечу лично в течение часа." },
-      { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/contact" },
+      { property: "og:url", content: "https://aiprofigrup.ru/contact" },
     ],
-    links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/contact" }],
+    links: [{ rel: "canonical", href: "https://aiprofigrup.ru/contact" }],
   }),
   component: () => <ContactForm />,
 });

@@ -61,7 +61,7 @@ export function Testimonials() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "AI-Profigrup",
-    url: "https://ai-profigrup-studia.lovable.app",
+    url: "https://aiprofigrup.ru",
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "5",

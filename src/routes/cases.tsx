@@ -9,11 +9,11 @@ export const Route = createFileRoute("/cases")({
       { name: "description", content: "Реальные результаты клиентов: +312% заявок, −58% стоимость лида, 1200+ диалогов в месяц." },
       { property: "og:title", content: "Кейсы AI-Profigrup" },
       { property: "og:description", content: "Цифры, а не красивые слова." },
-      { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/cases" },
-      { property: "og:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/8d334c79-0957-4315-9536-f032f6c399be/og-cases.jpg" },
-      { name: "twitter:image", content: "https://ai-profigrup-studia.lovable.app/__l5e/assets-v1/8d334c79-0957-4315-9536-f032f6c399be/og-cases.jpg" },
+      { property: "og:url", content: "https://aiprofigrup.ru/cases" },
+      { property: "og:image", content: "https://aiprofigrup.ru/__l5e/assets-v1/8d334c79-0957-4315-9536-f032f6c399be/og-cases.jpg" },
+      { name: "twitter:image", content: "https://aiprofigrup.ru/__l5e/assets-v1/8d334c79-0957-4315-9536-f032f6c399be/og-cases.jpg" },
     ],
-    links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/cases" }],
+    links: [{ rel: "canonical", href: "https://aiprofigrup.ru/cases" }],
   }),
   component: () => (
     <>
