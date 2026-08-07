@@ -25,7 +25,7 @@ const services = [
     title: "CRM для компании",
     description:
       "CRM-система под ваш бизнес: воронка продаж, клиенты, задачи и аналитика. Интеграция с сайтом, ботом и AI.",
-    to: "/avito" as const,
+    to: "/crm" as const,
     price: "от 90 000 ₽",
     term: "7–14 дней",
   },
