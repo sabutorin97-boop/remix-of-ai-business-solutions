@@ -16,8 +16,8 @@ const TELEGRAM_HANDOFF_AFTER_REPLIES = 2;
 const MAX_TIMED_SHOWS = 4;
 const TIMED_STORAGE_KEY = "max-promo-timed-shown-v1";
 const EXIT_STORAGE_KEY = "max-promo-exit-shown-v1";
-const FIRST_DELAY_MS = 15_000;
-const REPEAT_DELAY_MS = 20_000;
+const FIRST_DELAY_MS = 45_000;
+const REPEAT_DELAY_MS = 60_000;
 const DRAG_THRESHOLD_PX = 5;
 
 function readTimedShownCount(): number {
