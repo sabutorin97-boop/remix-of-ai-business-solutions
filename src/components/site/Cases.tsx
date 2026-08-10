@@ -29,6 +29,7 @@ const cases: Case[] = [
       "Загружаете фото товара — сервис сам пишет продающий заголовок, описание, ключевые слова и FAQ под любой российский маркетплейс.",
     url: "https://card-generato.lovable.app",
     featured: true,
+    image: "/cases/card-generator.jpg",
   },
   {
     cat: "Telegram-боты",
@@ -106,6 +107,7 @@ const cases: Case[] = [
       "Сайт для фабрики кухонь на заказ, работающей с 2004 года: каталог, бесплатный замер и 3D-проект, запись на замер прямо с сайта.",
     url: "https://zaurals-mebell.lovable.app",
     featured: true,
+    image: "/cases/zaurals-kitchens.jpg",
   },
   {
     cat: "AI-агенты",
@@ -131,6 +133,7 @@ const cases: Case[] = [
       "Открытки на любой повод, товарные фото для маркетплейсов, картинки для соцсетей, мемы и настоящие Telegram-стикеры с прозрачным фоном — на выбор несколько художественных стилей. Есть тарифы и промокоды.",
     url: "https://t.me/pixsparkbot_bot",
     featured: true,
+    image: "/cases/pixspark-art.jpg",
   },
   {
     cat: "AI-агенты",
