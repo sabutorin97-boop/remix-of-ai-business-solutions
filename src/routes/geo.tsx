@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { FinalCta } from "@/components/site/FinalCta";
 
 const practices = [
@@ -9,6 +15,33 @@ const practices = [
   "robots.txt без блокировок для GPTBot, ClaudeBot, PerplexityBot и других AI-краулеров",
   "Прямые ответы на реальные вопросы клиентов вместо общих фраз вроде «индивидуальный подход»",
   "Актуальные даты публикации и регулярное обновление контента — устаревшие цены и акции сбивают модели с толку",
+];
+
+const faqs = [
+  {
+    q: "Как быстро нейросети начинают «видеть» сайт после запуска GEO/AIO-практик?",
+    a: "Зависит от того, как часто конкретная модель обновляет свои данные — от нескольких недель до пары месяцев. Модели с доступом к реальному поиску (например, Perplexity или ChatGPT с браузингом) могут находить свежие структурированные страницы быстрее, чем модели, обученные на статичном датасете.",
+  },
+  {
+    q: "GEO/AIO заменяет обычное SEO-продвижение?",
+    a: "Нет, это не замена, а дополнение. Классическое SEO по-прежнему нужно для позиций в Google и Яндексе. GEO/AIO решает отдельную задачу — чтобы бизнес упоминался в самих ответах нейросетей, куда обычная поисковая выдача уже не попадает.",
+  },
+  {
+    q: "Нужно ли платить за GEO/AIO отдельно?",
+    a: "Нет, для клиентов AI-Profigrup эти практики входят в стоимость любого сайта, бота или CRM бесплатно — это не отдельная платная опция, а часть того, как мы вообще собираем проекты.",
+  },
+  {
+    q: "Как самому проверить, упоминает ли ChatGPT или Алиса мой бизнес?",
+    a: "Задайте нейросети прямой вопрос вроде «кто делает [ваша услуга] в [ваш город]» или «посоветуй компанию для [задача]» и посмотрите, попадает ли бренд в ответ. Стоит проверить сразу в нескольких моделях — ChatGPT, Perplexity, Алиса — картина у них может отличаться.",
+  },
+  {
+    q: "Достаточно ли одной разметки JSON-LD, чтобы попасть в ответы нейросетей?",
+    a: "Разметка помогает моделям точнее считывать структуру страницы, но без содержательного текста с прямыми ответами на реальные вопросы она не работает сама по себе. GEO/AIO — это разметка плюс контент, а не только техническая настройка.",
+  },
+  {
+    q: "Какие нейросети и AI-краулеры вы учитываете в первую очередь?",
+    a: "В первую очередь ChatGPT, Perplexity, Алису и Gemini — как самые массовые точки, где пользователи ищут рекомендации бизнеса вместо перехода по ссылкам. robots.txt сайта открыт для их краулеров (GPTBot, ClaudeBot, PerplexityBot и других).",
+  },
 ];
 
 export const Route = createFileRoute("/geo")({
@@ -40,6 +73,18 @@ export const Route = createFileRoute("/geo")({
           description:
             "Оптимизация сайтов и ботов под видимость в ответах нейросетей (ChatGPT, Perplexity, Алиса, Gemini) — входит бесплатно в каждый проект AI-Profigrup.",
           url: "https://aiprofigrup.ru/geo",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
         }),
       },
     ],
@@ -112,6 +157,26 @@ export const Route = createFileRoute("/geo")({
                 <span className="text-sm">{p}</span>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="mt-14">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Вопросы про <span className="text-gradient">GEO и AIO</span>
+          </h2>
+          <div className="mt-6 glass rounded-3xl p-2 md:p-4">
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((f, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border-border/60">
+                  <AccordionTrigger className="text-left text-base md:text-lg font-medium px-4">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground px-4">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>

@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { FinalCta } from "@/components/site/FinalCta";
 
 const features = [
@@ -9,6 +15,29 @@ const features = [
   "AI-ассистент: подсказки и автозаполнение",
   "Аналитика и отчёты в реальном времени",
   "Доступ с любого устройства",
+];
+
+const faqs = [
+  {
+    q: "Можно ли перенести текущих клиентов и сделки из другой CRM?",
+    a: "Да, при переходе с другой системы переносим базу клиентов, историю сделок и контакты — обсуждаем формат исходных данных на старте, чтобы ничего не потерялось при миграции.",
+  },
+  {
+    q: "Сколько пользователей и менеджеров поддерживает система?",
+    a: "Количество менеджеров с доступом рассчитывается под ваш отдел продаж — от одного человека до полноценной команды с разными ролями и правами. Ограничение зависит от выбранной конфигурации, а не жёстко зашито в продукт.",
+  },
+  {
+    q: "CRM работает с телефона?",
+    a: "Да, доступ к воронке, сделкам и задачам открыт с любого устройства через браузер — не нужно ставить отдельное приложение, чтобы посмотреть статус сделки в дороге.",
+  },
+  {
+    q: "Что с резервным копированием данных?",
+    a: "База данных регулярно резервируется, чтобы сбой на сервере не означал потерю сделок и истории клиентов. Детали графика бэкапов фиксируем в технической документации проекта.",
+  },
+  {
+    q: "Можно добавить свои этапы воронки и поля под специфику бизнеса?",
+    a: "Да, структура воронки, статусы сделок и дополнительные поля карточки клиента настраиваются под ваши бизнес-процессы, а не подгоняются под готовый шаблон.",
+  },
 ];
 
 export const Route = createFileRoute("/crm")({
@@ -34,6 +63,18 @@ export const Route = createFileRoute("/crm")({
           url: "https://aiprofigrup.ru/crm",
         }),
       },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
     ],
   }),
   component: () => (
@@ -57,6 +98,26 @@ export const Route = createFileRoute("/crm")({
               <span className="text-sm">{f}</span>
             </div>
           ))}
+        </div>
+
+        <div className="mt-14">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Вопросы про <span className="text-gradient">CRM</span>
+          </h2>
+          <div className="mt-6 glass rounded-3xl p-2 md:p-4">
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((f, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border-border/60">
+                  <AccordionTrigger className="text-left text-base md:text-lg font-medium px-4">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground px-4">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </section>
       <FinalCta />
