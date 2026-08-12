@@ -44,6 +44,12 @@ export function Services() {
           Каждый проект — это инструмент роста. AI ускоряет разработку, мы фокусируемся
           на конверсии и автоматизации.
         </p>
+        <Link
+          to="/geo"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/15"
+        >
+          Плюс бесплатно: видимость в ChatGPT, Алисе и других нейросетях (GEO/AIO) →
+        </Link>
       </div>
 
       <div className="mt-12 grid gap-6 md:grid-cols-3">

@@ -78,6 +78,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://aiprofigrup.ru/cases/own-site.jpg" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "AI-Profigrup",
+          url: "https://aiprofigrup.ru",
+          description: "AI-студия: сайты, Telegram-боты и AI-автоматизация для бизнеса.",
+          sameAs: ["https://t.me/AiProfiGrup_bot"],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
