@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Globe, Bot, Database, Zap } from "lucide-react";
+import { ArrowRight, Globe, Bot, Database, Zap, Radar } from "lucide-react";
 
 const services = [
   {
@@ -25,7 +25,7 @@ const services = [
     title: "CRM для компании",
     description:
       "CRM-система под ваш бизнес: воронка продаж, клиенты, задачи и аналитика. Интеграция с сайтом, ботом и AI.",
-    to: "/avito" as const,
+    to: "/crm" as const,
     price: "от 90 000 ₽",
     term: "7–14 дней",
   },
@@ -73,6 +73,33 @@ export function Services() {
           </Link>
         ))}
       </div>
+
+      <Link
+        to="/geo"
+        className="group mt-6 block glass rounded-3xl p-7 md:p-9 border border-primary/30 hover:border-primary/60 transition-all hover:-translate-y-1 bg-[linear-gradient(135deg,hsl(262_85%_62%/0.08),hsl(245_80%_58%/0.08))]"
+      >
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-brand text-primary-foreground shadow-glow">
+              <Radar className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="inline-block rounded-full bg-primary/15 text-primary px-2.5 py-0.5 text-[11px] font-medium mb-2">
+                Бесплатно во всех проектах
+              </div>
+              <h3 className="text-2xl font-semibold">GEO/AIO-оптимизация</h3>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">
+                Делаем сайт и бота видимыми не только в Google и Яндексе, но и в ответах
+                ChatGPT, Алисы и других нейросетей — без доплаты.
+              </p>
+            </div>
+          </div>
+          <div className="inline-flex items-center gap-1 text-sm font-medium text-foreground self-start md:self-center">
+            Подробнее
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </div>
+        </div>
+      </Link>
 
       <a
         href="#calculator"

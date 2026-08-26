@@ -1,7 +1,11 @@
 // Минимальный клиент Telegram Bot API. Только серверный код — токен бота
 // никогда не должен попасть в клиентский бандл.
 
-const API_BASE = "https://api.telegram.org";
+// api.telegram.org напрямую недоступен с прод-IP Timeweb App Platform
+// (та же категория сетевой блокировки, что и с openrouter.ai — см. api/chat.ts).
+// TELEGRAM_API_BASE позволяет направить трафик через внешний релей
+// (Cloudflare Worker, прозрачно проксирующий на api.telegram.org).
+const API_BASE = process.env.TELEGRAM_API_BASE ?? "https://api.telegram.org";
 
 function botToken(): string {
   const token = process.env.TELEGRAM_BOT_TOKEN;

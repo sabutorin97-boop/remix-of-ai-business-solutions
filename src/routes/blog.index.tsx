@@ -1,21 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { getAllPosts } from "@/lib/blog";
 
-const posts = [
-  { slug: "ai-vs-classic", title: "Почему AI-разработка обгоняет классику в 5 раз", excerpt: "Разбираем стек, который позволяет запускать сайты за 3–7 дней без потери качества.", date: "12 мая 2026" },
-  { slug: "telegram-bots-2026", title: "Telegram-боты в 2026: что реально работает", excerpt: "AI-консультанты, CRM-интеграции и автоворонки, которые приносят заявки.", date: "28 апреля 2026" },
-  { slug: "avito-automation", title: "Авито под ключ: как получать +4 заявки в день", excerpt: "Прокачка аккаунта, автоответы и аналитика — пошаговый разбор.", date: "10 апреля 2026" },
-];
+const posts = getAllPosts();
 
-export const Route = createFileRoute("/blog")({
+export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
       { title: "Блог — AI-Profigrup" },
       { name: "description", content: "Статьи об AI-разработке, Telegram-ботах и автоматизации продаж." },
       { property: "og:title", content: "Блог AI-Profigrup" },
       { property: "og:description", content: "Полезные статьи об AI в бизнесе." },
-      { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/blog" },
+      { property: "og:url", content: "https://aiprofigrup.ru/blog" },
     ],
-    links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/blog" }],
+    links: [{ rel: "canonical", href: "https://aiprofigrup.ru/blog" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -23,7 +20,7 @@ export const Route = createFileRoute("/blog")({
           "@context": "https://schema.org",
           "@type": "Blog",
           name: "Блог AI-Profigrup",
-          url: "https://ai-profigrup-studia.lovable.app/blog",
+          url: "https://aiprofigrup.ru/blog",
           description: "Статьи об AI-разработке, Telegram-ботах и автоматизации продаж.",
         }),
       },
@@ -40,10 +37,10 @@ export const Route = createFileRoute("/blog")({
       <div className="mt-12 grid gap-6 md:grid-cols-3">
         {posts.map((p) => (
           <article key={p.slug} className="glass rounded-3xl p-6">
-            <div className="text-xs text-muted-foreground">{p.date}</div>
+            <div className="text-xs text-muted-foreground">{p.dateLabel}</div>
             <h2 className="mt-3 text-xl font-semibold">{p.title}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{p.excerpt}</p>
-            <Link to="/contact" className="mt-4 inline-block text-sm font-medium text-gradient">Читать →</Link>
+            <Link to="/blog/$slug" params={{ slug: p.slug }} className="mt-4 inline-block text-sm font-medium text-gradient">Читать →</Link>
           </article>
         ))}
       </div>

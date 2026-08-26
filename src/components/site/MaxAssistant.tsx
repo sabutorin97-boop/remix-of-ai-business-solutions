@@ -5,12 +5,19 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { Link } from "@tanstack/react-router";
 import assistantAvatar from "@/assets/assistant-avatar.jpg";
 import { Button } from "@/components/ui/button";
+import { ymGoal } from "@/components/site/YandexMetrika";
+
+// После пары ответов Макса в чате предлагаем продолжить в Telegram у
+// консультанта "Азимут" (Nexus) — тот же продукт/цены, но живой диалог и
+// возможность оставить контакты. Сам чат с Максом не меняется, это доп. шаг.
+const CONSULTANT_BOT_URL = "https://t.me/AIProfigrupConsultant_bot";
+const TELEGRAM_HANDOFF_AFTER_REPLIES = 2;
 
 const MAX_TIMED_SHOWS = 4;
 const TIMED_STORAGE_KEY = "max-promo-timed-shown-v1";
 const EXIT_STORAGE_KEY = "max-promo-exit-shown-v1";
-const FIRST_DELAY_MS = 15_000;
-const REPEAT_DELAY_MS = 20_000;
+const FIRST_DELAY_MS = 45_000;
+const REPEAT_DELAY_MS = 60_000;
 const DRAG_THRESHOLD_PX = 5;
 
 function readTimedShownCount(): number {
@@ -119,6 +126,8 @@ function MaxChatPanel({ onClose }: { onClose: () => void }) {
   }, [messages, status]);
 
   const busy = status === "submitted" || status === "streaming";
+  const realAssistantReplies = messages.filter((m) => m.role === "assistant" && m.id !== "greeting").length;
+  const showTelegramHandoff = realAssistantReplies >= TELEGRAM_HANDOFF_AFTER_REPLIES;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +207,23 @@ function MaxChatPanel({ onClose }: { onClose: () => void }) {
             <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="underline">
               @AiProfiGrup_bot
             </a>
+          </div>
+        )}
+        {showTelegramHandoff && !busy && (
+          <div className="flex justify-start">
+            <div className="max-w-[90%] rounded-2xl rounded-bl-sm bg-secondary/60 px-3 py-2.5 space-y-2">
+              <p>Готовы обсудить детали, сроки и бюджет предметно? Продолжим в Telegram — отвечу быстрее и подберу решение под вашу задачу.</p>
+              <a
+                href={CONSULTANT_BOT_URL}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => ymGoal("max_chat_lead")}
+              >
+                <Button size="sm" className="rounded-full bg-gradient-brand text-primary-foreground shadow-glow">
+                  <Send className="mr-2 h-3.5 w-3.5" /> Продолжить в Telegram
+                </Button>
+              </a>
+            </div>
           </div>
         )}
       </div>

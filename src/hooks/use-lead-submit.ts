@@ -1,7 +1,19 @@
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { ymGoal } from "@/components/site/YandexMetrika";
 
 type LeadSource = "contact_form" | "lead_magnet" | "quiz" | "calculator" | "max_chat";
+
+// Единая точка, откуда уходят все заявки (форма, квиз, калькулятор, лид-магнит,
+// чат Max) — поэтому цели Метрики фиксируются здесь одним местом, а не в
+// каждой форме отдельно. Эти цели нужно завести в интерфейсе Метрики вручную.
+const GOAL_BY_SOURCE: Record<LeadSource, string> = {
+  contact_form: "contact_submit",
+  lead_magnet: "lead_magnet_download",
+  quiz: "quiz_complete",
+  calculator: "calc_request",
+  max_chat: "max_chat_lead",
+};
 
 interface SubmitLeadInput {
   source: LeadSource;
@@ -58,6 +70,7 @@ export function useLeadSubmit() {
       }
       const data = (await res.json()) as SubmitLeadResult;
       rememberLeadId(data.leadId);
+      ymGoal(GOAL_BY_SOURCE[input.source]);
       return data;
     } catch {
       toast.error("Не удалось отправить заявку. Попробуйте ещё раз или напишите в Telegram.");

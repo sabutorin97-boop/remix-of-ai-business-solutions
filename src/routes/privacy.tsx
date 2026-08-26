@@ -10,7 +10,7 @@ export const Route = createFileRoute("/privacy")({
           "Политика обработки и защиты персональных данных пользователей сайта AI-Profigrup.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/privacy" }],
+    links: [{ rel: "canonical", href: "https://aiprofigrup.ru/privacy" }],
   }),
   component: PrivacyPage,
 });

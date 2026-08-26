@@ -17,6 +17,16 @@ const serviceBase: Record<Service, number> = {
   "CRM для компании": 90000, // CRM-система с воронкой и аналитикой
 };
 
+// Верхняя граница цен на аналогичные проекты на фриланс/no-code рынке (чек-лист
+// цен «РЕАКТОР», Plaan Academy, 2025–2026: Лендинг полный 5-7 экранов — до 50 000₽,
+// Telegram-бот сложный (AI/CRM/интеграции) — до 150 000₽, CRM простая — до 200 000₽).
+// Не наша выдумка и не постоянный множитель — реальный опубликованный диапазон.
+const serviceMarketMax: Record<Service, number> = {
+  "Сайт": 50000,
+  "Telegram-бот": 150000,
+  "CRM для компании": 200000,
+};
+
 const activeBtn =
   "bg-[linear-gradient(135deg,hsl(262_85%_62%),hsl(245_80%_58%))] text-white shadow-[0_8px_24px_-8px_hsl(262_85%_62%/0.6)]";
 const idleBtn = "bg-secondary text-muted-foreground hover:text-foreground";
@@ -63,25 +73,24 @@ export function Calculator() {
     const baseSite = { Лендинг: 1, Корпоративный: 2.4, Каталог: 3.0, "Квиз-воронка": 0.8, "AI-воронка": 1.7 }[site];
 
     let servicesSum = 0;
+    let servicesSumMarket = 0;
     for (const s of services) {
-      const base = serviceBase[s];
-      servicesSum += s === "Сайт" ? base * baseSite : base;
+      servicesSum += s === "Сайт" ? serviceBase[s] * baseSite : serviceBase[s];
+      servicesSumMarket += s === "Сайт" ? serviceMarketMax[s] * baseSite : serviceMarketMax[s];
     }
 
-    // итоговый множитель скидки
-    const bundleDiscount = effectiveBundle
-      ? 0.75
-      : services.length >= 3
-      ? 0.85
-      : services.length === 2
-      ? 0.92
-      : 1;
+    // итоговый множитель скидки — применяется только к нашей цене; полный
+    // комплект (все 3 услуги через кнопку "Автоворонка") даёт 25%, любые 2 — 8%
+    const bundleDiscount = effectiveBundle ? 0.75 : services.length === 2 ? 0.92 : 1;
 
     const pagesCost = hasSite ? pages * 4000 : 0;
     const integrationsCost = picks.length * 6000;
 
     const ours = Math.round(((servicesSum + pagesCost + integrationsCost) * bundleDiscount) / 1000) * 1000;
-    const market = Math.round((ours * 3.0) / 1000) * 1000;
+    // "Рыночная" цена — та же схема (сайт/страницы/интеграции), но без нашей
+    // скидки за комплекс и с базой из верхней границы фриланс-рынка (см.
+    // serviceMarketMax выше), а не постоянный множитель нашей же цены.
+    const market = Math.round((servicesSumMarket + pagesCost + integrationsCost) / 1000) * 1000;
     const save = market > 0 ? Math.round(((market - ours) / market) * 100) : 0;
     return { ours, market, save, bundleDiscount };
   }, [services, site, pages, picks, hasSite, effectiveBundle]);
@@ -222,7 +231,7 @@ export function Calculator() {
           </div>
 
           <div className="mt-6">
-            <div className="text-xs text-muted-foreground">Средняя цена по рынку</div>
+            <div className="text-xs text-muted-foreground">Максимум по рынку фрилансеров</div>
             <div className="text-xl md:text-2xl font-semibold text-muted-foreground line-through">
               {fmt(calc.market)}
             </div>

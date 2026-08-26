@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { FinalCta } from "@/components/site/FinalCta";
 
 const features = [
@@ -11,6 +17,33 @@ const features = [
   "Поддержка 24/7 после запуска",
 ];
 
+const faqs = [
+  {
+    q: "Кому принадлежит токен и сам бот после сдачи проекта?",
+    a: "Бот создаётся через ваш аккаунт в Telegram (@BotFather), поэтому токен и права владельца изначально ваши. Мы не держим ботов клиентов на своём аккаунте и не можем забрать их себе.",
+  },
+  {
+    q: "Что будет, если Telegram изменит политику для ботов?",
+    a: "Мы следим за изменениями Bot API и обновляем логику бота при необходимости. Это входит в поддержку после запуска — вы не остаётесь один на один с техническими изменениями платформы.",
+  },
+  {
+    q: "Может ли бот передать сложный диалог живому менеджеру?",
+    a: "Да, это стандартный сценарий: бот ведёт разговор сам, а на сложном или горячем запросе эскалирует диалог живому человеку и уведомляет о новом обращении. Так, например, устроен наш собственный консультационный бот на сайте.",
+  },
+  {
+    q: "Бот может работать с оплатами и CRM одновременно?",
+    a: "Да, приём оплат (Telegram Payments, ЮKassa и другие) и передача заявки/сделки в CRM настраиваются в одном боте — клиент оплачивает и попадает в воронку без переключения между системами.",
+  },
+  {
+    q: "Нужен ли отдельный сервер для бота?",
+    a: "Для большинства сценариев отдельный сервер не нужен — бот размещается на нашей инфраструктуре или недорогом хостинге. Отдельный сервер имеет смысл только для нагруженных ботов с большим потоком сообщений или автономных AI-агентов, работающих 24/7 на стороне заказчика.",
+  },
+  {
+    q: "Бот умеет консультировать по прайсу и услугам самостоятельно?",
+    a: "Да, AI-консультант обучается на базе знаний о вашем бизнесе: ценах, услугах, частых вопросах — и отвечает по актуальным данным, а не общими фразами.",
+  },
+];
+
 export const Route = createFileRoute("/telegram-bots")({
   head: () => ({
     meta: [
@@ -18,9 +51,9 @@ export const Route = createFileRoute("/telegram-bots")({
       { name: "description", content: "Боты для продаж, поддержки и автоматизации воронок с AI и CRM." },
       { property: "og:title", content: "Telegram-боты от AI-Profigrup" },
       { property: "og:description", content: "AI-боты, которые продают и поддерживают 24/7." },
-      { property: "og:url", content: "https://ai-profigrup-studia.lovable.app/telegram-bots" },
+      { property: "og:url", content: "https://aiprofigrup.ru/telegram-bots" },
     ],
-    links: [{ rel: "canonical", href: "https://ai-profigrup-studia.lovable.app/telegram-bots" }],
+    links: [{ rel: "canonical", href: "https://aiprofigrup.ru/telegram-bots" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -28,10 +61,22 @@ export const Route = createFileRoute("/telegram-bots")({
           "@context": "https://schema.org",
           "@type": "Service",
           name: "Telegram-боты с AI",
-          provider: { "@type": "Organization", name: "AI-Profigrup", url: "https://ai-profigrup-studia.lovable.app" },
+          provider: { "@type": "Organization", name: "AI-Profigrup", url: "https://aiprofigrup.ru" },
           areaServed: "RU",
           description: "Боты для продаж, поддержки и автоматизации воронок с AI и CRM.",
-          url: "https://ai-profigrup-studia.lovable.app/telegram-bots",
+          url: "https://aiprofigrup.ru/telegram-bots",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
         }),
       },
     ],
@@ -57,6 +102,26 @@ export const Route = createFileRoute("/telegram-bots")({
               <span className="text-sm">{f}</span>
             </div>
           ))}
+        </div>
+
+        <div className="mt-14">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Вопросы про <span className="text-gradient">Telegram-ботов</span>
+          </h2>
+          <div className="mt-6 glass rounded-3xl p-2 md:p-4">
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((f, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border-border/60">
+                  <AccordionTrigger className="text-left text-base md:text-lg font-medium px-4">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground px-4">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </section>
       <FinalCta />
