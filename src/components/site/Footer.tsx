@@ -22,13 +22,16 @@ export function Footer() {
               Сайты, Telegram-боты и AI-автоматизация для бизнеса. Запуск за 3–7 дней.
             </p>
             {/* Левая колонка, а не «Связаться»: правый нижний угол перекрывает
-                плавающий виджет «Спросить Макса». */}
+                плавающий виджет «Спросить Макса». Кнопка та же, что у заявки,
+                но в другой колонке — так они не читаются как два равных
+                варианта одного действия. */}
             <a
               href={CHANNEL_LINKS.site}
               target="_blank"
               rel="noreferrer"
+              aria-label="Открыть Telegram-канал про AI"
               onClick={() => ymGoal("tg_channel_click", { place: "footer" })}
-              className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
             >
               <Megaphone className="h-4 w-4" /> Telegram-канал про AI
             </a>
