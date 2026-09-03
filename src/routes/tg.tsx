@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Gift, Radar, Send, Sparkles, Zap } from "lucide-react";
 import { ymGoal } from "@/components/site/YandexMetrika";
+import { CHANNEL_LINKS, CHANNEL_NAME } from "@/lib/telegram-channel";
 
 /**
  * Подписная страница под рекламу (Яндекс.Директ, VK Ads).
@@ -8,11 +9,10 @@ import { ymGoal } from "@/components/site/YandexMetrika";
  * «Спросить Макса» на этом маршруте скрыты (см. __root.tsx).
  */
 
-// Ссылка на канал. Для раздельного учёта источников сюда можно подставить
-// именованную пригласительную ссылку вида https://t.me/+xxxxxxxxxx —
-// Telegram показывает по каждой такой ссылке, сколько человек по ней вступило.
-const CHANNEL_URL = "https://t.me/ai_prodazhi_pro";
-const CHANNEL_NAME = "@ai_prodazhi_pro";
+// Ссылки на канал живут в одном месте на весь сайт, см. src/lib/telegram-channel.ts.
+// Здесь берём вариант для платного трафика, чтобы подписчиков из рекламы можно
+// было отделить от бесплатных, которые приходят из подвала и блога.
+const CHANNEL_URL = CHANNEL_LINKS.ads;
 
 // Бонус за подписку. Меняется целиком здесь: подарок может стать другим, форма
 // подачи останется. Держите `short` конкретным — «15 генераций» работает

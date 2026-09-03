@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Send } from "lucide-react";
+import { Megaphone, Send } from "lucide-react";
+import { CHANNEL_LINKS } from "@/lib/telegram-channel";
+import { ymGoal } from "@/components/site/YandexMetrika";
 
 export function Footer() {
   return (
@@ -19,6 +21,17 @@ export function Footer() {
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
               Сайты, Telegram-боты и AI-автоматизация для бизнеса. Запуск за 3–7 дней.
             </p>
+            {/* Левая колонка, а не «Связаться»: правый нижний угол перекрывает
+                плавающий виджет «Спросить Макса». */}
+            <a
+              href={CHANNEL_LINKS.site}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => ymGoal("tg_channel_click", { place: "footer" })}
+              className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <Megaphone className="h-4 w-4" /> Telegram-канал про AI
+            </a>
           </div>
 
           <div>

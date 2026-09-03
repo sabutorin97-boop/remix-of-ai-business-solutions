@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getPostBySlug } from "@/lib/blog";
+import { ChannelCta } from "@/components/site/ChannelCta";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: ({ params }) => {
@@ -58,6 +59,7 @@ function RouteComponent() {
         className="glass rounded-3xl p-6 md:p-8 mt-10 blog-content"
         dangerouslySetInnerHTML={{ __html: post.html }}
       />
+      <ChannelCta />
     </section>
   );
 }
