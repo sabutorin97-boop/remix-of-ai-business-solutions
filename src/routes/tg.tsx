@@ -14,23 +14,23 @@ import { CHANNEL_LINKS, CHANNEL_NAME } from "@/lib/telegram-channel";
 // было отделить от бесплатных, которые приходят из подвала и блога.
 const CHANNEL_URL = CHANNEL_LINKS.ads;
 
+// Бонус выдаёт сам бот PixSpark AI (@pixsparkbot_bot), не «Азимут» — это
+// прояснили и проверили вживую 2026-09-03 (см. CLAUDE.md, было записано
+// неверно). Диплинк `?start=bonus` сам проверяет подписку на канал через
+// Telegram API и один раз на пользователя выдаёт 15 генераций на 30 дней —
+// работает без участия Азимута и без ручного подтверждения.
+const PIXSPARK_BONUS_URL = "https://t.me/pixsparkbot_bot?start=bonus";
+
 // Бонус за подписку. Меняется целиком здесь: подарок может стать другим, форма
 // подачи останется. Держите `short` конкретным — «15 генераций» работает
 // заметно лучше, чем абстрактное «приятный бонус».
-//
-// Выдаёт бонус бот «Азимут» (@AIProfigrupConsultant_bot), его код живёт вне
-// этого репозитория. Пока выдача реально не работает, платный трафик на
-// страницу пускать нельзя: невыполненное обещание — жалобы и риск на
-// модерации Директа. Подробности в CLAUDE.md.
 const BONUS = {
   enabled: true,
   // Строка над кнопкой, самое заметное место после заголовка.
   short: "15 генераций изображений в PixSpark",
   title: "Бонус за подписку",
   text: "Наш AI-генератор изображений PixSpark на время открывается новым подписчикам. Пятнадцать генераций, без карты и без оплаты.",
-  // Намеренно не описываем шаги: механика выдачи ещё может измениться, а
-  // ошибиться в инструкции на рекламной странице дороже, чем недосказать.
-  note: "Как забрать — расскажем в канале сразу после подписки.",
+  note: "Уже подписались? Заберите бонус у бота PixSpark AI — кнопка ниже.",
 };
 
 // Счётчик подписчиков. Пока в канале мало людей, цифра работает против нас,
@@ -171,6 +171,16 @@ function TgLanding() {
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground md:text-base">{BONUS.text}</p>
                   <p className="mt-3 text-xs text-muted-foreground">{BONUS.note}</p>
+                  <a
+                    href={PIXSPARK_BONUS_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => ymGoal("tg_bonus_claim_click", { place: "bonus_block" })}
+                    className="mt-4 inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-primary/40 px-5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
+                  >
+                    <Gift className="h-4 w-4" />
+                    Забрать бонус в PixSpark
+                  </a>
                 </div>
               </div>
             </div>

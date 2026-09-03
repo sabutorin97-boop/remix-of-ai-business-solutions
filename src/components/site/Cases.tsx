@@ -131,7 +131,7 @@ const cases: Case[] = [
     tags: ["Telegram", "Nano Banana 2", "Открытки", "Мемы", "Стикеры"],
     description:
       "Открытки на любой повод, товарные фото для маркетплейсов, картинки для соцсетей, мемы и настоящие Telegram-стикеры с прозрачным фоном — на выбор несколько художественных стилей. Есть тарифы и промокоды.",
-    url: "https://t.me/pixsparkbot_bot",
+    url: "https://t.me/pixsparkbot_bot?start=bonus",
     featured: true,
     image: "/cases/pixspark-art.jpg",
   },
