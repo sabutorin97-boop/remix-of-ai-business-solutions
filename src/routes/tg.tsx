@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Send, Sparkles, Zap, Radar } from "lucide-react";
+import { Gift, Radar, Send, Sparkles, Zap } from "lucide-react";
 import { ymGoal } from "@/components/site/YandexMetrika";
 
 /**
@@ -14,10 +14,24 @@ import { ymGoal } from "@/components/site/YandexMetrika";
 const CHANNEL_URL = "https://t.me/ai_prodazhi_pro";
 const CHANNEL_NAME = "@ai_prodazhi_pro";
 
-// Блок бонуса PixSpark. Механика выдачи живёт вне этого репозитория: временную
-// подписку на генератор выдаёт бот «Азимут» (@AIProfigrupConsultant_bot).
-// Блок выключен, пока не уточнили условие и точный текст — см. CLAUDE.md.
-const SHOW_BONUS = false;
+// Бонус за подписку. Меняется целиком здесь: подарок может стать другим, форма
+// подачи останется. Держите `short` конкретным — «15 генераций» работает
+// заметно лучше, чем абстрактное «приятный бонус».
+//
+// Выдаёт бонус бот «Азимут» (@AIProfigrupConsultant_bot), его код живёт вне
+// этого репозитория. Пока выдача реально не работает, платный трафик на
+// страницу пускать нельзя: невыполненное обещание — жалобы и риск на
+// модерации Директа. Подробности в CLAUDE.md.
+const BONUS = {
+  enabled: true,
+  // Строка над кнопкой, самое заметное место после заголовка.
+  short: "15 генераций изображений в PixSpark",
+  title: "Бонус за подписку",
+  text: "Наш AI-генератор изображений PixSpark на время открывается новым подписчикам. Пятнадцать генераций, без карты и без оплаты.",
+  // Намеренно не описываем шаги: механика выдачи ещё может измениться, а
+  // ошибиться в инструкции на рекламной странице дороже, чем недосказать.
+  note: "Как забрать — расскажем в канале сразу после подписки.",
+};
 
 // Счётчик подписчиков. Пока в канале мало людей, цифра работает против нас,
 // поэтому null. Включать, когда наберётся хотя бы несколько сотен.
@@ -96,14 +110,23 @@ function TgLanding() {
         </div>
 
         <h1 className="mt-6 max-w-2xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-          AI-кейсы, инструменты и новости —{" "}
-          <span className="text-gradient">бесплатно</span>
+          AI-кейсы, инструменты и новости — <span className="text-gradient">бесплатно</span>
         </h1>
 
         <p className="mt-6 max-w-2xl text-base text-muted-foreground md:text-lg">
           Канал о том, как нейросети реально работают в бизнесе: что внедряем клиентам, сколько это
           стоит и что из этого выходит. Без курсов, без инфошума и без новостей ради новостей.
         </p>
+
+        {BONUS.enabled && (
+          <div className="mt-6 inline-flex w-fit items-center gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3">
+            <Gift className="h-5 w-5 shrink-0 text-primary" />
+            <span className="text-sm">
+              <span className="text-muted-foreground">Бонус за подписку: </span>
+              <span className="font-semibold">{BONUS.short}</span>
+            </span>
+          </div>
+        )}
 
         <div className="mt-8">
           <SubscribeButton place="hero" />
@@ -124,12 +147,16 @@ function TgLanding() {
           ))}
         </div>
 
-        {SHOW_BONUS && (
-          <div className="mt-6 rounded-2xl border border-border/60 bg-secondary/40 p-5">
-            <div className="text-sm font-semibold">Бонус за подписку</div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              15 генераций изображений в нашем AI-генераторе PixSpark — сразу после подписки.
-            </p>
+        {BONUS.enabled && (
+          <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-primary/25 bg-primary/[0.07] p-5 sm:flex-row sm:items-center sm:gap-5 sm:p-6">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-brand text-primary-foreground">
+              <Gift className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="text-base font-semibold">{BONUS.title}</div>
+              <p className="mt-1.5 text-sm text-muted-foreground">{BONUS.text}</p>
+              <p className="mt-2 text-xs text-muted-foreground">{BONUS.note}</p>
+            </div>
           </div>
         )}
 
