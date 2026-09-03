@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { createLead, updateLead, type LeadSource } from "@/lib/leads-store";
 import { sendTelegramMessage } from "@/lib/telegram";
+import { sendNotificationEmail } from "@/lib/email";
 
 const RL_WINDOW_MS = 60_000;
 const RL_MAX = 10;
@@ -48,6 +49,19 @@ function ownerNotificationText(lead: {
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function ownerNotificationPlainText(lead: {
+  source: LeadSource;
+  name: string | null;
+  contact: string;
+  message: string | null;
+}): string {
+  const lines = ["Новая заявка с сайта AI-Profigrup", "", `Источник: ${SOURCE_LABELS[lead.source]}`];
+  if (lead.name) lines.push(`Имя: ${lead.name}`);
+  lines.push(`Контакт: ${lead.contact}`);
+  if (lead.message) lines.push(`Сообщение: ${lead.message}`);
+  return lines.join("\n");
 }
 
 const BOT_USERNAME = "AiProfiGrup_bot";
@@ -99,6 +113,21 @@ export const Route = createFileRoute("/api/lead")({
             ipHash,
             userAgent,
           });
+        }
+
+        // Email — резервный канал уведомлений (SMTP через Yandex), на случай
+        // если Telegram-релей (Cloudflare Worker, см. CLAUDE.md) перестанет
+        // работать. На 2026-09-03 сам релей рабочий, оба канала шлют
+        // уведомление параллельно, не заменяют друг друга.
+        if (process.env.SMTP_HOST) {
+          try {
+            await sendNotificationEmail(
+              `Новая заявка: ${SOURCE_LABELS[lead.source]}`,
+              ownerNotificationPlainText(lead),
+            );
+          } catch (err) {
+            console.error("Failed to notify owner via email:", err);
+          }
         }
 
         const ownerChatId = process.env.TELEGRAM_OWNER_CHAT_ID;

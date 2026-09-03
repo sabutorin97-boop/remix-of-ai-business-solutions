@@ -25,7 +25,6 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiDebugTelegramPingRouteImport } from './routes/api/debug/telegram-ping'
 
 const TgRoute = TgRouteImport.update({
   id: '/tg',
@@ -107,11 +106,6 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiDebugTelegramPingRoute = ApiDebugTelegramPingRouteImport.update({
-  id: '/api/debug/telegram-ping',
-  path: '/api/debug/telegram-ping',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,7 +124,6 @@ export interface FileRoutesByFullPath {
   '/api/lead': typeof ApiLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
-  '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -149,7 +142,6 @@ export interface FileRoutesByTo {
   '/api/lead': typeof ApiLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
-  '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -169,7 +161,6 @@ export interface FileRoutesById {
   '/api/lead': typeof ApiLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
-  '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,7 +181,6 @@ export interface FileRouteTypes {
     | '/api/lead'
     | '/blog/$slug'
     | '/blog/'
-    | '/api/debug/telegram-ping'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -209,7 +199,6 @@ export interface FileRouteTypes {
     | '/api/lead'
     | '/blog/$slug'
     | '/blog'
-    | '/api/debug/telegram-ping'
   id:
     | '__root__'
     | '/'
@@ -228,7 +217,6 @@ export interface FileRouteTypes {
     | '/api/lead'
     | '/blog/$slug'
     | '/blog/'
-    | '/api/debug/telegram-ping'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -248,7 +236,6 @@ export interface RootRouteChildren {
   ApiLeadRoute: typeof ApiLeadRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
-  ApiDebugTelegramPingRoute: typeof ApiDebugTelegramPingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -365,13 +352,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/debug/telegram-ping': {
-      id: '/api/debug/telegram-ping'
-      path: '/api/debug/telegram-ping'
-      fullPath: '/api/debug/telegram-ping'
-      preLoaderRoute: typeof ApiDebugTelegramPingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -392,7 +372,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiLeadRoute: ApiLeadRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
-  ApiDebugTelegramPingRoute: ApiDebugTelegramPingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
