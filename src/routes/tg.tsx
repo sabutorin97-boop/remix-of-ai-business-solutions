@@ -14,8 +14,9 @@ import { ymGoal } from "@/components/site/YandexMetrika";
 const CHANNEL_URL = "https://t.me/ai_prodazhi_pro";
 const CHANNEL_NAME = "@ai_prodazhi_pro";
 
-// Блок бонуса PixSpark. Механики выдачи 15 генераций за подписку пока нет,
-// поэтому блок выключен — включится, когда бот научится её выдавать.
+// Блок бонуса PixSpark. Механика выдачи живёт вне этого репозитория: временную
+// подписку на генератор выдаёт бот «Азимут» (@AIProfigrupConsultant_bot).
+// Блок выключен, пока не уточнили условие и точный текст — см. CLAUDE.md.
 const SHOW_BONUS = false;
 
 // Счётчик подписчиков. Пока в канале мало людей, цифра работает против нас,
