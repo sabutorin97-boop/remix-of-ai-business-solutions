@@ -119,12 +119,20 @@ function TgLanding() {
         </p>
 
         {BONUS.enabled && (
-          <div className="mt-6 inline-flex w-fit items-center gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3">
-            <Gift className="h-5 w-5 shrink-0 text-primary" />
-            <span className="text-sm">
-              <span className="text-muted-foreground">Бонус за подписку: </span>
-              <span className="font-semibold">{BONUS.short}</span>
-            </span>
+          // Градиентная рамка, а не заливка: заливку держим только на кнопке,
+          // чтобы плашка не выглядела вторым «нажми сюда».
+          <div className="mt-7 w-full rounded-2xl bg-gradient-brand p-px shadow-glow sm:w-fit">
+            <div className="flex items-center gap-4 rounded-2xl bg-background/90 px-5 py-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground">
+                <Gift className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                  {BONUS.title}
+                </div>
+                <div className="mt-1 text-base font-semibold sm:text-lg">{BONUS.short}</div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -148,14 +156,23 @@ function TgLanding() {
         </div>
 
         {BONUS.enabled && (
-          <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-primary/25 bg-primary/[0.07] p-5 sm:flex-row sm:items-center sm:gap-5 sm:p-6">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-brand text-primary-foreground">
-              <Gift className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-base font-semibold">{BONUS.title}</div>
-              <p className="mt-1.5 text-sm text-muted-foreground">{BONUS.text}</p>
-              <p className="mt-2 text-xs text-muted-foreground">{BONUS.note}</p>
+          <div className="mt-4 rounded-3xl bg-gradient-brand p-px shadow-glow">
+            <div className="rounded-3xl bg-background/92 p-6 sm:p-8">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-7">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-brand text-primary-foreground">
+                  <Gift className="h-8 w-8" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                    {BONUS.title}
+                  </div>
+                  <div className="mt-2 text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
+                    {BONUS.short}
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground md:text-base">{BONUS.text}</p>
+                  <p className="mt-3 text-xs text-muted-foreground">{BONUS.note}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
