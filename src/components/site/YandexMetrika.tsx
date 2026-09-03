@@ -12,6 +12,7 @@
  *  - calc_request        — клик «Получить расчёт в Telegram»
  *  - lead_magnet_download — скачивание PDF
  *  - contact_submit      — отправка формы заявки
+ *  - tg_subscribe_click  — клик «Подписаться в Telegram» на странице /tg
  *
  * Хелпер для отправки события из кода:
  *   import { ymGoal } from "@/components/site/YandexMetrika";

@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -115,16 +116,21 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // Подписная страница под рекламу (/tg) живёт по правилу «одна цель — одно
+  // действие», поэтому общий каркас сайта на ней не рисуем: шапка, подвал и
+  // виджет «Спросить Макса» уводят от единственной кнопки.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const bare = pathname === "/tg" || pathname.startsWith("/tg/");
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">
-        <Header />
+        {!bare && <Header />}
         <main className="flex-1">
           <Outlet />
         </main>
-        <Footer />
+        {!bare && <Footer />}
       </div>
-      <MaxAssistant />
+      {!bare && <MaxAssistant />}
       <CookieConsent />
       <Toaster />
     </QueryClientProvider>

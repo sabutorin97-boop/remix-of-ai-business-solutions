@@ -9,20 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TgRouteImport } from './routes/tg'
 import { Route as TelegramBotsRouteImport } from './routes/telegram-bots'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as GeoRouteImport } from './routes/geo'
+import { Route as CrmRouteImport } from './routes/crm'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CasesRouteImport } from './routes/cases'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AvitoRouteImport } from './routes/avito'
 import { Route as AiWebsitesRouteImport } from './routes/ai-websites'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDebugTelegramPingRouteImport } from './routes/api/debug/telegram-ping'
 
+const TgRoute = TgRouteImport.update({
+  id: '/tg',
+  path: '/tg',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TelegramBotsRoute = TelegramBotsRouteImport.update({
   id: '/telegram-bots',
   path: '/telegram-bots',
@@ -43,6 +52,16 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GeoRoute = GeoRouteImport.update({
+  id: '/geo',
+  path: '/geo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmRoute = CrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -51,11 +70,6 @@ const ContactRoute = ContactRouteImport.update({
 const CasesRoute = CasesRouteImport.update({
   id: '/cases',
   path: '/cases',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvitoRoute = AvitoRouteImport.update({
@@ -71,6 +85,16 @@ const AiWebsitesRoute = AiWebsitesRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiLeadRoute = ApiLeadRouteImport.update({
@@ -93,30 +117,38 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-websites': typeof AiWebsitesRoute
   '/avito': typeof AvitoRoute
-  '/blog': typeof BlogRoute
   '/cases': typeof CasesRoute
   '/contact': typeof ContactRoute
+  '/crm': typeof CrmRoute
+  '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telegram-bots': typeof TelegramBotsRoute
+  '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/': typeof BlogIndexRoute
   '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-websites': typeof AiWebsitesRoute
   '/avito': typeof AvitoRoute
-  '/blog': typeof BlogRoute
   '/cases': typeof CasesRoute
   '/contact': typeof ContactRoute
+  '/crm': typeof CrmRoute
+  '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telegram-bots': typeof TelegramBotsRoute
+  '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog': typeof BlogIndexRoute
   '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRoutesById {
@@ -124,15 +156,19 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-websites': typeof AiWebsitesRoute
   '/avito': typeof AvitoRoute
-  '/blog': typeof BlogRoute
   '/cases': typeof CasesRoute
   '/contact': typeof ContactRoute
+  '/crm': typeof CrmRoute
+  '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telegram-bots': typeof TelegramBotsRoute
+  '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/': typeof BlogIndexRoute
   '/api/debug/telegram-ping': typeof ApiDebugTelegramPingRoute
 }
 export interface FileRouteTypes {
@@ -141,45 +177,57 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-websites'
     | '/avito'
-    | '/blog'
     | '/cases'
     | '/contact'
+    | '/crm'
+    | '/geo'
     | '/privacy'
     | '/services'
     | '/sitemap.xml'
     | '/telegram-bots'
+    | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/blog/$slug'
+    | '/blog/'
     | '/api/debug/telegram-ping'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/ai-websites'
     | '/avito'
-    | '/blog'
     | '/cases'
     | '/contact'
+    | '/crm'
+    | '/geo'
     | '/privacy'
     | '/services'
     | '/sitemap.xml'
     | '/telegram-bots'
+    | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/blog/$slug'
+    | '/blog'
     | '/api/debug/telegram-ping'
   id:
     | '__root__'
     | '/'
     | '/ai-websites'
     | '/avito'
-    | '/blog'
     | '/cases'
     | '/contact'
+    | '/crm'
+    | '/geo'
     | '/privacy'
     | '/services'
     | '/sitemap.xml'
     | '/telegram-bots'
+    | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/blog/$slug'
+    | '/blog/'
     | '/api/debug/telegram-ping'
   fileRoutesById: FileRoutesById
 }
@@ -187,20 +235,31 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiWebsitesRoute: typeof AiWebsitesRoute
   AvitoRoute: typeof AvitoRoute
-  BlogRoute: typeof BlogRoute
   CasesRoute: typeof CasesRoute
   ContactRoute: typeof ContactRoute
+  CrmRoute: typeof CrmRoute
+  GeoRoute: typeof GeoRoute
   PrivacyRoute: typeof PrivacyRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TelegramBotsRoute: typeof TelegramBotsRoute
+  TgRoute: typeof TgRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLeadRoute: typeof ApiLeadRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   ApiDebugTelegramPingRoute: typeof ApiDebugTelegramPingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tg': {
+      id: '/tg'
+      path: '/tg'
+      fullPath: '/tg'
+      preLoaderRoute: typeof TgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/telegram-bots': {
       id: '/telegram-bots'
       path: '/telegram-bots'
@@ -229,6 +288,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/geo': {
+      id: '/geo'
+      path: '/geo'
+      fullPath: '/geo'
+      preLoaderRoute: typeof GeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm': {
+      id: '/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof CrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -241,13 +314,6 @@ declare module '@tanstack/react-router' {
       path: '/cases'
       fullPath: '/cases'
       preLoaderRoute: typeof CasesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/avito': {
@@ -269,6 +335,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/lead': {
@@ -299,15 +379,19 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiWebsitesRoute: AiWebsitesRoute,
   AvitoRoute: AvitoRoute,
-  BlogRoute: BlogRoute,
   CasesRoute: CasesRoute,
   ContactRoute: ContactRoute,
+  CrmRoute: CrmRoute,
+  GeoRoute: GeoRoute,
   PrivacyRoute: PrivacyRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TelegramBotsRoute: TelegramBotsRoute,
+  TgRoute: TgRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLeadRoute: ApiLeadRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ApiDebugTelegramPingRoute: ApiDebugTelegramPingRoute,
 }
 export const routeTree = rootRouteImport
