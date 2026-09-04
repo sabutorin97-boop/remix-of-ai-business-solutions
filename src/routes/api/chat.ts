@@ -117,6 +117,11 @@ export const Route = createFileRoute("/api/chat")({
           model,
           system: SYSTEM_PROMPT,
           messages: await convertToModelMessages(messages),
+          // Жёсткий потолок на весь вызов (включая ретраи) — раньше при
+          // медленном ответе kie.ai пользователь мог ждать десятки секунд.
+          // При таймауте стрим завершается ошибкой, а виджет уже показывает
+          // запасное сообщение с ссылкой на Telegram (см. MaxChatPanel).
+          timeout: { totalMs: 5000 },
           // Токенный предохранитель на случай патологически длинной генерации —
           // фактическую границу в HARD_CHAR_LIMIT символов держит experimental_transform ниже.
           maxOutputTokens: 450,
