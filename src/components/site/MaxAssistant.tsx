@@ -129,6 +129,17 @@ function MaxChatPanel({ onClose }: { onClose: () => void }) {
   const realAssistantReplies = messages.filter((m) => m.role === "assistant" && m.id !== "greeting").length;
   const showTelegramHandoff = realAssistantReplies >= TELEGRAM_HANDOFF_AFTER_REPLIES;
 
+  // При таймауте/обрыве генерации на сервере ответ приходит с пустыми parts —
+  // useChat не выставляет error, просто заканчивает стрим. Без этой проверки
+  // пользователь видел пустой пузырь без текста и без объяснения (баг,
+  // из-за которого казалось, что бот вообще не отвечает).
+  const lastMessage = messages[messages.length - 1];
+  const lastReplyEmpty =
+    !busy &&
+    lastMessage?.role === "assistant" &&
+    lastMessage.id !== "greeting" &&
+    lastMessage.parts.every((p) => p.type !== "text" || !p.text);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const text = input.trim();
@@ -201,7 +212,7 @@ function MaxChatPanel({ onClose }: { onClose: () => void }) {
             </div>
           </div>
         )}
-        {error && (
+        {(error || lastReplyEmpty) && (
           <div className="text-xs text-destructive">
             Не удалось получить ответ. Напишите напрямую в Telegram:{" "}
             <a href="https://t.me/AiProfiGrup_bot" target="_blank" rel="noreferrer" className="underline">
