@@ -68,6 +68,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "AI-студия: сайты, Telegram-боты и AI-автоматизация для бизнеса. Запуск за 3–7 дней, экономия до 70%." },
       { name: "author", content: "AI-Profigrup" },
       { name: "yandex-verification", content: "7df62487aee464d6" },
+      { name: "google-site-verification", content: "B1ZrxDyHAGLYIpya9lNQeRaeMJIQAqk8gbXgTF92Hjg" },
       { property: "og:title", content: "AI-Profigrup — AI-сайты, Telegram-боты и автоматизация бизнеса" },
       { property: "og:description", content: "AI-студия: сайты, Telegram-боты и AI-автоматизация для бизнеса. Запуск за 3–7 дней, экономия до 70%." },
       { property: "og:type", content: "website" },
