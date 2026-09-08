@@ -135,6 +135,14 @@ function accessOpenToAll(): boolean {
  */
 export const BOT_VERSION = "2026-09-08 · приглашения и разговор";
 
+/**
+ * Часовой пояс для дат в таблице и карточках партнёров. Сервер живёт в UTC, и
+ * без этого даты уезжали на несколько часов назад относительно рабочего дня.
+ */
+function timeZone(): string {
+  return process.env.PARTNER_BOT_TIMEZONE?.trim() || "Asia/Yekaterinburg";
+}
+
 /** Username партнёрского бота — из него собираются ссылки-приглашения. */
 const PARTNER_BOT_USERNAME = process.env.PARTNER_BOT_USERNAME?.trim() || "AIProfigrupPartner_bot";
 
@@ -289,7 +297,7 @@ function profileText(partner: Partner): string {
       "<b>Последние переданные клиенты:</b>",
     );
     for (const d of partner.deals.slice(-5).reverse()) {
-      const date = new Date(d.createdAt).toLocaleDateString("ru-RU");
+      const date = new Date(d.createdAt).toLocaleDateString("ru-RU", { timeZone: timeZone() });
       const mark = LEAD_TYPES[d.temperature ?? "cold"].emoji;
       lines.push(`• ${date} ${mark} ${escapeHtml(d.clientName)} (${escapeHtml(d.contact)})`);
     }
@@ -539,7 +547,7 @@ function dealNotificationText(
 function dealSheetRow(partner: Partner, deal: PartnerDeal): SheetDealRow {
   const temperature = deal.temperature ?? "cold";
   return {
-    date: new Date(deal.createdAt).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" }),
+    date: new Date(deal.createdAt).toLocaleString("ru-RU", { timeZone: timeZone() }),
     partner: partner.label ?? partner.firstName ?? String(partner.telegramId),
     partnerCode: partner.refCode,
     leadType: LEAD_TYPES[temperature].label,
@@ -1107,7 +1115,7 @@ function partnerCard(p: Partner): string {
   if (p.deals.length) {
     lines.push("", "<b>Переданные клиенты:</b>");
     for (const d of p.deals.slice(-15).reverse()) {
-      const date = new Date(d.createdAt).toLocaleDateString("ru-RU");
+      const date = new Date(d.createdAt).toLocaleDateString("ru-RU", { timeZone: timeZone() });
       const mark = LEAD_TYPES[d.temperature ?? "cold"].emoji;
       const rate = commissionFor(d.temperature ?? "cold");
       lines.push(
@@ -1161,7 +1169,7 @@ async function handleOwnerCommand(ctx: Ctx, text: string): Promise<boolean> {
               "",
               ...invites.map(
                 (i) =>
-                  `• <code>${i.code}</code> — ${escapeHtml(i.label)} (от ${new Date(i.createdAt).toLocaleDateString("ru-RU")})`,
+                  `• <code>${i.code}</code> — ${escapeHtml(i.label)} (от ${new Date(i.createdAt).toLocaleDateString("ru-RU", { timeZone: timeZone() })})`,
               ),
             ].join("\n")
           : "Неиспользованных приглашений нет. Новое создаётся командой <code>/invite Имя</code>.",

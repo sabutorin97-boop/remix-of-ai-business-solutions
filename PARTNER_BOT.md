@@ -214,11 +214,19 @@
        sheet.setFrozenRows(1);
      }
      sheet.appendRow([
-       data.date, data.partner, data.partnerCode, data.leadType, data.rate,
-       data.client, data.contact, data.note,
-       '', '', '', '', data.leadId,
+       text(data.date), text(data.partner), text(data.partnerCode), text(data.leadType), data.rate,
+       text(data.client), text(data.contact), text(data.note),
+       '', '', '', '', text(data.leadId),
      ]);
      return ContentService.createTextOutput('ok');
+   }
+
+   // Телефон «+7…» таблица принимает за формулу и показывает #ERROR!, а текст
+   // с «=» в начале вообще выполнила бы. Апостроф делает значение текстом и в
+   // самой ячейке не виден.
+   function text(value) {
+     const s = value === undefined || value === null ? '' : String(value);
+     return /^[=+\-@]/.test(s) ? "'" + s : s;
    }
    ```
 
@@ -234,6 +242,13 @@
    ```
 
 Проверить подключение можно в `action=ping`, поле `sheetsConfigured`.
+
+**После правки скрипта** развёртывание нужно обновить: «Развернуть» →
+«Управление развёртываниями» → карандаш → версия «Новая версия» → «Развернуть».
+Адрес при этом не меняется, менять переменные в Timeweb не нужно.
+
+**Часовой пояс** дат берётся из `PARTNER_BOT_TIMEZONE`, по умолчанию
+`Asia/Yekaterinburg`. Сервер живёт в UTC, поэтому без этого даты уезжали.
 
 **Если строка не ушла.** Передача клиента от этого не срывается: заявка уже в
 S3 и в Telegram у владельца, а в записи сделки просто не проставлена отметка
