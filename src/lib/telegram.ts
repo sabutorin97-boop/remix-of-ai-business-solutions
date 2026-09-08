@@ -148,6 +148,11 @@ export function setTelegramWebhook(
   );
 }
 
+/** Снимает вебхук: обязательное условие для работы getUpdates. */
+export function deleteTelegramWebhook(options?: TelegramCallOptions) {
+  return callTelegram("deleteWebhook", {}, options);
+}
+
 export function getTelegramWebhookInfo(options?: TelegramCallOptions) {
   return callTelegram("getWebhookInfo", {}, options);
 }
