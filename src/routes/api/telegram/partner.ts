@@ -8,6 +8,7 @@ import {
   type TgUpdate,
 } from "@/lib/partner-bot";
 import { partnerPollingStatus } from "@/lib/partner-bot-polling";
+import { sheetsConfigured } from "@/lib/sheets";
 import {
   getTelegramWebhookInfo,
   setTelegramMyCommands,
@@ -103,6 +104,7 @@ export const Route = createFileRoute("/api/telegram/partner")({
             siteBaseUrl: process.env.SITE_BASE_URL ?? null,
             s3Configured: Boolean(process.env.S3_ENDPOINT && process.env.S3_BUCKET),
             aiConfigured: Boolean(process.env.KIE_API_KEY),
+            sheetsConfigured: sheetsConfigured(),
             polling: partnerPollingStatus(),
           });
         }

@@ -43,6 +43,8 @@ export interface PartnerDeal {
   contact: string;
   note: string | null;
   createdAt: string;
+  /** Когда строка ушла в Google-таблицу; пусто — значит ещё не ушла. */
+  sheetSyncedAt?: string;
 }
 
 export interface Partner {

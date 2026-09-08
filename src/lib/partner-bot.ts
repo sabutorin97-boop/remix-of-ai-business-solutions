@@ -17,6 +17,7 @@
 import { generateText } from "ai";
 import { createKieProvider } from "@/lib/ai-gateway";
 import { rateLimit } from "@/lib/rate-limit";
+import { appendDealRow, sheetsConfigured, type SheetDealRow } from "@/lib/sheets";
 import { createLead } from "@/lib/leads-store";
 import { sendNotificationEmail } from "@/lib/email";
 import {
@@ -37,6 +38,7 @@ import {
   savePartner,
   upsertPartner,
   type Partner,
+  type PartnerDeal,
   type PendingAction,
 } from "@/lib/partners-store";
 import {
@@ -533,6 +535,22 @@ function dealNotificationText(
     .join("\n");
 }
 
+/** Одна сделка в виде строки таблицы: тот же вид и при передаче, и при /sync. */
+function dealSheetRow(partner: Partner, deal: PartnerDeal): SheetDealRow {
+  const temperature = deal.temperature ?? "cold";
+  return {
+    date: new Date(deal.createdAt).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" }),
+    partner: partner.label ?? partner.firstName ?? String(partner.telegramId),
+    partnerCode: partner.refCode,
+    leadType: LEAD_TYPES[temperature].label,
+    rate: commissionFor(temperature),
+    client: deal.clientName,
+    contact: deal.contact,
+    note: deal.note ?? "",
+    leadId: deal.leadId ?? "",
+  };
+}
+
 async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Promise<void> {
   const pending = partner.pending;
   if (!pending || pending.kind !== "deal") return;
@@ -602,16 +620,24 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
     }
   }
 
-  partner.deals.push({
+  const deal: PartnerDeal = {
     leadId,
     temperature,
     clientName: client,
     contact,
     note,
     createdAt: new Date().toISOString(),
-  });
+  };
+  partner.deals.push(deal);
   partner.pending = null;
   await savePartner(partner);
+
+  // Строка в Google-таблицу — необязательный шаг: если таблица недоступна,
+  // сделка уже сохранена, а строку дошлём командой /sync.
+  if (sheetsConfigured() && (await appendDealRow(dealSheetRow(partner, deal)))) {
+    deal.sheetSyncedAt = new Date().toISOString();
+    await savePartner(partner);
+  }
 
   const downgraded = pending.draft.temperature === "warm" && temperature === "cold";
   const confirmation = delivered
@@ -1044,6 +1070,7 @@ const OWNER_HELP = [
   "/partner код — карточка партнёра со всеми переданными клиентами",
   "/block код — закрыть доступ (история сохраняется)",
   "/unblock код — вернуть доступ",
+  "/sync — дослать в Google-таблицу строки, которые не ушли",
   "/admin — эта подсказка",
   "",
   "Вместо кода можно указать @username или числовой id партнёра.",
@@ -1138,6 +1165,42 @@ async function handleOwnerCommand(ctx: Ctx, text: string): Promise<boolean> {
               ),
             ].join("\n")
           : "Неиспользованных приглашений нет. Новое создаётся командой <code>/invite Имя</code>.",
+        [],
+      );
+      return true;
+    }
+
+    case "/sync": {
+      if (!sheetsConfigured()) {
+        await reply(
+          ctx,
+          "Google-таблица не подключена: не задан адрес в переменной <code>SHEETS_WEBHOOK_URL</code>.",
+          [],
+        );
+        return true;
+      }
+      const partners = await listPartners();
+      let sent = 0;
+      let failed = 0;
+      for (const p of partners) {
+        let changed = false;
+        for (const deal of p.deals) {
+          if (deal.sheetSyncedAt) continue;
+          if (await appendDealRow(dealSheetRow(p, deal))) {
+            deal.sheetSyncedAt = new Date().toISOString();
+            changed = true;
+            sent += 1;
+          } else {
+            failed += 1;
+          }
+        }
+        if (changed) await savePartner(p);
+      }
+      await reply(
+        ctx,
+        sent || failed
+          ? `📤 Дослано строк: ${sent}. Не удалось: ${failed}.`
+          : "📤 Все переданные клиенты уже есть в таблице.",
         [],
       );
       return true;
