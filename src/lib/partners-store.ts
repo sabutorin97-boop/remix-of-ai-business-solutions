@@ -25,6 +25,12 @@ export type PendingAction =
   | { kind: "search" }
   | { kind: "access_code" };
 
+/** Реплика диалога с AI-наставником: хранится, чтобы бот помнил контекст. */
+export interface ChatTurn {
+  role: "user" | "bot";
+  text: string;
+}
+
 export interface PartnerDeal {
   /** id лида в leads-store; null, если S3 недоступен и лид не сохранился. */
   leadId: string | null;
@@ -52,6 +58,8 @@ export interface Partner {
   /** Номера пройденных уроков (1–8). */
   lessonsDone: number[];
   deals: PartnerDeal[];
+  /** Последние реплики разговора с AI. Хранится немного и обрезается. */
+  chat?: ChatTurn[];
   pending: PendingAction | null;
 }
 

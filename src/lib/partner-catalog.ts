@@ -519,8 +519,10 @@ export function searchNiches(query: string, limit = 8): Niche[] {
     if (haystack.includes(q)) score += 10;
     if (n.name.toLowerCase().includes(q)) score += 10;
     for (const w of words) {
-      // Обрезаем окончание: «стоматологии» должно находить «стоматологии» и «стоматолог».
-      const stem = w.length > 5 ? w.slice(0, w.length - 2) : w;
+      // Обрезаем окончание: «стоматологии» должно находить «стоматолог».
+      // Короткие слова не режем: от «привет» оставался огрызок «прив»,
+      // который находился в «приводит заявки» и выдавал случайную нишу.
+      const stem = w.length > 6 ? w.slice(0, w.length - 2) : w;
       if (haystack.includes(stem)) score += 3;
       if (n.name.toLowerCase().includes(stem)) score += 3;
     }
@@ -528,4 +530,27 @@ export function searchNiches(query: string, limit = 8): Niche[] {
   }).filter((x) => x.score > 0);
   scored.sort((a, b) => b.score - a.score || a.n.id - b.n.id);
   return scored.slice(0, limit).map((x) => x.n);
+}
+
+/**
+ * Строгий поиск для подсказок под ответом наставника в свободном разговоре.
+ * Здесь ложное срабатывание заметнее пропуска: кнопка «Ремонт квартир» под
+ * ответом на «привет» выглядит глупо. Поэтому длинные фразы считаем разговором
+ * и ничего не предлагаем, а короткие сверяем целиком, по всем словам сразу.
+ */
+export function findNichesByPhrase(query: string, limit = 3): Niche[] {
+  const words = query
+    .trim()
+    .toLowerCase()
+    .split(/[\s,.!?;:]+/)
+    .filter(Boolean);
+  if (!words.length || words.length > 4) return [];
+  const keys = words
+    .filter((w) => w.length >= 5)
+    .map((w) => (w.length > 6 ? w.slice(0, w.length - 2) : w));
+  if (!keys.length) return [];
+  return ALL_NICHES.filter((n) => {
+    const haystack = `${n.name} ${n.pain} ${n.product} ${n.offer}`.toLowerCase();
+    return keys.every((k) => haystack.includes(k));
+  }).slice(0, limit);
 }

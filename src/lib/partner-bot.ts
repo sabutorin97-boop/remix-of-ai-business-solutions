@@ -37,6 +37,7 @@ import {
   CATALOG,
   NICHE_FILTER,
   findNiche,
+  findNichesByPhrase,
   findSection,
   priceRange,
   searchNiches,
@@ -45,6 +46,7 @@ import {
   type Niche,
 } from "@/lib/partner-catalog";
 import {
+  ASSISTANT_NAME,
   LEAD_TYPES,
   LESSONS,
   OBJECTIONS,
@@ -52,6 +54,7 @@ import {
   PRODUCTS_SUMMARY,
   SCRIPTS,
   SITE_URL,
+  TONE_RULES,
   commissionFor,
   lessonById,
   objectionById,
@@ -153,6 +156,7 @@ function menuText(partner: Partner): string {
     `Обучение: ${progress}. Передано клиентов: ${partner.deals.length}.`,
     "",
     "Начните с «🎓 Обучение», дальше выбирайте ниши в каталоге и передавайте клиентов через бот.",
+    "А если проще спросить словами — просто напишите мне сообщение.",
   ].join("\n");
 }
 
@@ -168,12 +172,16 @@ function welcomeText(name: string | null): string {
     "📝 <b>Передать клиента</b> — заявка сразу уходит в студию с вашей меткой.",
     "🤖 <b>Спросить AI</b> — вопрос по продукту или нише в свободной форме.",
     "",
-    "Рекомендую начать с первого урока — это 10 минут.",
+    `Со мной можно просто разговаривать: напишите словами, что нужно, и я отвечу. Меня зовут ${ASSISTANT_NAME}, я тут ваш наставник.`,
+    "",
+    "Начать лучше с первого урока, это минут десять.",
   ].join("\n");
 }
 
 const HELP_TEXT = [
   "❓ <b>Как пользоваться ботом</b>",
+  "",
+  "Проще всего — писать мне обычными словами. Спросите «с чего начать», «что ответить стоматологии» или «как объяснить цену», и я отвечу. Кнопки — для готовых материалов.",
   "",
   "<b>Команды:</b>",
   "/menu — главное меню",
@@ -184,8 +192,7 @@ const HELP_TEXT = [
   "/find слово — найти нишу (например: /find стоматология)",
   "/me — мой профиль и статистика",
   "/cancel — прервать текущий ввод",
-  "",
-  "Можно и без команд: просто напишите слово — бот поищет подходящую нишу в каталоге.",
+  "/reset — начать разговор со мной заново",
 ].join("\n");
 
 function nicheCard(n: Niche): string {
@@ -608,40 +615,51 @@ function catalogForPrompt(): string {
   ).join("\n");
 }
 
-function aiSystemPrompt(): string {
-  return `Ты — наставник партнёра по продажам студии AI-Profigrup. Партнёр продаёт наши услуги бизнесу и задаёт тебе рабочие вопросы: как выйти на клиента, что ответить, какая ниша подойдёт, как объяснить продукт.
+function aiSystemPrompt(partner: Partner): string {
+  const done = partner.lessonsDone.length;
+  const who = partner.firstName ? `Партнёра зовут ${partner.firstName}.` : "";
+  return `Ты — ${ASSISTANT_NAME}, AI-наставник партнёров студии AI-Profigrup. Партнёры продают наши услуги бизнесу, а ты помогаешь им: подсказываешь, что написать клиенту, какая ниша подойдёт, как объяснить продукт простыми словами. И просто разговариваешь по-человечески, когда это уместно.
 
-Отвечай кратко и по делу: 3–6 предложений или короткий список до 5 пунктов. По-русски, спокойно и профессионально, без восторгов и канцелярита. Если уместно — дай готовую формулировку, которую партнёр может отправить клиенту.
+${who} Пройдено уроков: ${done} из ${TOTAL_LESSONS}. Передано клиентов в студию: ${partner.deals.length}.
+
+${TONE_RULES}
 
 ПРОДУКТЫ И ФАКТЫ (единственный источник, ничего не додумывай):
 ${PRODUCTS_SUMMARY}
 Сайт: ${SITE_URL}
 
 КАТАЛОГ НИШ (вилки цен — ориентир для разговора, не прайс):
-${catalogForPrompt()}
-
-ПРАВИЛА:
-- Не выдумывай услуги, кейсы, сроки, гарантии и проценты, которых нет выше.
-- Точную стоимость проекта не называй: её считает студия бесплатно после созвона. Можно назвать вилку из каталога как ориентир.
-- Размер комиссии партнёра и порядок выплат не называй: отправляй в раздел «Условия» бота.
-- Не обещай гарантированный рост продаж.
-- На вопросы не по теме (личные советы, политика, посторонние задачи) отвечай одной фразой: «Отвечаю только по продуктам AI-Profigrup и работе партнёра» — и возвращай к делу.`;
+${catalogForPrompt()}`;
 }
 
-async function answerWithAi(ctx: Ctx, partner: Partner, question: string): Promise<void> {
+const CHAT_HISTORY_TURNS = 8;
+const CHAT_TURN_CHARS = 700;
+
+/**
+ * Разговор с наставником. История хранится у партнёра, поэтому бот помнит,
+ * о чём шла речь: без этого каждый ответ выглядит как реплика незнакомца.
+ */
+async function answerWithAi(
+  ctx: Ctx,
+  partner: Partner,
+  question: string,
+  extraRows: InlineButton[][] = [],
+): Promise<void> {
   const key = process.env.KIE_API_KEY;
   if (!key) {
     await reply(
       ctx,
-      "🤖 AI-помощник сейчас недоступен: не настроен ключ доступа. Ответы на частые вопросы есть в разделах «🎓 Обучение», «💬 Скрипты» и «🛡 Возражения».",
+      "Сейчас не могу ответить своими словами: не настроен доступ к AI. Загляните пока в «🎓 Обучение», «💬 Скрипты» или «🛡 Возражения» — там разобраны частые вопросы.",
+      [...extraRows, BACK_TO_MENU],
     );
     return;
   }
-  const rl = rateLimit("partner_ai", String(partner.telegramId), { windowMs: 3_600_000, max: 25 });
+  const rl = rateLimit("partner_ai", String(partner.telegramId), { windowMs: 3_600_000, max: 40 });
   if (!rl.ok) {
     await reply(
       ctx,
-      "🤖 Слишком много вопросов подряд. Вернитесь через час — лимит на AI-ответы восстановится.",
+      "Столько вопросов подряд я за час не осилю — давайте продолжим чуть позже. А пока загляните в «💬 Скрипты», там есть готовые формулировки.",
+      [BACK_TO_MENU],
     );
     return;
   }
@@ -652,12 +670,19 @@ async function answerWithAi(ctx: Ctx, partner: Partner, question: string): Promi
     // «печатает…» — украшение, его сбой не должен ломать ответ.
   }
 
+  const history = partner.chat ?? [];
   try {
     const provider = createKieProvider(key, AI_MODEL_SLUG);
     const result = await generateText({
       model: provider(AI_MODEL_SLUG),
-      system: aiSystemPrompt(),
-      prompt: question,
+      system: aiSystemPrompt(partner),
+      messages: [
+        ...history.map((turn) => ({
+          role: turn.role === "user" ? ("user" as const) : ("assistant" as const),
+          content: turn.text,
+        })),
+        { role: "user" as const, content: question },
+      ],
       maxOutputTokens: 600,
       abortSignal: AbortSignal.timeout(AI_TIMEOUT_MS),
     });
@@ -665,14 +690,21 @@ async function answerWithAi(ctx: Ctx, partner: Partner, question: string): Promi
     if (!text) throw new Error("empty AI response");
     const trimmed =
       text.length > AI_CHAR_LIMIT ? `${text.slice(0, AI_CHAR_LIMIT).trimEnd()}…` : text;
-    await reply(ctx, `🤖 ${escapeHtml(trimmed)}`, [
-      [{ text: "🤖 Ещё вопрос", callback_data: "ask" }, ...BACK_TO_MENU],
-    ]);
+
+    partner.chat = [
+      ...history,
+      { role: "user" as const, text: question.slice(0, CHAT_TURN_CHARS) },
+      { role: "bot" as const, text: trimmed.slice(0, CHAT_TURN_CHARS) },
+    ].slice(-CHAT_HISTORY_TURNS);
+    await savePartner(partner);
+
+    await reply(ctx, escapeHtml(trimmed), [...extraRows, BACK_TO_MENU]);
   } catch (err) {
     console.error("[partner-bot] AI-ответ не получен:", err);
     await reply(
       ctx,
-      "🤖 Не получилось получить ответ — сервис не ответил вовремя. Попробуйте переспросить чуть позже или загляните в «💬 Скрипты» и «🛡 Возражения».",
+      "Не получилось ответить: сервис не отозвался вовремя. Спросите ещё раз через минуту, а если срочно — посмотрите «💬 Скрипты» и «🛡 Возражения».",
+      [...extraRows, BACK_TO_MENU],
     );
   }
 }
@@ -908,6 +940,11 @@ async function handleText(ctx: Ctx, partner: Partner, rawText: string): Promise<
       return showLearn({ ...ctx, messageId: undefined }, partner);
     case "/catalog":
       return showCatalog({ ...ctx, messageId: undefined });
+    case "/reset":
+      partner.chat = [];
+      partner.pending = null;
+      await savePartner(partner);
+      return reply(ctx, "Разговор начат с чистого листа. О чём поговорим?");
     case "/me":
       return reply(ctx, profileText(partner));
     case "/terms":
@@ -936,12 +973,21 @@ async function handleText(ctx: Ctx, partner: Partner, rawText: string): Promise<
   }
 
   if (text.startsWith("/")) {
-    return reply(ctx, `Не знаю такую команду.\n\n${HELP_TEXT}`);
+    return reply(
+      ctx,
+      `Такой команды у меня нет. Но со мной можно и без команд — просто напишите словами.\n\n${HELP_TEXT}`,
+    );
   }
 
-  // Свободный текст без ожидания — ищем нишу: партнёр в разговоре чаще
-  // печатает «стоматология», чем открывает меню.
-  return showSearchResults(ctx, text);
+  // Свободный текст — это разговор с наставником, а не поиск по каталогу.
+  // Раньше сюда попадало «привет», и бот отвечал списком ниш, из-за чего
+  // выглядел бездушным. Ниши ищет отдельная кнопка и команда /find, а здесь
+  // они лишь подсказками под ответом, и только при точном совпадении.
+  const related = findNichesByPhrase(text);
+  const hints: InlineButton[][] = related.map((n) => [
+    { text: `${n.id}. ${n.name} — ${priceRange(n)}`, callback_data: `n:${n.id}` },
+  ]);
+  return answerWithAi(ctx, partner, text, hints);
 }
 
 // --- Точка входа ------------------------------------------------------------
@@ -1043,5 +1089,6 @@ export const PARTNER_BOT_COMMANDS = [
   { command: "find", description: "Найти нишу по слову" },
   { command: "me", description: "Мой профиль" },
   { command: "terms", description: "Условия партнёрства" },
+  { command: "reset", description: "Начать разговор заново" },
   { command: "help", description: "Как пользоваться ботом" },
 ];
