@@ -36,7 +36,9 @@ function webhookSecret(): string | undefined {
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body, null, 2), {
     status,
-    headers: { "Content-Type": "application/json" },
+    // Диагностику браузер кешировать не должен: иначе после передеплоя
+    // видно старый ответ и непонятно, какая сборка работает.
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }
 
