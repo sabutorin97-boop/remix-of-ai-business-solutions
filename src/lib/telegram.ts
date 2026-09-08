@@ -16,6 +16,8 @@ const API_BASE = process.env.TELEGRAM_API_BASE?.trim()
 // каждый вызов принимает необязательный токен, а без него берётся основной.
 export interface TelegramCallOptions {
   token?: string;
+  /** Прерывание запроса: нужно длинному опросу, чтобы не держать соединение при остановке сервера. */
+  signal?: AbortSignal;
 }
 
 function botToken(explicit?: string): string {
@@ -44,6 +46,7 @@ export async function callTelegram<T = unknown>(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: options?.signal,
     });
   } catch (err) {
     // Сетевой сбой fetch отдаёт голое «fetch failed», по которому не понять,

@@ -23,7 +23,11 @@ import { handlePartnerUpdate, partnerBotToken, type TgUpdate } from "@/lib/partn
 /** Сколько секунд Telegram держит соединение, пока нет новых сообщений. */
 const LONG_POLL_SECONDS = 25;
 const ERROR_BACKOFF_MS = 5_000;
-const CONFLICT_BACKOFF_MS = 15_000;
+// Хостинг гасит старый контейнер только после того, как новый стал здоровым:
+// по логам деплоя это около пятнадцати секунд, когда обе копии опрашивают
+// Telegram и обе получают Conflict. Ждём коротко и пробуем снова, чтобы бот
+// возвращался в строй за секунды после передеплоя, а не за полминуты.
+const CONFLICT_BACKOFF_MS = 5_000;
 
 export interface PollingStatus {
   running: boolean;
@@ -33,6 +37,16 @@ export interface PollingStatus {
   lastError: string | null;
   lastErrorAt: string | null;
 }
+
+/**
+ * Остановка по SIGTERM. При передеплое Timeweb поднимает новую копию раньше,
+ * чем гасит старую, а Telegram разрешает опрашивать бота только одной: вторая
+ * получает «Conflict: terminated by other getUpdates request», и бот молчит,
+ * пока старая копия висит на 25-секундном ожидании. Прерываем запрос сразу,
+ * чтобы окно передачи было секундами, а не десятками секунд.
+ */
+let stopping = false;
+let inflight: AbortController | null = null;
 
 const status: PollingStatus = {
   running: false,
@@ -58,15 +72,21 @@ function pollingEnabled(): boolean {
 }
 
 async function fetchUpdates(token: string, offset: number): Promise<TgUpdate[]> {
-  return callTelegram<TgUpdate[]>(
-    "getUpdates",
-    {
-      offset,
-      timeout: LONG_POLL_SECONDS,
-      allowed_updates: ["message", "callback_query"],
-    },
-    { token },
-  );
+  const controller = new AbortController();
+  inflight = controller;
+  try {
+    return await callTelegram<TgUpdate[]>(
+      "getUpdates",
+      {
+        offset,
+        timeout: LONG_POLL_SECONDS,
+        allowed_updates: ["message", "callback_query"],
+      },
+      { token, signal: controller.signal },
+    );
+  } finally {
+    inflight = null;
+  }
 }
 
 /**
@@ -105,11 +125,12 @@ async function loop(token: string): Promise<void> {
   }
 
   let offset = 0;
-  for (;;) {
+  while (!stopping) {
     try {
       offset = await pollOnce(token, offset);
       status.lastError = null;
     } catch (err) {
+      if (stopping) break;
       const message = err instanceof Error ? err.message : String(err);
       status.lastError = message;
       status.lastErrorAt = new Date().toISOString();
@@ -128,6 +149,14 @@ async function loop(token: string): Promise<void> {
       }
     }
   }
+  status.running = false;
+  console.log("[partner-polling] Опрос остановлен");
+}
+
+/** Прерывает опрос: вызывается при остановке сервера. */
+export function stopPartnerBotPolling(): void {
+  stopping = true;
+  inflight?.abort();
 }
 
 /** Запускает опрос один раз на процесс. Повторные вызовы игнорируются. */
@@ -137,6 +166,10 @@ export function startPartnerBotPolling(): void {
   const token = partnerBotToken();
   if (!token) return;
   loopStarted = true;
+  // Хостинг гасит контейнер сигналом: успеваем закрыть длинный запрос сами,
+  // иначе следующая копия приложения упирается в Conflict.
+  process.once("SIGTERM", stopPartnerBotPolling);
+  process.once("SIGINT", stopPartnerBotPolling);
   console.log("[partner-polling] Запускаю опрос Telegram для партнёрского бота");
   void loop(token);
 }
