@@ -54,6 +54,12 @@ import {
   type Niche,
 } from "@/lib/partner-catalog";
 import {
+  PRICE_SECTIONS,
+  findPriceSection,
+  formatPrice,
+  priceListForPrompt,
+} from "@/lib/partner-prices";
+import {
   ASSISTANT_NAME,
   LEAD_TYPES,
   LESSONS,
@@ -178,15 +184,16 @@ const MENU_KEYBOARD = keyboard([
     { text: "💬 Скрипты", callback_data: "scripts" },
     { text: "🛡 Возражения", callback_data: "obj" },
   ],
+  [
+    { text: "💵 Цены", callback_data: "prices" },
+    { text: "💰 Условия", callback_data: "terms" },
+  ],
   [{ text: "📝 Передать клиента", callback_data: "deal" }],
   [
     { text: "🤖 Спросить AI", callback_data: "ask" },
     { text: "🔎 Найти нишу", callback_data: "search" },
   ],
-  [
-    { text: "💰 Условия", callback_data: "terms" },
-    { text: "👤 Мой профиль", callback_data: "me" },
-  ],
+  [{ text: "👤 Мой профиль", callback_data: "me" }],
 ]);
 
 const BACK_TO_MENU = [{ text: "🏠 Меню", callback_data: "menu" }];
@@ -238,6 +245,7 @@ const HELP_TEXT = [
   "/deal — передать клиента студии",
   "/ask вопрос — спросить AI по продукту",
   "/find слово — найти нишу (например: /find стоматология)",
+  "/prices — прайс-лист студии",
   "/me — мой профиль и статистика",
   "/cancel — прервать текущий ввод",
   "/reset — начать разговор со мной заново",
@@ -252,12 +260,12 @@ function nicheCard(n: Niche): string {
     `😖 <b>Боль:</b> ${escapeHtml(n.pain)}`,
     `🧩 <b>Первый продукт:</b> ${escapeHtml(n.product)}`,
     `🎯 <b>Оффер:</b> «${escapeHtml(n.offer)}»`,
-    `💵 <b>Вилка проекта:</b> ${priceRange(n)}`,
+    `💵 <b>Рынок по нише:</b> ${priceRange(n)}`,
     "",
     "✉️ <b>Как начать разговор:</b>",
     `<i>«Здравствуйте! Вижу, что ${lowerFirst(escapeHtml(n.pain))} — с этим сталкиваются почти все в вашей нише. Мы собираем ${lowerFirst(escapeHtml(n.product))}: ${lowerFirst(escapeHtml(n.offer))}. Сколько обращений в неделю сейчас приходится обрабатывать вручную?»</i>`,
     "",
-    "<i>Точную сумму называет студия после бесплатного расчёта — вилка выше нужна вам для ориентира.</i>",
+    "<i>Вилка выше — оценка по рынку из исследования ниши, чтобы понимать порядок сумм в разговоре. Реальные цены студии — в разделе «💵 Цены».</i>",
   ].join("\n");
 }
 
@@ -428,6 +436,44 @@ async function showNiche(ctx: Ctx, id: number): Promise<void> {
     [{ text: "⬅️ К нишам", callback_data: section ? `s:${section.id}` : "cat" }, ...BACK_TO_MENU],
   ];
   await show(ctx, nicheCard(niche), rows);
+}
+
+async function showPrices(ctx: Ctx): Promise<void> {
+  const rows: InlineButton[][] = PRICE_SECTIONS.map((s) => [
+    { text: `${s.emoji} ${s.title} (${s.items.length})`, callback_data: `pr:${s.id}` },
+  ]);
+  rows.push(BACK_TO_MENU);
+  const text = [
+    "💵 <b>Прайс-лист студии</b>",
+    "",
+    "По каждой позиции две цены:",
+    "⭐ <b>Рекомендуемая</b> — её и называйте клиенту, она подходит большинству проектов.",
+    "🔝 <b>Максимальная</b> — потолок для сложных задач с полным функционалом.",
+    "",
+    "Финальную сумму студия подтверждает после брифа, поэтому в разговоре это ориентир, а не окончательная оферта.",
+    "",
+    "Выберите раздел:",
+  ].join("\n");
+  await show(ctx, text, rows);
+}
+
+async function showPriceSection(ctx: Ctx, sectionId: string): Promise<void> {
+  const section = findPriceSection(sectionId);
+  if (!section) return showPrices(ctx);
+  const lines = [`${section.emoji} <b>${escapeHtml(section.title)}</b>`, ""];
+  for (const item of section.items) {
+    lines.push(
+      `<b>${escapeHtml(item.name)}</b>`,
+      `⭐ ${formatPrice(item.recommended, item.perMonth)} · 🔝 до ${formatPrice(item.max, item.perMonth)}`,
+      "",
+    );
+  }
+  lines.push(
+    "<i>Называйте рекомендуемую. Максимальная — если у клиента сложный проект и полный функционал.</i>",
+  );
+  await show(ctx, lines.join("\n"), [
+    [{ text: "⬅️ К разделам", callback_data: "prices" }, ...BACK_TO_MENU],
+  ]);
 }
 
 async function showScripts(ctx: Ctx): Promise<void> {
@@ -700,7 +746,10 @@ ${TONE_RULES}
 ${PRODUCTS_SUMMARY}
 Сайт: ${SITE_URL}
 
-КАТАЛОГ НИШ (вилки цен — ориентир для разговора, не прайс):
+ПРАЙС СТУДИИ (единственный источник цен, суммы за проект):
+${priceListForPrompt()}
+
+КАТАЛОГ НИШ (вилки — оценка рынка по нише из исследования, а не наш прайс):
 ${catalogForPrompt()}`;
 }
 
@@ -883,6 +932,7 @@ async function handleCallbackData(ctx: Ctx, partner: Partner, data: string): Pro
     return show(ctx, filterText(), [
       [{ text: "📚 К блокам", callback_data: "cat" }, ...BACK_TO_MENU],
     ]);
+  if (data === "prices") return showPrices(ctx);
   if (data === "scripts") return showScripts(ctx);
   if (data === "obj") return showObjections(ctx);
   if (data === "terms") return show(ctx, termsText(), [BACK_TO_MENU]);
@@ -945,6 +995,7 @@ async function handleCallbackData(ctx: Ctx, partner: Partner, data: string): Pro
       ],
     );
   }
+  if (prefix === "pr" && arg) return showPriceSection(ctx, arg);
   if (prefix === "s" && arg) return showSection(ctx, arg);
   if (prefix === "n" && arg) return showNiche(ctx, Number(arg));
   if (prefix === "sc" && arg) {
@@ -1024,6 +1075,8 @@ async function handleText(ctx: Ctx, partner: Partner, rawText: string): Promise<
       return reply(ctx, "Разговор начат с чистого листа. О чём поговорим?");
     case "/me":
       return reply(ctx, profileText(partner));
+    case "/prices":
+      return showPrices({ ...ctx, messageId: undefined });
     case "/terms":
       return reply(ctx, termsText());
     case "/deal":
@@ -1400,6 +1453,7 @@ export const PARTNER_BOT_COMMANDS = [
   { command: "deal", description: "Передать клиента студии" },
   { command: "ask", description: "Спросить AI по продукту" },
   { command: "find", description: "Найти нишу по слову" },
+  { command: "prices", description: "Прайс-лист студии" },
   { command: "me", description: "Мой профиль" },
   { command: "terms", description: "Условия партнёрства" },
   { command: "reset", description: "Начать разговор заново" },
