@@ -111,6 +111,22 @@ function accessCode(): string | undefined {
 }
 
 /**
+ * Кабинет закрыт по умолчанию, и это осознанно: раньше проверка включалась,
+ * только если задан общий код или существует хотя бы одно приглашение. Стоило
+ * убрать код и заблокировать последнего партнёра — и бот открывался всем
+ * подряд вместе с каталогом, скриптами и условиями. Теперь дверь закрыта
+ * всегда, а войти можно по личному приглашению, по общему коду (если он задан)
+ * или владельцу — он и выписывает приглашения командой /invite.
+ *
+ * PARTNER_BOT_OPEN=1 снимает проверку целиком: пригодится разве что на
+ * тестовом стенде.
+ */
+function accessOpenToAll(): boolean {
+  const flag = process.env.PARTNER_BOT_OPEN?.trim().toLowerCase();
+  return flag === "1" || flag === "true" || flag === "yes";
+}
+
+/**
  * Метка сборки бота. Нужна для диагностики: по ответу action=ping видно, какая
  * версия реально запущена, — панель Timeweb показывает коммит ненадёжно.
  * Обновляется вручную при заметных изменениях поведения.
@@ -1218,9 +1234,7 @@ export async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
   const throttle = rateLimit("partner_bot", String(from.id), { windowMs: 60_000, max: 40 });
   if (!throttle.ok) return;
 
-  // Вход закрыт, если задан общий код или выписано хотя бы одно приглашение.
-  // Пока нет ни того ни другого, бот открыт — это состояние «только поставили».
-  const gated = Boolean(accessCode()) || (await listInvites()).length > 0;
+  const gated = !accessOpenToAll();
   const { partner, isNew } = await upsertPartner(from, gated && !isOwner(from.id));
 
   const baseCtx: Ctx = { chatId, token };

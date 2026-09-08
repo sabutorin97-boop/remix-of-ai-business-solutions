@@ -242,6 +242,8 @@ export interface PartnerInvite {
   createdAt: string;
   usedBy: number | null;
   usedAt: string | null;
+  /** Отозвано при блокировке партнёра: запись остаётся ради истории. */
+  revokedAt?: string;
 }
 
 let inviteMemory: PartnerInvite[] = [];
@@ -302,7 +304,7 @@ export async function redeemInvite(
   const wanted = code.trim().toUpperCase();
   const invites = await listInvites();
   const invite = invites.find((i) => i.code.toUpperCase() === wanted);
-  if (!invite) return null;
+  if (!invite || invite.revokedAt) return null;
   if (invite.usedBy !== null && invite.usedBy !== telegramId) return null;
   if (invite.usedBy === null) {
     invite.usedBy = telegramId;
@@ -312,12 +314,18 @@ export async function redeemInvite(
   return invite;
 }
 
+/**
+ * Отзывает приглашение, но не стирает его: по записи потом видно, кого и когда
+ * приглашали. Удаление было бы опаснее — от количества приглашений когда-то
+ * зависела сама проверка доступа.
+ */
 export async function revokeInvite(code: string): Promise<boolean> {
   const wanted = code.trim().toUpperCase();
   const invites = await listInvites();
-  const rest = invites.filter((i) => i.code.toUpperCase() !== wanted);
-  if (rest.length === invites.length) return false;
-  await saveInvites(rest);
+  const invite = invites.find((i) => i.code.toUpperCase() === wanted);
+  if (!invite || invite.revokedAt) return false;
+  invite.revokedAt = new Date().toISOString();
+  await saveInvites(invites);
   return true;
 }
 
