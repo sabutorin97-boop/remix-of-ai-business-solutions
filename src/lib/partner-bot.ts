@@ -110,6 +110,13 @@ function accessCode(): string | undefined {
   return c && c.trim() ? c.trim() : undefined;
 }
 
+/**
+ * Метка сборки бота. Нужна для диагностики: по ответу action=ping видно, какая
+ * версия реально запущена, — панель Timeweb показывает коммит ненадёжно.
+ * Обновляется вручную при заметных изменениях поведения.
+ */
+export const BOT_VERSION = "2026-09-08 · приглашения и разговор";
+
 /** Username партнёрского бота — из него собираются ссылки-приглашения. */
 const PARTNER_BOT_USERNAME = process.env.PARTNER_BOT_USERNAME?.trim() || "AIProfigrupPartner_bot";
 

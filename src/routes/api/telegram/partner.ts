@@ -1,6 +1,7 @@
 import "@tanstack/react-start";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  BOT_VERSION,
   handlePartnerUpdate,
   partnerBotToken,
   PARTNER_BOT_COMMANDS,
@@ -93,6 +94,7 @@ export const Route = createFileRoute("/api/telegram/partner")({
           // понятно, дело в переменных или в канале до Telegram.
           return json({
             ok: true,
+            botVersion: BOT_VERSION,
             apiHost: telegramApiHost(),
             hasPartnerToken: Boolean(process.env.TELEGRAM_PARTNER_BOT_TOKEN),
             hasMainToken: Boolean(process.env.TELEGRAM_BOT_TOKEN),
