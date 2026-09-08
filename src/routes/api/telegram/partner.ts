@@ -6,7 +6,12 @@ import {
   PARTNER_BOT_COMMANDS,
   type TgUpdate,
 } from "@/lib/partner-bot";
-import { getTelegramWebhookInfo, setTelegramMyCommands, setTelegramWebhook } from "@/lib/telegram";
+import {
+  getTelegramWebhookInfo,
+  setTelegramMyCommands,
+  setTelegramWebhook,
+  telegramApiHost,
+} from "@/lib/telegram";
 
 /**
  * Вебхук партнёрского Telegram-бота.
@@ -79,6 +84,22 @@ export const Route = createFileRoute("/api/telegram/partner")({
         if (!token) return json({ error: "TELEGRAM_PARTNER_BOT_TOKEN не задан" }, 503);
 
         const action = url.searchParams.get("action") ?? "info";
+        if (action === "ping") {
+          // Проверка настроек без обращения к Telegram: показывает, что задано,
+          // но не сами значения. Нужна, когда setWebhook падает по сети и не
+          // понятно, дело в переменных или в канале до Telegram.
+          return json({
+            ok: true,
+            apiHost: telegramApiHost(),
+            hasPartnerToken: Boolean(process.env.TELEGRAM_PARTNER_BOT_TOKEN),
+            hasMainToken: Boolean(process.env.TELEGRAM_BOT_TOKEN),
+            hasOwnerChatId: Boolean(process.env.TELEGRAM_OWNER_CHAT_ID),
+            hasAccessCode: Boolean(process.env.PARTNER_BOT_ACCESS_CODE),
+            siteBaseUrl: process.env.SITE_BASE_URL ?? null,
+            s3Configured: Boolean(process.env.S3_ENDPOINT && process.env.S3_BUCKET),
+            aiConfigured: Boolean(process.env.KIE_API_KEY),
+          });
+        }
         try {
           if (action === "set") {
             const base = url.searchParams.get("url") || process.env.SITE_BASE_URL;

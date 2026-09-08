@@ -20,16 +20,37 @@ function botToken(explicit?: string): string {
   return token;
 }
 
+/** Хост, через который уходят запросы. Для диагностики: токена в нём нет. */
+export function telegramApiHost(): string {
+  try {
+    return new URL(API_BASE).host;
+  } catch {
+    return API_BASE;
+  }
+}
+
 export async function callTelegram<T = unknown>(
   method: string,
   payload: Record<string, unknown>,
   options?: TelegramCallOptions,
 ): Promise<T> {
-  const res = await fetch(`${API_BASE}/bot${botToken(options?.token)}/${method}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/bot${botToken(options?.token)}/${method}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    // Сетевой сбой fetch отдаёт голое «fetch failed», по которому не понять,
+    // куда именно не достучались. Разворачиваем его в сообщение с хостом и
+    // причиной: обычно это лежачий релей из TELEGRAM_API_BASE.
+    const cause = (err as { cause?: { code?: string; message?: string } }).cause;
+    const reason = cause?.code ?? cause?.message ?? (err as Error).message;
+    throw new Error(
+      `Telegram API ${method}: не удалось соединиться с ${telegramApiHost()} (${reason})`,
+    );
+  }
   const data = (await res.json()) as { ok: boolean; result?: T; description?: string };
   if (!data.ok) {
     throw new Error(`Telegram API ${method} failed: ${data.description ?? res.status}`);
