@@ -45,15 +45,19 @@ import {
   type Niche,
 } from "@/lib/partner-catalog";
 import {
+  LEAD_TYPES,
   LESSONS,
   OBJECTIONS,
+  PAYOUT_RULE,
   PRODUCTS_SUMMARY,
   SCRIPTS,
   SITE_URL,
+  commissionFor,
   lessonById,
   objectionById,
   scriptById,
   termsText,
+  type LeadTemperature,
 } from "@/lib/partner-training";
 
 // --- Типы Telegram (только используемые поля) -------------------------------
@@ -231,10 +235,16 @@ function profileText(partner: Partner): string {
     `Передано клиентов: ${partner.deals.length}`,
   ].filter(Boolean) as string[];
   if (partner.deals.length) {
-    lines.push("", "<b>Последние переданные клиенты:</b>");
+    const warm = partner.deals.filter((d) => d.temperature === "warm").length;
+    lines.push(
+      `Из них тёплых: ${warm}, холодных: ${partner.deals.length - warm}`,
+      "",
+      "<b>Последние переданные клиенты:</b>",
+    );
     for (const d of partner.deals.slice(-5).reverse()) {
       const date = new Date(d.createdAt).toLocaleDateString("ru-RU");
-      lines.push(`• ${date} — ${escapeHtml(d.clientName)} (${escapeHtml(d.contact)})`);
+      const mark = LEAD_TYPES[d.temperature ?? "cold"].emoji;
+      lines.push(`• ${date} ${mark} ${escapeHtml(d.clientName)} (${escapeHtml(d.contact)})`);
     }
   }
   lines.push(
@@ -391,22 +401,72 @@ async function showObjections(ctx: Ctx): Promise<void> {
 
 // --- Передача клиента -------------------------------------------------------
 
-const DEAL_PROMPTS: Record<"client" | "contact" | "note", string> = {
-  client:
-    "📝 <b>Передача клиента, шаг 1 из 3</b>\n\nНапишите имя клиента и что за бизнес.\n\n<i>Пример: Марина, салон красоты в Казани</i>\n\nПрервать — /cancel",
-  contact:
-    "📞 <b>Шаг 2 из 3</b>\n\nКонтакт клиента: телефон, @username или почта.\n\n<i>Пример: +7 900 123-45-67</i>",
-  note: "💬 <b>Шаг 3 из 3</b>\n\nЧто болит у клиента, о чём договорились и когда удобно звонить.\n\nЕсли добавить нечего — отправьте /skip",
-};
+// У холодного лида два шага (имя и контакт), у тёплого три: к ним добавляется
+// бриф. Тип спрашиваем первым, потому что от него зависит и набор вопросов,
+// и ставка комиссии.
+function dealSteps(temperature: LeadTemperature): number {
+  return temperature === "warm" ? 3 : 2;
+}
+
+function dealClientPrompt(temperature: LeadTemperature): string {
+  const total = dealSteps(temperature);
+  return temperature === "warm"
+    ? `📝 <b>Тёплый лид, шаг 1 из ${total}</b>\n\nИмя клиента и что за бизнес.\n\n<i>Пример: Марина, салон красоты в Казани</i>\n\nПрервать — /cancel`
+    : `📝 <b>Холодный лид, шаг 1 из ${total}</b>\n\nФИО клиента из заявки.\n\n<i>Пример: Иванова Марина Сергеевна</i>\n\nПрервать — /cancel`;
+}
+
+function dealContactPrompt(temperature: LeadTemperature): string {
+  return `📞 <b>Шаг 2 из ${dealSteps(temperature)}</b>\n\nКонтакт клиента: телефон, @username или почта.\n\n<i>Пример: +7 900 123-45-67</i>`;
+}
+
+const DEAL_BRIEF_PROMPT = [
+  "📋 <b>Шаг 3 из 3 — бриф</b>",
+  "",
+  "Перенесите ответы клиента одним сообщением:",
+  ...LEAD_TYPES.warm.checklist.map((item) => `• ${item}`),
+  "",
+  "Без брифа студия не сможет подтвердить, что лид тёплый, — тогда заявка уйдёт как холодная. Если брифа нет, отправьте /skip.",
+].join("\n");
+
+const DEAL_TYPE_PROMPT = [
+  "📝 <b>Передача клиента</b>",
+  "",
+  "Сначала выберите тип лида — от него зависит ваша ставка:",
+  "",
+  `${LEAD_TYPES.cold.emoji} <b>${LEAD_TYPES.cold.label} — ${commissionFor("cold")}%</b>`,
+  LEAD_TYPES.cold.definition,
+  "",
+  `${LEAD_TYPES.warm.emoji} <b>${LEAD_TYPES.warm.label} — ${commissionFor("warm")}%</b>`,
+  LEAD_TYPES.warm.definition,
+  "",
+  `<i>${PAYOUT_RULE}</i>`,
+].join("\n");
 
 async function startDeal(ctx: Ctx, partner: Partner): Promise<void> {
-  partner.pending = { kind: "deal", step: "client", draft: {} };
+  partner.pending = { kind: "deal", step: "type", draft: {} };
   await savePartner(partner);
-  await reply(ctx, DEAL_PROMPTS.client, [[{ text: "Отмена", callback_data: "cancel" }]]);
+  await reply(ctx, DEAL_TYPE_PROMPT, [
+    [
+      { text: `${LEAD_TYPES.cold.emoji} Холодный`, callback_data: "deal_t:cold" },
+      { text: `${LEAD_TYPES.warm.emoji} Тёплый`, callback_data: "deal_t:warm" },
+    ],
+    [{ text: "Отмена", callback_data: "cancel" }],
+  ]);
+}
+
+async function askDealClient(
+  ctx: Ctx,
+  partner: Partner,
+  temperature: LeadTemperature,
+): Promise<void> {
+  partner.pending = { kind: "deal", step: "client", draft: { temperature } };
+  await savePartner(partner);
+  await reply(ctx, dealClientPrompt(temperature), [[{ text: "Отмена", callback_data: "cancel" }]]);
 }
 
 function dealNotificationText(
   partner: Partner,
+  temperature: LeadTemperature,
   client: string,
   contact: string,
   note: string | null,
@@ -414,13 +474,15 @@ function dealNotificationText(
   const who = partner.username
     ? `@${escapeHtml(partner.username)}`
     : escapeHtml(partner.firstName ?? "партнёр");
+  const type = LEAD_TYPES[temperature];
   return [
-    "🤝 <b>Клиент от партнёра</b>",
+    `${type.emoji} <b>${type.label} от партнёра</b>`,
     "",
     `👤 Партнёр: ${who} (код ${partner.refCode}, id ${partner.telegramId})`,
+    `💰 Ставка по типу: ${commissionFor(temperature)}% после оплаты заказа`,
     `🏢 Клиент: ${escapeHtml(client)}`,
     `📞 Контакт: ${escapeHtml(contact)}`,
-    note ? `💬 Детали: ${escapeHtml(note)}` : null,
+    note ? `📋 Бриф: ${escapeHtml(note)}` : null,
   ]
     .filter(Boolean)
     .join("\n");
@@ -431,6 +493,10 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
   if (!pending || pending.kind !== "deal") return;
   const client = pending.draft.client ?? "не указан";
   const contact = pending.draft.contact ?? "не указан";
+  // Тёплый лид без брифа студия подтвердить не может, поэтому уходит как
+  // холодный: партнёр предупреждён об этом на шаге брифа.
+  const temperature: LeadTemperature =
+    pending.draft.temperature === "warm" && note ? "warm" : "cold";
 
   let leadId: string | null = null;
   try {
@@ -443,6 +509,8 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
         partnerTelegramId: partner.telegramId,
         partnerUsername: partner.username,
         partnerRefCode: partner.refCode,
+        leadTemperature: temperature,
+        commissionPercent: commissionFor(temperature),
       },
     });
     leadId = lead.id;
@@ -452,7 +520,7 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
     console.error("[partner-bot] Не удалось сохранить лид от партнёра:", err);
   }
 
-  const text = dealNotificationText(partner, client, contact, note);
+  const text = dealNotificationText(partner, temperature, client, contact, note);
   let delivered = false;
   const ownerChatId = process.env.TELEGRAM_OWNER_CHAT_ID;
   if (ownerChatId) {
@@ -472,12 +540,13 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
   if (process.env.SMTP_HOST) {
     try {
       await sendNotificationEmail(
-        `Клиент от партнёра ${partner.refCode}: ${client}`,
+        `${LEAD_TYPES[temperature].label} от партнёра ${partner.refCode}: ${client}`,
         [
           `Партнёр: ${partner.username ? `@${partner.username}` : partner.firstName} (код ${partner.refCode})`,
+          `Тип лида: ${LEAD_TYPES[temperature].label} (${commissionFor(temperature)}% после оплаты заказа)`,
           `Клиент: ${client}`,
           `Контакт: ${contact}`,
-          note ? `Детали: ${note}` : "",
+          note ? `Бриф: ${note}` : "",
         ]
           .filter(Boolean)
           .join("\n"),
@@ -490,6 +559,7 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
 
   partner.deals.push({
     leadId,
+    temperature,
     clientName: client,
     contact,
     note,
@@ -498,17 +568,26 @@ async function finishDeal(ctx: Ctx, partner: Partner, note: string | null): Prom
   partner.pending = null;
   await savePartner(partner);
 
+  const downgraded = pending.draft.temperature === "warm" && temperature === "cold";
   const confirmation = delivered
     ? [
-        "✅ <b>Клиент передан студии.</b>",
+        `✅ <b>Клиент передан студии как ${LEAD_TYPES[temperature].label.toLowerCase()}.</b>`,
         "",
         `Клиент: ${escapeHtml(client)}`,
         `Контакт: ${escapeHtml(contact)}`,
+        `Ставка по этому лиду: ${commissionFor(temperature)}%`,
         `Ваша метка: <code>${partner.refCode}</code>`,
+        downgraded
+          ? "\n⚠️ Бриф не заполнен, поэтому лид ушёл как холодный. С брифом ставка была бы выше."
+          : "",
+        "",
+        `⏳ ${PAYOUT_RULE}`,
         "",
         "Что дальше: студия свяжется с клиентом, сделает бесплатный аудит и посчитает стоимость.",
         "Предупредите клиента, что с ним свяжутся — так разговор пройдёт легче.",
-      ].join("\n")
+      ]
+        .filter(Boolean)
+        .join("\n")
     : [
         "⚠️ <b>Заявка записана, но уведомление студии не ушло.</b>",
         "",
@@ -643,20 +722,44 @@ async function handlePending(
   }
 
   if (pending.kind === "deal") {
+    const temperature: LeadTemperature = pending.draft.temperature ?? "cold";
+    if (pending.step === "type") {
+      // Тип выбирается кнопкой; текстом сюда попадают редко, поэтому просто
+      // повторяем вопрос вместо того, чтобы гадать.
+      await reply(ctx, DEAL_TYPE_PROMPT, [
+        [
+          { text: `${LEAD_TYPES.cold.emoji} Холодный`, callback_data: "deal_t:cold" },
+          { text: `${LEAD_TYPES.warm.emoji} Тёплый`, callback_data: "deal_t:warm" },
+        ],
+        [{ text: "Отмена", callback_data: "cancel" }],
+      ]);
+      return true;
+    }
     if (pending.step === "client") {
-      partner.pending = { kind: "deal", step: "contact", draft: { client: text.slice(0, 300) } };
+      partner.pending = {
+        kind: "deal",
+        step: "contact",
+        draft: { ...pending.draft, client: text.slice(0, 300) },
+      };
       await savePartner(partner);
-      await reply(ctx, DEAL_PROMPTS.contact, [[{ text: "Отмена", callback_data: "cancel" }]]);
+      await reply(ctx, dealContactPrompt(temperature), [
+        [{ text: "Отмена", callback_data: "cancel" }],
+      ]);
       return true;
     }
     if (pending.step === "contact") {
-      partner.pending = {
-        kind: "deal",
-        step: "note",
-        draft: { ...pending.draft, contact: text.slice(0, 300) },
-      };
+      const draft = { ...pending.draft, contact: text.slice(0, 300) };
+      if (temperature === "cold") {
+        // У холодного лида по определению есть только ФИО и контакт —
+        // брифа не ждём и заканчиваем на втором шаге.
+        partner.pending = { kind: "deal", step: "note", draft };
+        await savePartner(partner);
+        await finishDeal(ctx, partner, null);
+        return true;
+      }
+      partner.pending = { kind: "deal", step: "note", draft };
       await savePartner(partner);
-      await reply(ctx, DEAL_PROMPTS.note, [[{ text: "Пропустить", callback_data: "deal_skip" }]]);
+      await reply(ctx, DEAL_BRIEF_PROMPT, [[{ text: "Пропустить", callback_data: "deal_skip" }]]);
       return true;
     }
     await finishDeal(ctx, partner, text.slice(0, 2000));
@@ -684,6 +787,10 @@ async function handleCallbackData(ctx: Ctx, partner: Partner, data: string): Pro
 
   if (data === "deal") {
     return startDeal({ ...ctx, messageId: undefined }, partner);
+  }
+  if (data.startsWith("deal_t:")) {
+    const temperature: LeadTemperature = data.endsWith("warm") ? "warm" : "cold";
+    return askDealClient({ ...ctx, messageId: undefined }, partner, temperature);
   }
   if (data === "deal_skip") {
     if (partner.pending?.kind === "deal" && partner.pending.step === "note") {

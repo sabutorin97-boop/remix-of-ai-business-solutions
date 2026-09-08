@@ -13,12 +13,13 @@
  * Сервер-only: здесь ключи доступа к бакету, в клиентский код не импортировать.
  */
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import type { LeadTemperature } from "@/lib/partner-training";
 
 export type PendingAction =
   | {
       kind: "deal";
-      step: "client" | "contact" | "note";
-      draft: { client?: string; contact?: string };
+      step: "type" | "client" | "contact" | "note";
+      draft: { temperature?: LeadTemperature; client?: string; contact?: string };
     }
   | { kind: "ask" }
   | { kind: "search" }
@@ -27,6 +28,11 @@ export type PendingAction =
 export interface PartnerDeal {
   /** id лида в leads-store; null, если S3 недоступен и лид не сохранился. */
   leadId: string | null;
+  /**
+   * Тип лида на момент передачи — от него зависит ставка комиссии.
+   * Необязательный: у сделок, переданных до разделения ставок, его нет.
+   */
+  temperature?: LeadTemperature;
   clientName: string;
   contact: string;
   note: string | null;
