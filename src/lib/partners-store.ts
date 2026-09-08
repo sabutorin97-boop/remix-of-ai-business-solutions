@@ -51,7 +51,12 @@ export interface Partner {
   firstName: string | null;
   /** Метка партнёра в заявках и ссылках: по ней видно, кто привёл клиента. */
   refCode: string;
-  status: "active" | "pending_code";
+  /** Имя из приглашения: под ним партнёр виден в списке владельца. */
+  label?: string;
+  /** Код приглашения, по которому партнёр получил доступ. */
+  inviteCode?: string;
+  /** blocked — сотрудничество прекращено: история сохраняется, вход закрыт. */
+  status: "active" | "pending_code" | "blocked";
   createdAt: string;
   updatedAt: string;
   lastSeenAt: string;
@@ -125,6 +130,7 @@ async function getJson<T>(key: string): Promise<T | null> {
 }
 
 const INDEX_KEY = "partners/_index.json";
+const INVITES_KEY = "partners/_invites.json";
 
 function partnerKey(telegramId: number): string {
   return `partners/${telegramId}.json`;
@@ -220,4 +226,126 @@ export async function listPartnerIds(): Promise<number[]> {
     console.error("[partners-store] Чтение индекса партнёров не удалось:", err);
     return [...memory.keys()];
   }
+}
+
+// --- Приглашения ------------------------------------------------------------
+
+/**
+ * Личное приглашение партнёра. Один код — один человек, поэтому отозвать
+ * доступ можно у одного, не трогая остальных: общий код на всех такого не
+ * позволяет (см. PARTNER_BOT_ACCESS_CODE, он остался как запасной вариант).
+ */
+export interface PartnerInvite {
+  code: string;
+  /** Имя, под которым партнёр будет виден владельцу. */
+  label: string;
+  createdAt: string;
+  usedBy: number | null;
+  usedAt: string | null;
+}
+
+let inviteMemory: PartnerInvite[] = [];
+
+/** Код диктуют вслух и пересылают в ссылке, поэтому он короткий и без похожих символов. */
+function makeInviteCode(): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < 6; i++) {
+    out += alphabet[Math.floor(Math.random() * alphabet.length)];
+    if (i === 2) out += "-";
+  }
+  return `AP-${out}`;
+}
+
+export async function listInvites(): Promise<PartnerInvite[]> {
+  if (!s3Configured()) return inviteMemory;
+  try {
+    return (await getJson<PartnerInvite[]>(INVITES_KEY)) ?? [];
+  } catch (err) {
+    console.error("[partners-store] Чтение приглашений не удалось:", err);
+    return inviteMemory;
+  }
+}
+
+async function saveInvites(invites: PartnerInvite[]): Promise<void> {
+  inviteMemory = invites;
+  if (!s3Configured()) return;
+  try {
+    await putJson(INVITES_KEY, invites);
+  } catch (err) {
+    console.error("[partners-store] Запись приглашений не удалась:", err);
+  }
+}
+
+export async function createInvite(label: string): Promise<PartnerInvite> {
+  const invites = await listInvites();
+  const invite: PartnerInvite = {
+    code: makeInviteCode(),
+    label: label.trim().slice(0, 100) || "Партнёр",
+    createdAt: new Date().toISOString(),
+    usedBy: null,
+    usedAt: null,
+  };
+  await saveInvites([...invites, invite]);
+  return invite;
+}
+
+/**
+ * Пытается принять код от партнёра. Приглашение одноразовое: второй человек по
+ * тому же коду не войдёт, а тот же самый — войдёт снова (например, после
+ * перезахода в бот).
+ */
+export async function redeemInvite(
+  code: string,
+  telegramId: number,
+): Promise<PartnerInvite | null> {
+  const wanted = code.trim().toUpperCase();
+  const invites = await listInvites();
+  const invite = invites.find((i) => i.code.toUpperCase() === wanted);
+  if (!invite) return null;
+  if (invite.usedBy !== null && invite.usedBy !== telegramId) return null;
+  if (invite.usedBy === null) {
+    invite.usedBy = telegramId;
+    invite.usedAt = new Date().toISOString();
+    await saveInvites(invites);
+  }
+  return invite;
+}
+
+export async function revokeInvite(code: string): Promise<boolean> {
+  const wanted = code.trim().toUpperCase();
+  const invites = await listInvites();
+  const rest = invites.filter((i) => i.code.toUpperCase() !== wanted);
+  if (rest.length === invites.length) return false;
+  await saveInvites(rest);
+  return true;
+}
+
+// --- Список партнёров -------------------------------------------------------
+
+/** Полные записи всех партнёров: для списка и статистики у владельца. */
+export async function listPartners(): Promise<Partner[]> {
+  const ids = await listPartnerIds();
+  const partners: Partner[] = [];
+  for (const id of ids) {
+    const partner = await getPartner(id);
+    if (partner) partners.push(partner);
+  }
+  return partners.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+}
+
+/** Поиск по коду партнёра, telegram id или @username — как удобнее владельцу. */
+export async function findPartner(identifier: string): Promise<Partner | null> {
+  const raw = identifier.trim().replace(/^@/, "").toUpperCase();
+  if (!raw) return null;
+  const partners = await listPartners();
+  return (
+    partners.find(
+      (p) =>
+        p.refCode.toUpperCase() === raw ||
+        String(p.telegramId) === raw ||
+        (p.username ?? "").toUpperCase() === raw ||
+        (p.inviteCode ?? "").toUpperCase() === raw,
+    ) ?? null
+  );
 }

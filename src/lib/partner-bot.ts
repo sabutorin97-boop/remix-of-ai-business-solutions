@@ -27,7 +27,13 @@ import {
   sendTelegramMessage,
 } from "@/lib/telegram";
 import {
+  createInvite,
+  findPartner,
   getPartner,
+  listInvites,
+  listPartners,
+  redeemInvite,
+  revokeInvite,
   savePartner,
   upsertPartner,
   type Partner,
@@ -102,6 +108,15 @@ export function partnerBotToken(): string | undefined {
 function accessCode(): string | undefined {
   const c = process.env.PARTNER_BOT_ACCESS_CODE;
   return c && c.trim() ? c.trim() : undefined;
+}
+
+/** Username партнёрского бота — из него собираются ссылки-приглашения. */
+const PARTNER_BOT_USERNAME = process.env.PARTNER_BOT_USERNAME?.trim() || "AIProfigrupPartner_bot";
+
+/** Владелец студии: у него в боте свои команды управления партнёрами. */
+function isOwner(telegramId: number): boolean {
+  const owner = process.env.TELEGRAM_OWNER_CHAT_ID?.trim();
+  return Boolean(owner) && String(telegramId) === owner;
 }
 
 const AI_MODEL_SLUG = "gemini-3-flash";
@@ -908,6 +923,11 @@ async function handleCallbackData(ctx: Ctx, partner: Partner, data: string): Pro
 async function handleText(ctx: Ctx, partner: Partner, rawText: string): Promise<void> {
   const text = rawText.trim();
 
+  if (isOwner(partner.telegramId) && text.startsWith("/")) {
+    const handled = await handleOwnerCommand(ctx, text);
+    if (handled) return;
+  }
+
   if (text === "/cancel") {
     partner.pending = null;
     await savePartner(partner);
@@ -990,6 +1010,187 @@ async function handleText(ctx: Ctx, partner: Partner, rawText: string): Promise<
   return answerWithAi(ctx, partner, text, hints);
 }
 
+// --- Управление партнёрами (только владелец) --------------------------------
+
+const OWNER_HELP = [
+  "🛠 <b>Управление партнёрами</b>",
+  "",
+  "/invite Имя Фамилия — создать личное приглашение и ссылку",
+  "/invites — неиспользованные приглашения",
+  "/partners — список партнёров и их результаты",
+  "/partner код — карточка партнёра со всеми переданными клиентами",
+  "/block код — закрыть доступ (история сохраняется)",
+  "/unblock код — вернуть доступ",
+  "/admin — эта подсказка",
+  "",
+  "Вместо кода можно указать @username или числовой id партнёра.",
+].join("\n");
+
+function partnerLine(index: number, p: Partner): string {
+  const warm = p.deals.filter((d) => d.temperature === "warm").length;
+  const cold = p.deals.length - warm;
+  const state =
+    p.status === "blocked"
+      ? "🚫 доступ закрыт"
+      : p.status === "pending_code"
+        ? "⏳ не вошёл"
+        : "✅ активен";
+  const name = escapeHtml(p.label ?? p.firstName ?? "без имени");
+  const who = p.username ? ` @${escapeHtml(p.username)}` : "";
+  return [
+    `${index}. <b>${name}</b>${who} · <code>${p.refCode}</code>`,
+    `   ${state} · уроков ${p.lessonsDone.length}/${TOTAL_LESSONS} · клиентов ${p.deals.length} (🔥 ${warm} / 🧊 ${cold})`,
+  ].join("\n");
+}
+
+function partnerCard(p: Partner): string {
+  const warm = p.deals.filter((d) => d.temperature === "warm").length;
+  const lines = [
+    `👤 <b>${escapeHtml(p.label ?? p.firstName ?? "Партнёр")}</b>`,
+    p.username ? `Telegram: @${escapeHtml(p.username)}` : null,
+    `Код: <code>${p.refCode}</code> · id ${p.telegramId}`,
+    `Статус: ${p.status === "blocked" ? "доступ закрыт" : p.status === "pending_code" ? "ещё не вошёл" : "активен"}`,
+    `Вошёл по приглашению: ${p.inviteCode ? `<code>${p.inviteCode}</code>` : "общий код"}`,
+    `Обучение: ${p.lessonsDone.length} из ${TOTAL_LESSONS}`,
+    `Клиентов передано: ${p.deals.length} (🔥 ${warm} / 🧊 ${p.deals.length - warm})`,
+  ].filter(Boolean) as string[];
+  if (p.deals.length) {
+    lines.push("", "<b>Переданные клиенты:</b>");
+    for (const d of p.deals.slice(-15).reverse()) {
+      const date = new Date(d.createdAt).toLocaleDateString("ru-RU");
+      const mark = LEAD_TYPES[d.temperature ?? "cold"].emoji;
+      const rate = commissionFor(d.temperature ?? "cold");
+      lines.push(
+        `• ${date} ${mark} ${escapeHtml(d.clientName)} — ${escapeHtml(d.contact)} · ${rate}%`,
+      );
+      if (d.note) lines.push(`   <i>${escapeHtml(d.note.slice(0, 200))}</i>`);
+    }
+  }
+  return lines.join("\n");
+}
+
+/** Возвращает true, если сообщение было командой владельца и уже обработано. */
+async function handleOwnerCommand(ctx: Ctx, text: string): Promise<boolean> {
+  const [command, ...rest] = text.split(/\s+/);
+  const arg = rest.join(" ").trim();
+
+  switch (command) {
+    case "/admin":
+      await reply(ctx, OWNER_HELP, []);
+      return true;
+
+    case "/invite": {
+      if (!arg) {
+        await reply(ctx, "Укажите имя партнёра: <code>/invite Иван Петров</code>", []);
+        return true;
+      }
+      const invite = await createInvite(arg);
+      await reply(
+        ctx,
+        [
+          `🎟 <b>Приглашение для «${escapeHtml(invite.label)}»</b>`,
+          "",
+          `Код: <code>${invite.code}</code>`,
+          `Ссылка: https://t.me/${PARTNER_BOT_USERNAME}?start=${invite.code}`,
+          "",
+          "Перешлите ссылку партнёру: по ней кабинет откроется сразу, код вводить не придётся.",
+          "Приглашение одноразовое и закрепится за тем, кто войдёт по нему первым.",
+        ].join("\n"),
+        [],
+      );
+      return true;
+    }
+
+    case "/invites": {
+      const invites = (await listInvites()).filter((i) => i.usedBy === null);
+      await reply(
+        ctx,
+        invites.length
+          ? [
+              "🎟 <b>Неиспользованные приглашения</b>",
+              "",
+              ...invites.map(
+                (i) =>
+                  `• <code>${i.code}</code> — ${escapeHtml(i.label)} (от ${new Date(i.createdAt).toLocaleDateString("ru-RU")})`,
+              ),
+            ].join("\n")
+          : "Неиспользованных приглашений нет. Новое создаётся командой <code>/invite Имя</code>.",
+        [],
+      );
+      return true;
+    }
+
+    case "/partners": {
+      const partners = await listPartners();
+      if (!partners.length) {
+        await reply(ctx, "Партнёров пока нет. Создайте приглашение: <code>/invite Имя</code>", []);
+        return true;
+      }
+      const totalDeals = partners.reduce((sum, p) => sum + p.deals.length, 0);
+      await reply(
+        ctx,
+        [
+          `👥 <b>Партнёры: ${partners.length}</b>, клиентов передано: ${totalDeals}`,
+          "",
+          ...partners.map((p, i) => partnerLine(i + 1, p)),
+          "",
+          "Карточка партнёра: <code>/partner код</code>",
+        ].join("\n"),
+        [],
+      );
+      return true;
+    }
+
+    case "/partner": {
+      if (!arg) {
+        await reply(ctx, "Укажите код, @username или id: <code>/partner AP-B88F</code>", []);
+        return true;
+      }
+      const partner = await findPartner(arg);
+      await reply(
+        ctx,
+        partner ? partnerCard(partner) : `Партнёр «${escapeHtml(arg)}» не найден.`,
+        [],
+      );
+      return true;
+    }
+
+    case "/block":
+    case "/unblock": {
+      if (!arg) {
+        await reply(ctx, `Укажите код, @username или id: <code>${command} AP-B88F</code>`, []);
+        return true;
+      }
+      const partner = await findPartner(arg);
+      if (!partner) {
+        await reply(ctx, `Партнёр «${escapeHtml(arg)}» не найден.`, []);
+        return true;
+      }
+      const blocking = command === "/block";
+      partner.status = blocking ? "blocked" : "active";
+      // Прерываем незавершённый ввод, чтобы после разблокировки партнёр не
+      // оказался посреди старой формы передачи клиента.
+      partner.pending = null;
+      await savePartner(partner);
+      if (blocking && partner.inviteCode) await revokeInvite(partner.inviteCode);
+      await reply(
+        ctx,
+        blocking
+          ? [
+              `🚫 Доступ закрыт: <b>${escapeHtml(partner.label ?? partner.firstName ?? partner.refCode)}</b>.`,
+              "",
+              "История переданных клиентов сохранена, она видна в карточке партнёра.",
+              "Приглашение отозвано: по старой ссылке войти больше нельзя.",
+            ].join("\n")
+          : `✅ Доступ возвращён: <b>${escapeHtml(partner.label ?? partner.firstName ?? partner.refCode)}</b>.`,
+        [],
+      );
+      return true;
+    }
+  }
+  return false;
+}
+
 // --- Точка входа ------------------------------------------------------------
 
 export async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
@@ -1010,21 +1211,41 @@ export async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
   const throttle = rateLimit("partner_bot", String(from.id), { windowMs: 60_000, max: 40 });
   if (!throttle.ok) return;
 
-  const needsCode = Boolean(accessCode());
-  const { partner, isNew } = await upsertPartner(from, needsCode);
+  // Вход закрыт, если задан общий код или выписано хотя бы одно приглашение.
+  // Пока нет ни того ни другого, бот открыт — это состояние «только поставили».
+  const gated = Boolean(accessCode()) || (await listInvites()).length > 0;
+  const { partner, isNew } = await upsertPartner(from, gated && !isOwner(from.id));
 
   const baseCtx: Ctx = { chatId, token };
 
-  // Код доступа принимаем двумя способами: в диплинке `/start КОД` и обычным
-  // сообщением. Пока он не сошёлся, дальше по боту никакие экраны не открываем.
+  if (partner.status === "blocked") {
+    if (update.callback_query) {
+      await answerCallbackQuery(update.callback_query.id, { token });
+    }
+    await sendTelegramMessage(
+      chatId,
+      "🚫 <b>Доступ к кабинету закрыт.</b>\n\nЕсли это недоразумение, напишите вашему руководителю в студии.",
+      { token },
+    );
+    return;
+  }
+
+  // Код принимаем и в диплинке `/start КОД`, и обычным сообщением. Личное
+  // приглашение важнее общего кода: по нему видно, кто именно вошёл.
   if (partner.status === "pending_code") {
-    const code = accessCode();
     const text = update.message?.text?.trim() ?? "";
     const supplied = text.startsWith("/start ") ? text.slice("/start ".length).trim() : text;
-    const unlocked = !code || (supplied.length > 0 && supplied === code);
+    const invite = supplied ? await redeemInvite(supplied, from.id) : null;
+    const generalCode = accessCode();
+    const unlocked =
+      invite !== null || (Boolean(generalCode) && supplied === generalCode) || !gated;
     if (unlocked) {
       partner.status = "active";
       partner.pending = null;
+      if (invite) {
+        partner.label = invite.label;
+        partner.inviteCode = invite.code;
+      }
       await savePartner(partner);
       await sendTelegramMessage(
         chatId,
@@ -1043,8 +1264,8 @@ export async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
     await sendTelegramMessage(
       chatId,
       wrongAttempt
-        ? "🔒 Код не подошёл. Проверьте раскладку и пробелы или попросите код у руководителя."
-        : "🔒 <b>Кабинет партнёра AI-Profigrup</b>\n\nДоступ по коду. Отправьте код, который выдал руководитель.",
+        ? "🔒 Код не подошёл. Проверьте раскладку и пробелы или попросите новый код у руководителя."
+        : "🔒 <b>Кабинет партнёра AI-Profigrup</b>\n\nДоступ по личному приглашению. Отправьте код, который выдал руководитель.",
       { token },
     );
     return;
