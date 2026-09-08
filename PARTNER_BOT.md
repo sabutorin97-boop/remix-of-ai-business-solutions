@@ -38,8 +38,6 @@
    TELEGRAM_PARTNER_BOT_TOKEN=<токен из BotFather>
    TELEGRAM_PARTNER_WEBHOOK_SECRET=<секрет из шага 2>
    PARTNER_BOT_ACCESS_CODE=<код, который вы выдаёте партнёрам>
-   PARTNER_COMMISSION_COLD_PERCENT=10
-   PARTNER_COMMISSION_WARM_PERCENT=25
    PARTNER_MANAGER_CONTACT=@ваш_телеграм
    SITE_BASE_URL=https://aiprofigrup.ru
    ```
@@ -95,10 +93,10 @@
 - **Выплата только после оплаты заказа заказчиком.** Это правило зашито в коде
   (`PAYOUT_RULE` в `src/lib/partner-training.ts`) и повторяется партнёру при
   каждой передаче клиента.
-- **Проценты** без переменных `PARTNER_COMMISSION_COLD_PERCENT` и
-  `PARTNER_COMMISSION_WARM_PERCENT` показываются как значения по умолчанию с
-  пометкой, что компания их не подтверждала. Задайте реальные ставки до того,
-  как раздавать бот партнёрам.
+- **Действующие ставки: 15% за холодный лид и 30% за тёплый.** Они зашиты в
+  `src/lib/partner-training.ts`. Если ставки изменятся, их можно переопределить
+  переменными `PARTNER_COMMISSION_COLD_PERCENT` и
+  `PARTNER_COMMISSION_WARM_PERCENT` без правки кода.
 - **api.telegram.org недоступен с прод-IP Timeweb напрямую** — трафик идёт через
   релей из `TELEGRAM_API_BASE` (см. `CLAUDE.md`). Это касается и партнёрского
   бота: если релей лёг, бот замолчит.

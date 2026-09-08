@@ -9,12 +9,11 @@
  *
  * ВАЖНО про деньги: ставка зависит от типа переданного лида — холодный
  * (только ФИО и контакты из заявки) и тёплый (проведена консультация, заполнен
- * бриф, клиент готов продолжать). Проценты берутся из переменных окружения
- * PARTNER_COMMISSION_COLD_PERCENT и PARTNER_COMMISSION_WARM_PERCENT; пока они
- * не заданы, бот показывает значения по умолчанию и честно помечает их как
- * неподтверждённые — чтобы партнёр не пообещал себе того, чего компания не
- * утверждала. Правило выплаты (после оплаты заказа заказчиком) — условие
- * компании, а не настройка: см. PAYOUT_RULE ниже.
+ * бриф, клиент готов продолжать). Действующие ставки подтверждены компанией
+ * (2026-09-08) и лежат в DEFAULT_COMMISSION ниже; переменные окружения
+ * PARTNER_COMMISSION_COLD_PERCENT и PARTNER_COMMISSION_WARM_PERCENT позволяют
+ * поменять их без правки кода. Правило выплаты (после оплаты заказа
+ * заказчиком) — условие компании, а не настройка: см. PAYOUT_RULE ниже.
  */
 
 export const SITE_URL = "https://aiprofigrup.ru";
@@ -87,8 +86,6 @@ export interface PartnerTerms {
   coldPercent: string;
   warmPercent: string;
   managerContact: string;
-  /** false, если проценты не заданы в окружении и показаны заглушки. */
-  percentsConfirmed: boolean;
 }
 
 /**
@@ -97,14 +94,14 @@ export interface PartnerTerms {
  */
 export const PAYOUT_RULE = "Комиссия выплачивается после того, как заказчик оплатил заказ.";
 
+/** Действующие ставки, подтверждены компанией 2026-09-08. */
+const DEFAULT_COMMISSION = { cold: "15", warm: "30" };
+
 export function partnerTerms(): PartnerTerms {
-  const cold = env("PARTNER_COMMISSION_COLD_PERCENT");
-  const warm = env("PARTNER_COMMISSION_WARM_PERCENT");
   return {
-    coldPercent: cold ?? "10",
-    warmPercent: warm ?? "20",
+    coldPercent: env("PARTNER_COMMISSION_COLD_PERCENT") ?? DEFAULT_COMMISSION.cold,
+    warmPercent: env("PARTNER_COMMISSION_WARM_PERCENT") ?? DEFAULT_COMMISSION.warm,
     managerContact: env("PARTNER_MANAGER_CONTACT") ?? "@ai_profigrup",
-    percentsConfirmed: Boolean(cold && warm),
   };
 }
 
@@ -135,12 +132,6 @@ export function termsText(): string {
     "",
     `<b>Вопросы по деньгам и спорным сделкам:</b> ${t.managerContact}`,
   ];
-  if (!t.percentsConfirmed) {
-    lines.push(
-      "",
-      "⚠️ <i>Проценты выше показаны по умолчанию и компанией не подтверждены. Уточните ставки у руководителя, прежде чем на них рассчитывать.</i>",
-    );
-  }
   return lines.join("\n");
 }
 

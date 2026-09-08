@@ -77,7 +77,7 @@ Tailwind 4, Vite. Деплой — Timeweb Cloud Apps, есть конфиг и 
   холодный.
 - Правило «комиссия выплачивается после того, как заказчик оплатил заказ» —
   условие компании, зашито константой `PAYOUT_RULE` в `partner-training.ts`.
-- Сами проценты — переменные `PARTNER_COMMISSION_COLD_PERCENT` и
-  `PARTNER_COMMISSION_WARM_PERCENT`. Пока не заданы, бот показывает значения по
-  умолчанию с пометкой, что компания их не подтверждала — **до раздачи бота
-  партнёрам их нужно проставить**.
+- Ставки подтверждены компанией 2026-09-08: 15% за холодный лид, 30% за тёплый.
+  Лежат в `DEFAULT_COMMISSION` (`partner-training.ts`), переменные
+  `PARTNER_COMMISSION_COLD_PERCENT` и `PARTNER_COMMISSION_WARM_PERCENT` нужны
+  только чтобы поменять их без правки кода.
