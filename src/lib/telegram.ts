@@ -5,7 +5,11 @@
 // (та же категория сетевой блокировки, что и с openrouter.ai — см. api/chat.ts).
 // TELEGRAM_API_BASE позволяет направить трафик через внешний релей
 // (Cloudflare Worker, прозрачно проксирующий на api.telegram.org).
-const API_BASE = process.env.TELEGRAM_API_BASE ?? "https://api.telegram.org";
+// Пустая строка в переменной — это «не задано», а не «ходить в никуда»:
+// в панелях хостинга переменную легко создать без значения.
+const API_BASE = process.env.TELEGRAM_API_BASE?.trim()
+  ? process.env.TELEGRAM_API_BASE.trim().replace(/\/$/, "")
+  : "https://api.telegram.org";
 
 // Ботов в проекте два, и токены у них разные: основной принимает заявки с
 // сайта, партнёрский (`src/lib/partner-bot.ts`) обучает партнёров. Поэтому

@@ -107,6 +107,47 @@
   релей из `TELEGRAM_API_BASE` (см. `CLAUDE.md`). Это касается и партнёрского
   бота: если релей лёг, бот замолчит.
 
+## Если Telegram недоступен с сервера
+
+С боевого IP Timeweb (зона РУ) `api.telegram.org` закрыт. Симптом: любой вызов
+Telegram падает с `Telegram API <метод>: не удалось соединиться с
+api.telegram.org (...)`, бот принимает сообщения, но молчит в ответ.
+
+Проверка занимает один запрос:
+
+```
+https://aiprofigrup.ru/api/telegram/partner?secret=<секрет>&action=ping
+```
+
+Если в ответе `"apiHost": "api.telegram.org"`, релей не подключён: переменная
+`TELEGRAM_API_BASE` пустая или отсутствует. Значение должно быть адресом
+прокси-релея без завершающего слэша, например `https://tg-relay.example.workers.dev`.
+Код дописывает к нему `/bot<токен>/<метод>` сам.
+
+Простейший релей — Cloudflare Worker, который прозрачно проксирует запрос:
+
+```js
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (!url.pathname.startsWith("/bot")) return new Response("Not found", { status: 404 });
+    return fetch(`https://api.telegram.org${url.pathname}${url.search}`, {
+      method: request.method,
+      headers: { "Content-Type": request.headers.get("content-type") ?? "application/json" },
+      body: request.method === "POST" ? await request.arrayBuffer() : undefined,
+    });
+  },
+};
+```
+
+Отдельная авторизация ему не нужна: без токена бота в пути релей бесполезен, а
+токен и так знает только приложение. Если Cloudflare с сервера тоже недоступен
+(Роскомнадзор периодически душит его в РФ), тот же прокси поднимается на любом
+VPS вне зоны РУ, хоть на nginx с `proxy_pass https://api.telegram.org;`.
+
+Входящие апдейты через релей не идут: их Telegram сам присылает на вебхук
+сайта, а вход в РФ не блокируется. Релей нужен только для исходящих ответов.
+
 ## Что править чаще всего
 
 - Тексты уроков, скриптов и возражений — `src/lib/partner-training.ts`.
