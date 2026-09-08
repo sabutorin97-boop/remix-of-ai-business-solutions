@@ -56,8 +56,9 @@ Tailwind 4, Vite. Деплой — Timeweb Cloud Apps, есть конфиг и 
 
 Кабинет партнёра в Telegram: обучение, каталог 42 ниш, скрипты, возражения и
 передача клиентов в студию. Отдельного сервиса нет — вебхук живёт в этом же
-приложении, роут `src/routes/api/telegram/partner.ts`. Инструкция по запуску и
-переменным — `PARTNER_BOT.md`.
+приложении, роут `src/routes/api/telegram/partner.ts`. Бот —
+`@AIProfigrupPartner_bot` (создан 2026-09-08, отдельный от бота заявок
+`@AiProfiGrup_bot`). Инструкция по запуску и переменным — `PARTNER_BOT.md`.
 
 - Логика — `src/lib/partner-bot.ts`, контент — `src/lib/partner-training.ts`,
   данные каталога — `src/lib/partner-catalog.ts`, партнёры в S3 —
