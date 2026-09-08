@@ -5,7 +5,11 @@
 // ключи доступа к бакету).
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
-export type LeadSource = "contact_form" | "lead_magnet" | "quiz" | "calculator" | "max_chat";
+// "partner" — клиент, переданный партнёром через партнёрского Telegram-бота
+// (`src/lib/partner-bot.ts`). В zod-схеме /api/lead его намеренно нет:
+// с сайта такой источник прийти не может.
+export type LeadSource =
+  "contact_form" | "lead_magnet" | "quiz" | "calculator" | "max_chat" | "partner";
 export type FunnelStatus = "new" | "contacted" | "qualified" | "proposal_sent" | "won" | "lost";
 
 export interface Lead {

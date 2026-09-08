@@ -28,6 +28,7 @@ const SOURCE_LABELS: Record<LeadSource, string> = {
   quiz: "Квиз",
   calculator: "Калькулятор",
   max_chat: "Чат Макс",
+  partner: "Партнёр (Telegram-бот)",
 };
 
 function ownerNotificationText(lead: {
