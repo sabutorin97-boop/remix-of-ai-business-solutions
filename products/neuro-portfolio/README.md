@@ -157,9 +157,14 @@ python demo/build_demo.py site/
 витрине: у клиента страница собирается одной темой и панели не имеет.
 
 Витрина выкладывается на GitHub Pages через `.github/workflows/demo-pages.yml`
-при изменениях в `products/` на ветке `main`. Адрес сайта:
-<https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/>.
-Pages включает сам workflow, в настройки репозитория заходить не нужно.
+при изменениях в `products/` на ветке `main`. Собранная статика лежит в ветке
+`gh-pages`, её и отдаёт Pages:
+
+- салон красоты — <https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/>
+- автосервис — <https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/garage/>
+
+Ветку `gh-pages` руками не правят: всё меняется в `products/`, результат
+приезжает туда сборкой.
 
 Новая ниша добавляется так: кладёте JSON рядом с `demo/beauty.json` и
 дописываете строку в список `DEMOS` внутри `demo/build_demo.py`.
