@@ -1,0 +1,63 @@
+{#
+  Кейсы — ядро страницы. Схема одна на все: боль → что сделали → результат
+  → цифры. Картинка, ссылка на живой проект и цитата необязательны.
+#}
+<section class="section section--cases" id="cases" aria-labelledby="cases-title">
+  <div class="wrap">
+    <h2 class="section__title" id="cases-title">Кейсы</h2>
+    <div class="cases">
+      {% for case in cases %}
+      <article class="case{% if case.image %} case--media{% endif %}" id="{{ case.id }}">
+        {% if case.image %}
+        <div class="case__media">
+          <img src="{{ case.image }}" alt="{{ case.image_alt or case.client or 'Скриншот проекта' }}"
+               loading="lazy" decoding="async"
+               {% if case.size.width %}width="{{ case.size.width }}" height="{{ case.size.height }}"{% endif %}>
+        </div>
+        {% endif %}
+        <div class="case__body">
+          <h3 class="case__title">{{ case.client or case.niche or 'Проект' }}</h3>
+          {% if case.niche and case.client %}
+          <p class="case__niche">{{ case.niche }}</p>
+          {% endif %}
+
+          <dl class="case__story">
+            <dt>Было</dt>
+            <dd>{{ case.pain }}</dd>
+            <dt>Сделали</dt>
+            <dd>{{ case.solution }}</dd>
+            <dt>Стало</dt>
+            <dd>{{ case.result }}</dd>
+          </dl>
+
+          {% if case.numbers %}
+          <ul class="figures">
+            {% for number in case.numbers %}
+            <li class="figures__item">
+              <span class="figures__value">{{ number.value }}</span>
+              <span class="figures__label">{{ number.label }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+
+          {% if case.quote %}
+          <figure class="case__quote">
+            <blockquote><p>{{ case.quote }}</p></blockquote>
+            {% if case.quote_author %}
+            <figcaption>{{ case.quote_author }}</figcaption>
+            {% endif %}
+          </figure>
+          {% endif %}
+
+          {% if case.url %}
+          <p class="case__link">
+            <a class="link" href="{{ case.url }}" rel="noopener">Посмотреть проект</a>
+          </p>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

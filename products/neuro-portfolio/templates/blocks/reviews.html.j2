@@ -1,0 +1,24 @@
+{# Отзывы. Массив пуст — блока нет. #}
+{% if reviews %}
+<section class="section section--reviews" id="reviews" aria-labelledby="reviews-title">
+  <div class="wrap">
+    <h2 class="section__title" id="reviews-title">{{ reviews_title }}</h2>
+    <div class="reviews">
+      {% for review in reviews %}
+      <figure class="review">
+        <blockquote class="review__text"><p>{{ review.text }}</p></blockquote>
+        <figcaption class="review__author">
+          {% if review.photo %}
+          <img class="review__photo" src="{{ review.photo }}" alt="" loading="lazy" width="44" height="44">
+          {% endif %}
+          <span>
+            <span class="review__name">{{ review.author }}</span>
+            {% if review.role %}<span class="review__role">{{ review.role }}</span>{% endif %}
+          </span>
+        </figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

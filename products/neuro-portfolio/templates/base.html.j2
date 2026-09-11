@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="{{ lang }}" class="{{ theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ meta.title }}</title>
+  <meta name="description" content="{{ meta.description }}">
+  {% if meta.domain %}
+  <link rel="canonical" href="{{ meta.domain }}">
+  {% endif %}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ meta.title }}">
+  <meta property="og:description" content="{{ meta.description }}">
+  <meta property="og:locale" content="ru_RU">
+  {% if og_image %}
+  <meta property="og:image" content="{{ og_image }}">
+  {% endif %}
+  {% if brand.logo %}
+  <link rel="icon" href="{{ brand.logo }}">
+  {% endif %}
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">{{ jsonld | safe }}</script>
+</head>
+<body>
+  <a class="skip" href="#main">К содержанию</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="topbar__brand" href="#main">
+        {% if brand.logo %}<img class="topbar__logo" src="{{ brand.logo }}" alt="" width="28" height="28">{% endif %}
+        <span>{{ brand.name }}</span>
+      </a>
+      <nav class="topbar__nav" aria-label="Разделы страницы">
+        <a href="#cases">Кейсы</a>
+        {% if faq_items %}<a href="#faq">Вопросы</a>{% endif %}
+        <a href="#contact">Контакты</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    {% include "blocks/hero.html.j2" %}
+    {% include "blocks/approach.html.j2" %}
+    {% include "blocks/cases.html.j2" %}
+    {% include "blocks/numbers.html.j2" %}
+    {% include "blocks/reviews.html.j2" %}
+    {% include "faq.html.j2" %}
+    {% include "blocks/cta.html.j2" %}
+  </main>
+
+  {% include "blocks/footer.html.j2" %}
+
+  <script src="script.js" defer></script>
+</body>
+</html>

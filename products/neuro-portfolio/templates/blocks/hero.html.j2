@@ -1,0 +1,23 @@
+{# Первый экран: одна мысль, одно действие. Слайдеров здесь нет. #}
+<section class="hero">
+  <div class="wrap hero__inner{% if hero.media %} hero__inner--media{% endif %}">
+    <div class="hero__text">
+      <h1 class="hero__headline">{{ hero.headline }}</h1>
+      <p class="hero__subline">{{ hero.subline }}</p>
+      <p class="hero__action">
+        <a class="button button--primary" href="{{ hero.cta_url }}">{{ hero.cta_text }}</a>
+      </p>
+      {% if contacts.primary %}
+      <p class="hero__aside">Или напишите сразу:
+        <a class="link" href="{{ contacts.primary.url }}">{{ contacts.primary.text }}</a>
+      </p>
+      {% endif %}
+    </div>
+    {% if hero.media %}
+    <div class="hero__media">
+      <img src="{{ hero.media }}" alt="{{ hero.media_alt or '' }}" loading="eager" decoding="async"
+           {% if hero_media_size.width %}width="{{ hero_media_size.width }}" height="{{ hero_media_size.height }}"{% endif %}>
+    </div>
+    {% endif %}
+  </div>
+</section>

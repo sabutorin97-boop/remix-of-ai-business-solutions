@@ -1,0 +1,73 @@
+/*
+  Тема C «Ночь». Тёмный синий фон, тёплый песочный акцент, средняя плотность.
+  Неона здесь нет: контраст держится на тоне, а не на кислотном цвете.
+*/
+
+:root {
+  /* Цвет */
+  --bg: #141c25;
+  --bg-alt: #0f161d;
+  --text: #e9eef3;
+  --text-muted: #a3b1bf;
+  --accent: #e3b96f;
+  --accent-strong: #f0cd8c;
+  --accent-soft: #3a4351;
+  --accent-text: #16202b;
+  --line: #2a3542;
+  --line-strong: #3d4b5a;
+  --focus: #e3b96f;
+  --danger: #f08a86;
+  --input-bg: #101820;
+
+  /* Геометрия */
+  --radius: 10px;
+  --radius-small: 8px;
+  --line-width: 1px;
+  --focus-width: 2px;
+  --section-divider-width: 1px;
+
+  /* Карточки */
+  --card-bg: #1a242f;
+  --card-border: #26313d;
+  --card-border-width: 1px;
+  --card-radius: 12px;
+  --card-padding: 1.7rem;
+  --card-shadow: none;
+  --case-gap: 1.9rem;
+  --case-media-columns: 1.15fr 0.85fr;
+  --case-rule-width: 0;
+  --case-rule-gap: 0;
+
+  /* Плотность */
+  --wrap-width: 68rem;
+  --gutter: 1.15rem;
+  --section-gap: 4.4rem;
+  --section-gap-inner: 2.5rem;
+  --hero-gap: 3.6rem;
+  --block-gap: 1.35rem;
+  --faq-gap: 1.15rem;
+
+  /* Типографика */
+  --font-head: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --weight-head: 700;
+  --weight-body: 400;
+  --weight-button: 600;
+  --weight-figure: 700;
+  --tracking-head: -0.02em;
+  --line-height: 1.6;
+  --line-height-head: 1.18;
+  --size-body: 1.02rem;
+  --size-lead: 1.15rem;
+  --size-h1: clamp(2rem, 1.3rem + 3.2vw, 3.3rem);
+  --size-h2: clamp(1.5rem, 1.15rem + 1.5vw, 2.1rem);
+  --size-h3: clamp(1.2rem, 1.05rem + 0.7vw, 1.45rem);
+  --size-figure: 1.9rem;
+
+  /* Кнопка и движение */
+  --button-size: 1rem;
+  --button-padding: 0.8em 1.5em;
+  --button-radius: 8px;
+  --motion-fast: 150ms ease;
+  --motion-slow: 260ms ease;
+}

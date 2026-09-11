@@ -1,0 +1,73 @@
+/*
+  Тема A «Сетка». Холодная, плотная, геометричная, типографика спокойная.
+  Карточки держатся на тонкой рамке: теней в теме нет вовсе.
+*/
+
+:root {
+  /* Цвет */
+  --bg: #ffffff;
+  --bg-alt: #f1f4f6;
+  --text: #14181d;
+  --text-muted: #57626e;
+  --accent: #15607a;
+  --accent-strong: #0f4a5e;
+  --accent-soft: #cfe0e7;
+  --accent-text: #ffffff;
+  --line: #d7dde2;
+  --line-strong: #b6c0c8;
+  --focus: #15607a;
+  --danger: #a3232b;
+  --input-bg: #ffffff;
+
+  /* Геометрия */
+  --radius: 3px;
+  --radius-small: 2px;
+  --line-width: 1px;
+  --focus-width: 2px;
+  --section-divider-width: 1px;
+
+  /* Карточки */
+  --card-bg: transparent;
+  --card-border: #d7dde2;
+  --card-border-width: 1px;
+  --card-radius: 3px;
+  --card-padding: 1.3rem;
+  --card-shadow: none;
+  --case-gap: 1.5rem;
+  --case-media-columns: 0.85fr 1.15fr;
+  --case-rule-width: 0;
+  --case-rule-gap: 0;
+
+  /* Плотность */
+  --wrap-width: 66rem;
+  --gutter: 1rem;
+  --section-gap: 3.4rem;
+  --section-gap-inner: 2rem;
+  --hero-gap: 2.6rem;
+  --block-gap: 1.1rem;
+  --faq-gap: 1rem;
+
+  /* Типографика */
+  --font-head: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --weight-head: 600;
+  --weight-body: 400;
+  --weight-button: 600;
+  --weight-figure: 600;
+  --tracking-head: -0.01em;
+  --line-height: 1.55;
+  --line-height-head: 1.22;
+  --size-body: 1rem;
+  --size-lead: 1.09rem;
+  --size-h1: clamp(1.8rem, 1.25rem + 2.2vw, 2.6rem);
+  --size-h2: clamp(1.35rem, 1.1rem + 1.1vw, 1.8rem);
+  --size-h3: clamp(1.15rem, 1rem + 0.6vw, 1.35rem);
+  --size-figure: 1.6rem;
+
+  /* Кнопка и движение */
+  --button-size: 1rem;
+  --button-padding: 0.72em 1.3em;
+  --button-radius: 3px;
+  --motion-fast: 140ms ease;
+  --motion-slow: 240ms ease;
+}

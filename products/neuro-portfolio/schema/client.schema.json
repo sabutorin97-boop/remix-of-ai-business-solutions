@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aiprofigrup.ru/schema/neuro-portfolio/client.schema.json",
+  "title": "Нейро-Портфолио — данные клиента",
+  "type": "object",
+  "required": ["meta", "brand", "hero", "cases", "contacts"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "title": "мета-данные страницы",
+      "required": ["title", "description", "theme"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 70,
+          "title": "заголовок вкладки и выдачи"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 200,
+          "title": "описание для выдачи"
+        },
+        "domain": {
+          "type": "string",
+          "title": "домен сайта",
+          "examples": ["https://estetika-studio.ru"]
+        },
+        "theme": {
+          "type": "string",
+          "title": "тема оформления",
+          "enum": ["theme-a", "theme-b", "theme-c", "theme-d"]
+        },
+        "lang": {
+          "type": "string",
+          "title": "язык страницы",
+          "default": "ru"
+        }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "title": "бренд",
+      "required": ["name", "tagline"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "title": "название" },
+        "tagline": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 160,
+          "title": "короткое описание, оно же description в разметке"
+        },
+        "logo": { "type": ["string", "null"], "title": "путь к логотипу" },
+        "social": {
+          "type": "array",
+          "title": "ссылки на соцсети для sameAs",
+          "items": { "type": "string" }
+        },
+        "accent_override": {
+          "type": ["string", "null"],
+          "title": "свой акцентный цвет вместо цвета темы",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        }
+      }
+    },
+    "hero": {
+      "type": "object",
+      "title": "первый экран",
+      "required": ["headline", "subline", "cta_text", "cta_url"],
+      "additionalProperties": false,
+      "properties": {
+        "headline": { "type": "string", "minLength": 10, "title": "главная мысль" },
+        "subline": { "type": "string", "minLength": 20, "title": "пояснение" },
+        "cta_text": { "type": "string", "minLength": 3, "title": "надпись на кнопке" },
+        "cta_url": { "type": "string", "minLength": 3, "title": "адрес кнопки" },
+        "media": { "type": ["string", "null"], "title": "картинка первого экрана" },
+        "media_alt": { "type": ["string", "null"], "title": "описание картинки" }
+      }
+    },
+    "approach": {
+      "type": "array",
+      "title": "подход к работе",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["title", "text"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 3, "title": "тезис" },
+          "text": { "type": "string", "minLength": 10, "title": "пояснение" }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "title": "кейсы",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["pain", "solution", "result"],
+        "additionalProperties": false,
+        "properties": {
+          "client": { "type": ["string", "null"], "title": "клиент" },
+          "niche": { "type": ["string", "null"], "title": "ниша" },
+          "pain": { "type": "string", "minLength": 10, "title": "боль" },
+          "solution": { "type": "string", "minLength": 10, "title": "что сделали" },
+          "result": { "type": "string", "minLength": 10, "title": "результат" },
+          "numbers": {
+            "type": "array",
+            "title": "цифры кейса",
+            "items": {
+              "type": "object",
+              "required": ["value", "label"],
+              "additionalProperties": false,
+              "properties": {
+                "value": { "type": "string", "minLength": 1, "title": "значение" },
+                "label": { "type": "string", "minLength": 2, "title": "подпись" }
+              }
+            }
+          },
+          "image": { "type": ["string", "null"], "title": "скриншот или фото" },
+          "image_alt": { "type": ["string", "null"], "title": "описание картинки" },
+          "url": { "type": ["string", "null"], "title": "ссылка на живой проект" },
+          "quote": { "type": ["string", "null"], "title": "цитата клиента" },
+          "quote_author": { "type": ["string", "null"], "title": "автор цитаты" }
+        }
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "title": "отзывы",
+      "items": {
+        "type": "object",
+        "required": ["author", "text"],
+        "additionalProperties": false,
+        "properties": {
+          "author": { "type": "string", "minLength": 2, "title": "автор" },
+          "role": { "type": ["string", "null"], "title": "должность или бизнес" },
+          "text": { "type": "string", "minLength": 20, "title": "текст отзыва" },
+          "photo": { "type": ["string", "null"], "title": "фото автора" }
+        }
+      }
+    },
+    "faq": {
+      "type": "array",
+      "title": "вопросы и ответы",
+      "items": {
+        "type": "object",
+        "required": ["q", "a"],
+        "additionalProperties": false,
+        "properties": {
+          "q": { "type": "string", "minLength": 5, "title": "вопрос" },
+          "a": { "type": "string", "minLength": 20, "title": "ответ" }
+        }
+      }
+    },
+    "contacts": {
+      "type": "object",
+      "title": "контакты",
+      "additionalProperties": false,
+      "description": "Заполните хотя бы один контакт: telegram, phone, whatsapp или email. Это проверяет сборщик.",
+      "properties": {
+        "telegram": { "type": ["string", "null"], "title": "телеграм" },
+        "phone": { "type": ["string", "null"], "title": "телефон" },
+        "whatsapp": { "type": ["string", "null"], "title": "whatsapp" },
+        "email": { "type": ["string", "null"], "title": "почта" },
+        "address": { "type": ["string", "null"], "title": "адрес" },
+        "hours": { "type": ["string", "null"], "title": "часы работы" }
+      }
+    },
+    "cta": {
+      "type": "object",
+      "title": "блок действия",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": ["string", "null"], "title": "заголовок" },
+        "text": { "type": ["string", "null"], "title": "пояснение" },
+        "button": { "type": ["string", "null"], "title": "надпись на кнопке" },
+        "url": { "type": ["string", "null"], "title": "адрес кнопки" },
+        "form": { "type": "boolean", "title": "показывать форму", "default": true }
+      }
+    },
+    "legal": {
+      "type": "object",
+      "title": "реквизиты",
+      "additionalProperties": false,
+      "properties": {
+        "entity": { "type": ["string", "null"], "title": "название лица" },
+        "inn": { "type": ["string", "null"], "title": "ИНН" },
+        "privacy_contact": { "type": ["string", "null"], "title": "контакт для запросов по данным" }
+      }
+    }
+  }
+}

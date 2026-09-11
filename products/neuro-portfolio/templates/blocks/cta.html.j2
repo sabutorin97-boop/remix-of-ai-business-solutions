@@ -1,0 +1,55 @@
+{#
+  Действие. Кнопка ведёт в переписку, форма собирает заявку без бэкенда:
+  скрипт складывает текст и открывает почту или Telegram.
+#}
+<section class="section section--cta" id="contact" aria-labelledby="cta-title">
+  <div class="wrap cta">
+    <div class="cta__text">
+      <h2 class="section__title" id="cta-title">{{ cta.title }}</h2>
+      <p class="cta__lead">{{ cta.text }}</p>
+      <p class="cta__action">
+        <a class="button button--primary" href="{{ cta.url }}">{{ cta.button }}</a>
+      </p>
+      {% if contacts.channels %}
+      <ul class="contacts">
+        {% for item in contacts.channels %}
+        <li class="contacts__item">
+          {% if icons[item.kind] %}<span class="contacts__icon" aria-hidden="true">{{ icons[item.kind] | safe }}</span>{% endif %}
+          <a class="link" href="{{ item.url }}">{{ item.text }}</a>
+          <span class="contacts__label">{{ item.label }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% if contacts.hours %}
+      <p class="cta__hours">{{ contacts.hours }}</p>
+      {% endif %}
+    </div>
+
+    {% if cta.form %}
+    <form class="form" data-lead-form
+          data-email="{{ contacts.email }}"
+          data-telegram="{{ contacts.telegram_url }}"
+          data-brand="{{ brand.name }}"
+          data-action="{{ cta.button }}"
+          novalidate>
+      <div class="field">
+        <label class="field__label" for="lead-name">Как к вам обращаться</label>
+        <input class="field__input" id="lead-name" name="name" type="text" autocomplete="name" required>
+        <span class="field__error" id="lead-name-error" hidden>Напишите имя — иначе непонятно, к кому обращаться</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="lead-contact">Телефон, почта или телеграм</label>
+        <input class="field__input" id="lead-contact" name="contact" type="text" required>
+        <span class="field__error" id="lead-contact-error" hidden>Оставьте контакт, иначе ответить некуда</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="lead-task">Что за задача</label>
+        <textarea class="field__input" id="lead-task" name="task" rows="3"></textarea>
+      </div>
+      <button class="button button--primary" type="submit">{{ cta.button }}</button>
+      <p class="form__status" data-form-status role="status" aria-live="polite"></p>
+    </form>
+    {% endif %}
+  </div>
+</section>

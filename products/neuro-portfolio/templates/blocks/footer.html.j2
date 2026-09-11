@@ -1,0 +1,26 @@
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div class="footer__brand">
+      <p class="footer__name">{{ brand.name }}</p>
+      <p class="footer__tagline">{{ brand.tagline }}</p>
+    </div>
+
+    {% if contacts.channels or contacts.address %}
+    <div class="footer__contacts">
+      <ul class="footer__list">
+        {% for item in contacts.channels %}
+        <li><a class="link" href="{{ item.url }}">{{ item.text }}</a></li>
+        {% endfor %}
+        {% if contacts.address %}<li>{{ contacts.address }}</li>{% endif %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="footer__legal">
+      {% if legal.entity %}<p>{{ legal.entity }}</p>{% endif %}
+      {% if legal.inn %}<p>ИНН {{ legal.inn }}</p>{% endif %}
+      <p><a class="link" href="privacy.html">Политика конфиденциальности</a></p>
+      <p class="footer__year">© {{ year }}</p>
+    </div>
+  </div>
+</footer>
