@@ -1,0 +1,73 @@
+/*
+  Тема B «Воздух». Тёплая, разреженная, мягкая, типографика крупная.
+  Заголовки — антиква, карточка отделяется от фона тоном, а не тенью.
+*/
+
+:root {
+  /* Цвет */
+  --bg: #faf7f5;
+  --bg-alt: #f2ece8;
+  --text: #2a211e;
+  --text-muted: #6e625c;
+  --accent: #7a2e4e;
+  --accent-strong: #5e2139;
+  --accent-soft: #e6d3db;
+  --accent-text: #ffffff;
+  --line: #e4dad4;
+  --line-strong: #cfc0b8;
+  --focus: #7a2e4e;
+  --danger: #9e2b2b;
+  --input-bg: #ffffff;
+
+  /* Геометрия */
+  --radius: 20px;
+  --radius-small: 14px;
+  --line-width: 1px;
+  --focus-width: 3px;
+  --section-divider-width: 0;
+
+  /* Карточки */
+  --card-bg: #ffffff;
+  --card-border: transparent;
+  --card-border-width: 0;
+  --card-radius: 24px;
+  --card-padding: 2rem;
+  --card-shadow: none;
+  --case-gap: 2.4rem;
+  --case-media-columns: 1fr 1fr;
+  --case-rule-width: 0;
+  --case-rule-gap: 0;
+
+  /* Плотность */
+  --wrap-width: 62rem;
+  --gutter: 1.25rem;
+  --section-gap: 5.5rem;
+  --section-gap-inner: 3rem;
+  --hero-gap: 4.5rem;
+  --block-gap: 1.6rem;
+  --faq-gap: 1.4rem;
+
+  /* Типографика */
+  --font-head: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-body: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --weight-head: 400;
+  --weight-body: 400;
+  --weight-button: 500;
+  --weight-figure: 400;
+  --tracking-head: -0.015em;
+  --line-height: 1.68;
+  --line-height-head: 1.15;
+  --size-body: 1.05rem;
+  --size-lead: 1.25rem;
+  --size-h1: clamp(2.15rem, 1.5rem + 2.9vw, 3.4rem);
+  --size-h2: clamp(1.6rem, 1.25rem + 1.6vw, 2.3rem);
+  --size-h3: clamp(1.3rem, 1.1rem + 0.9vw, 1.7rem);
+  --size-figure: 2.1rem;
+
+  /* Кнопка и движение */
+  --button-size: 1.1rem;
+  --button-padding: 0.95em 1.9em;
+  --button-radius: 999px;
+  --motion-fast: 180ms ease;
+  --motion-slow: 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}

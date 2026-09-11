@@ -1,0 +1,19 @@
+{#
+  Итог по всем кейсам. Значения считает генератор из данных кейсов —
+  руками сюда ничего не вписывается.
+#}
+{% if summary | length > 1 %}
+<section class="section section--summary" aria-labelledby="summary-title">
+  <div class="wrap">
+    <h2 class="section__title" id="summary-title">Итог по всем проектам</h2>
+    <ul class="figures figures--wide">
+      {% for item in summary %}
+      <li class="figures__item">
+        <span class="figures__value">{{ item.value }}</span>
+        <span class="figures__label">{{ item.label }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}

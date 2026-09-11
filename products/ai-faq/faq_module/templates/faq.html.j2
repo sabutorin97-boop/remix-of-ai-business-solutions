@@ -1,0 +1,33 @@
+{#
+  Аккордеон FAQ. Работает без JS: <details> раскрывается сам, с клавиатуры
+  доступен нативно. Скрипт добавляет только плавность раскрытия.
+  Текст здесь обязан дословно совпадать с текстом в JSON-LD.
+#}
+{% if faq_items %}
+<section class="section section--faq" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 class="section__title" id="faq-title">{{ faq_title }}</h2>
+    <div class="faq" data-faq>
+      {% for item in faq_items %}
+      <details class="faq__item" id="{{ item.id }}">
+        <summary class="faq__question">
+          <span class="faq__question-text">{{ item.question }}</span>
+          <span class="faq__sign" aria-hidden="true"></span>
+        </summary>
+        <div class="faq__panel">
+          <div class="faq__answer">
+            <p>{{ item.answer }}</p>
+          </div>
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+    {% if faq_help_text %}
+    <p class="faq__help">
+      {{ faq_help_text }}
+      {%- if faq_help_url %} <a class="link" href="{{ faq_help_url }}">{{ faq_help_link_text }}</a>{% endif %}
+    </p>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

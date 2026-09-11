@@ -1,0 +1,16 @@
+{# Подход: 3–4 тезиса. Нет данных — секции нет, вёрстка не разъезжается. #}
+{% if approach %}
+<section class="section section--approach" id="approach" aria-labelledby="approach-title">
+  <div class="wrap">
+    <h2 class="section__title" id="approach-title">Как строится работа</h2>
+    <div class="approach">
+      {% for item in approach %}
+      <div class="approach__item">
+        <h3 class="approach__title">{{ item.title }}</h3>
+        <p class="approach__text">{{ item.text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

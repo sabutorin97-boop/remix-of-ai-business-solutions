@@ -1,0 +1,105 @@
+/* Аккордеон FAQ. Цвета и радиусы берутся из темы, вёрстка одна на все темы. */
+
+.faq {
+  border-top: var(--line-width) solid var(--line);
+}
+
+.faq__item {
+  border-bottom: var(--line-width) solid var(--line);
+}
+
+.faq__question {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: var(--faq-gap) 0;
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: var(--size-lead);
+  font-weight: var(--weight-head);
+  line-height: 1.35;
+  color: var(--text);
+  list-style: none;
+}
+
+.faq__question::-webkit-details-marker {
+  display: none;
+}
+
+.faq__question:hover {
+  color: var(--accent);
+}
+
+.faq__question:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Знак «плюс»: две линии, вторая прячется при раскрытии. Иконочных шрифтов нет. */
+.faq__sign {
+  position: relative;
+  flex: 0 0 auto;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: 0.35em;
+}
+
+.faq__sign::before,
+.faq__sign::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: var(--line-width);
+  background: currentColor;
+  transition: transform var(--motion-fast);
+}
+
+.faq__sign::after {
+  transform: rotate(90deg);
+}
+
+.faq__item[open] .faq__sign::after {
+  transform: rotate(0deg);
+}
+
+.faq__panel {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.faq__answer {
+  overflow: hidden;
+  padding-bottom: var(--faq-gap);
+  max-width: 62ch;
+  color: var(--text-muted);
+}
+
+.faq__answer p {
+  margin: 0;
+}
+
+/* Состояние анимации ставит скрипт: без него раскрытие мгновенное и рабочее. */
+.faq__item[data-animating] .faq__panel {
+  transition: grid-template-rows var(--motion-slow);
+}
+
+.faq__item[data-collapsed] .faq__panel {
+  grid-template-rows: 0fr;
+}
+
+.faq__help {
+  margin: calc(var(--faq-gap) * 1.2) 0 0;
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq__item[data-animating] .faq__panel {
+    transition: none;
+  }
+
+  .faq__sign::before,
+  .faq__sign::after {
+    transition: none;
+  }
+}

@@ -1,0 +1,73 @@
+/*
+  Тема D «Печать». Газетная полоса: белый лист, крупная антиква, синий
+  акцент. Карточек нет вовсе — блоки разделяются линиями, углы прямые.
+*/
+
+:root {
+  /* Цвет */
+  --bg: #ffffff;
+  --bg-alt: #ffffff;
+  --text: #0f1012;
+  --text-muted: #55585e;
+  --accent: #1a3fcb;
+  --accent-strong: #12309f;
+  --accent-soft: #c9d3f5;
+  --accent-text: #ffffff;
+  --line: #1a1b1e;
+  --line-strong: #1a1b1e;
+  --focus: #1a3fcb;
+  --danger: #b0122a;
+  --input-bg: #ffffff;
+
+  /* Геометрия */
+  --radius: 0;
+  --radius-small: 0;
+  --line-width: 1px;
+  --focus-width: 2px;
+  --section-divider-width: 2px;
+
+  /* Карточки: их нет, работает линия между кейсами */
+  --card-bg: transparent;
+  --card-border: transparent;
+  --card-border-width: 0;
+  --card-radius: 0;
+  --card-padding: 0;
+  --card-shadow: none;
+  --case-gap: 2.6rem;
+  --case-media-columns: 1fr 1.3fr;
+  --case-rule-width: 1px;
+  --case-rule-gap: 2.6rem;
+
+  /* Плотность */
+  --wrap-width: 58rem;
+  --gutter: 1.2rem;
+  --section-gap: 4rem;
+  --section-gap-inner: 2.4rem;
+  --hero-gap: 3rem;
+  --block-gap: 1.25rem;
+  --faq-gap: 1.1rem;
+
+  /* Типографика */
+  --font-head: "PT Serif", Georgia, "Times New Roman", serif;
+  --font-body: "PT Sans", system-ui, "Segoe UI", Arial, sans-serif;
+  --weight-head: 700;
+  --weight-body: 400;
+  --weight-button: 700;
+  --weight-figure: 700;
+  --tracking-head: -0.02em;
+  --line-height: 1.6;
+  --line-height-head: 1.08;
+  --size-body: 1.05rem;
+  --size-lead: 1.2rem;
+  --size-h1: clamp(2.2rem, 1.5rem + 3.2vw, 3.6rem);
+  --size-h2: clamp(1.6rem, 1.25rem + 1.7vw, 2.4rem);
+  --size-h3: clamp(1.25rem, 1.1rem + 0.8vw, 1.6rem);
+  --size-figure: 2.2rem;
+
+  /* Кнопка и движение */
+  --button-size: 1.02rem;
+  --button-padding: 0.78em 1.45em;
+  --button-radius: 0;
+  --motion-fast: 120ms linear;
+  --motion-slow: 220ms ease;
+}
