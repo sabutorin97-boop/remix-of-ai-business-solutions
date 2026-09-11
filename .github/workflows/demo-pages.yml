@@ -1,0 +1,61 @@
+# Публикация демо «Нейро-Портфолио» на GitHub Pages.
+# Сайт собирается из products/neuro-portfolio/demo и выкладывается по адресу
+# https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/
+#
+# Перед первым запуском в настройках репозитория нужно выбрать
+# Settings → Pages → Source: GitHub Actions.
+
+name: Демо Нейро-Портфолио
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "products/**"
+      - ".github/workflows/demo-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Собрать витрину
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Поставить Jinja2
+        run: pip install --quiet jinja2
+
+      - name: Прогнать критерии приёмки
+        run: python selftest.py
+        working-directory: products/neuro-portfolio
+
+      - name: Собрать демо
+        run: python products/neuro-portfolio/demo/build_demo.py site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Выложить на Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
