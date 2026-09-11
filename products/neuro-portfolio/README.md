@@ -159,8 +159,7 @@ python demo/build_demo.py site/
 Витрина выкладывается на GitHub Pages через `.github/workflows/demo-pages.yml`
 при изменениях в `products/` на ветке `main`. Адрес сайта:
 <https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/>.
-Перед первым запуском в настройках репозитория нужно выбрать
-Settings → Pages → Source: GitHub Actions.
+Pages включает сам workflow, в настройки репозитория заходить не нужно.
 
 Новая ниша добавляется так: кладёте JSON рядом с `demo/beauty.json` и
 дописываете строку в список `DEMOS` внутри `demo/build_demo.py`.

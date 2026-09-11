@@ -2,8 +2,8 @@
 # Сайт собирается из products/neuro-portfolio/demo и выкладывается по адресу
 # https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/
 #
-# Перед первым запуском в настройках репозитория нужно выбрать
-# Settings → Pages → Source: GitHub Actions.
+# Pages включается самим workflow (шаг configure-pages с enablement), так что
+# заходить в настройки репозитория руками не нужно.
 
 name: Демо Нейро-Портфолио
 
@@ -30,6 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Включить Pages, если ещё не включён
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/setup-python@v5
         with:
