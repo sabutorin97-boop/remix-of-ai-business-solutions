@@ -162,3 +162,12 @@ Tailwind 4, Vite. Деплой — Timeweb Cloud Apps, есть конфиг и 
   отдаёт 403), разметку проверяйте руками при выкладке.
 - ТЗ на нейро-портфолио ссылалось на готовый `products/ai-faq/`, но в
   репозитории его не было: FAQ-модуль создан вместе с генератором.
+- **Демо для клиентов живёт на GitHub Pages**: салон красоты по адресу
+  `sabutorin97-boop.github.io/remix-of-ai-business-solutions/`, автосервис —
+  в подпапке `/garage/`. Собирается `products/neuro-portfolio/demo/build_demo.py`,
+  выкладывается workflow `.github/workflows/demo-pages.yml` при изменениях в
+  `products/` на `main`. Статика лежит в ветке `gh-pages` — руками её не
+  правят. Источник Pages — именно ветка: включить режим «GitHub Actions»
+  через `configure-pages` не вышло, у `GITHUB_TOKEN` нет прав создавать
+  Pages-сайт (`Resource not accessible by integration`), а сам Pages
+  включился автоматически при появлении ветки `gh-pages`.

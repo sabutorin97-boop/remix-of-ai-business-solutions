@@ -1,9 +1,11 @@
 # Публикация демо «Нейро-Портфолио» на GitHub Pages.
-# Сайт собирается из products/neuro-portfolio/demo и выкладывается по адресу
+#
+# Сайт собирается из products/neuro-portfolio/demo и укладывается в ветку
+# gh-pages — её и отдаёт Pages по адресу
 # https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/
 #
-# Pages включается самим workflow (шаг configure-pages с enablement), так что
-# заходить в настройки репозитория руками не нужно.
+# Ветка gh-pages содержит только собранную статику, исходников в ней нет:
+# правится всё в products/, а сюда результат приезжает сам.
 
 name: Демо Нейро-Портфолио
 
@@ -16,25 +18,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: demo-pages
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Собрать витрину
+  publish:
+    name: Собрать и выложить витрину
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Включить Pages, если ещё не включён
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/setup-python@v5
         with:
@@ -47,20 +42,29 @@ jobs:
         run: python selftest.py
         working-directory: products/neuro-portfolio
 
-      - name: Собрать демо
+      - name: Собрать витрину
         run: python products/neuro-portfolio/demo/build_demo.py site/
 
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
+      - name: Выложить в ветку gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          remote="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --depth 1 --branch gh-pages "$remote" published
 
-  deploy:
-    name: Выложить на Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          # Содержимое ветки заменяется целиком, .git при этом не трогаем.
+          find published -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r site/. published/
+
+          cd published
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Витрина не изменилась, публиковать нечего."
+            exit 0
+          fi
+          git commit -q -m "Витрина демо: сборка из ${GITHUB_SHA:0:7}"
+          git push -q origin gh-pages
+          echo "Витрина обновлена."
