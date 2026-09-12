@@ -1,0 +1,329 @@
+/*
+  Стили FAQ-страницы. Страница живёт на сайте клиента, поэтому вёрстка
+  намеренно сдержанная, а всё, что отличает её от чужого дизайна, собрано
+  в переменных сверху: цвет акцента, скругления и шрифтовая пара приходят
+  из data-атрибутов, их ставит генератор по разделу `design` в JSON.
+
+  Подогнать под сайт клиента — это поправить акцент в JSON, а не CSS.
+*/
+
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f5f6f8;
+  --text: #16181d;
+  --text-muted: #5b6470;
+  --line: #e1e5ea;
+  --line-strong: #c9cfd7;
+  --accent: #1f5f8b;
+  --accent-strong: #174a6d;
+  --accent-text: #ffffff;
+  --focus: #1f5f8b;
+
+  --font-head: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --weight-head: 600;
+
+  --radius: 10px;
+  --radius-small: 8px;
+  --line-width: 1px;
+  --focus-width: 2px;
+
+  --wrap-width: 46rem;
+  --gutter: 1.15rem;
+  --section-gap: 3rem;
+  --block-gap: 1.2rem;
+  --faq-gap: 1.05rem;
+
+  --size-body: 1.03rem;
+  --size-lead: 1.15rem;
+  --size-h1: clamp(1.8rem, 1.3rem + 2.2vw, 2.5rem);
+  --size-h2: clamp(1.35rem, 1.15rem + 0.9vw, 1.7rem);
+  --line-height: 1.62;
+  --line-height-head: 1.22;
+
+  --motion-fast: 140ms ease;
+  --motion-slow: 240ms ease;
+}
+
+/* Тёмная страница: та же вёрстка, другой набор цветов. */
+[data-scheme="dark"] {
+  --bg: #14181d;
+  --bg-alt: #0f1318;
+  --text: #eceff3;
+  --text-muted: #a4afbb;
+  --line: #262d36;
+  --line-strong: #36404b;
+  --accent: #6fb3e0;
+  --accent-strong: #8cc6ee;
+  --accent-text: #10161c;
+  --focus: #6fb3e0;
+}
+
+[data-font="serif"] {
+  --font-head: Georgia, "PT Serif", "Times New Roman", serif;
+  --weight-head: 700;
+}
+
+[data-radius="sharp"] {
+  --radius: 0;
+  --radius-small: 0;
+}
+
+[data-radius="round"] {
+  --radius: 999px;
+  --radius-small: 16px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--size-body);
+  line-height: var(--line-height);
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-weight: var(--weight-head);
+  line-height: var(--line-height-head);
+  text-wrap: balance;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 3px;
+}
+
+.wrap {
+  width: min(100% - var(--gutter) * 2, var(--wrap-width));
+  margin-inline: auto;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10;
+  padding: 0.7em 1.1em;
+  background: var(--accent);
+  color: var(--accent-text);
+  text-decoration: none;
+}
+
+.skip:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  overflow-wrap: anywhere;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.75em 1.4em;
+  border: none;
+  border-radius: var(--radius-small);
+  font-family: var(--font-head);
+  font-size: var(--size-body);
+  font-weight: var(--weight-head);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+
+.button--primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.button--primary:hover {
+  background: var(--accent-strong);
+}
+
+.topbar {
+  padding-block: 1rem;
+  border-bottom: var(--line-width) solid var(--line);
+}
+
+.topbar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.5rem;
+}
+
+.topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-head);
+  font-weight: var(--weight-head);
+  text-decoration: none;
+}
+
+.topbar__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.topbar__nav {
+  color: var(--text-muted);
+}
+
+.topbar__nav a {
+  text-decoration: none;
+  border-bottom: var(--line-width) solid transparent;
+}
+
+.topbar__nav a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.intro {
+  padding-block: var(--section-gap) calc(var(--section-gap) * 0.6);
+}
+
+.intro__headline {
+  font-size: var(--size-h1);
+  margin-bottom: 0.5em;
+  max-width: 30ch;
+}
+
+.intro__text {
+  max-width: 60ch;
+  font-size: var(--size-lead);
+  color: var(--text-muted);
+}
+
+.intro__updated {
+  margin-top: 1em;
+  font-size: calc(var(--size-body) * 0.9);
+  color: var(--text-muted);
+}
+
+.section {
+  padding-block: calc(var(--section-gap) * 0.8);
+}
+
+.section__title {
+  margin-bottom: var(--block-gap);
+  font-size: var(--size-h2);
+}
+
+.section--help {
+  border-top: var(--line-width) solid var(--line);
+  background: var(--bg-alt);
+}
+
+.help {
+  display: grid;
+  gap: var(--block-gap);
+}
+
+.help__lead {
+  max-width: 52ch;
+  color: var(--text-muted);
+}
+
+.help__action {
+  margin-top: var(--block-gap);
+}
+
+.contacts {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
+.contacts__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.contacts__item--plain {
+  color: var(--text-muted);
+}
+
+.contacts__label {
+  color: var(--text-muted);
+  font-size: calc(var(--size-body) * 0.88);
+}
+
+.footer {
+  padding-block: calc(var(--section-gap) * 0.7);
+  border-top: var(--line-width) solid var(--line);
+  color: var(--text-muted);
+  font-size: calc(var(--size-body) * 0.92);
+}
+
+.footer__inner {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.footer__name {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-head);
+  font-weight: var(--weight-head);
+}
+
+.footer__year {
+  margin-top: 0.7em;
+}
+
+@media (min-width: 40em) {
+  .help {
+    grid-template-columns: 1.3fr 1fr;
+    gap: calc(var(--block-gap) * 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

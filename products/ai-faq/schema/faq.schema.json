@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aiprofigrup.ru/schema/ai-faq/faq.schema.json",
+  "title": "AI-FAQ — данные страницы вопросов и ответов",
+  "type": "object",
+  "required": ["meta", "brand", "intro", "faq"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "title": "мета-данные страницы",
+      "required": ["title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 70,
+          "title": "заголовок вкладки и выдачи"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 200,
+          "title": "описание для выдачи"
+        },
+        "url": {
+          "type": ["string", "null"],
+          "title": "адрес страницы на сайте клиента",
+          "examples": ["https://estetika-studio.ru/faq"]
+        },
+        "lang": { "type": "string", "title": "язык страницы", "default": "ru" }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "title": "бренд",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "title": "название" },
+        "tagline": { "type": ["string", "null"], "title": "одна строка о деле" },
+        "site_url": { "type": ["string", "null"], "title": "адрес сайта для ссылки «на главную»" },
+        "logo": { "type": ["string", "null"], "title": "путь к логотипу" }
+      }
+    },
+    "intro": {
+      "type": "object",
+      "title": "шапка страницы",
+      "required": ["headline"],
+      "additionalProperties": false,
+      "properties": {
+        "headline": { "type": "string", "minLength": 6, "title": "заголовок" },
+        "text": { "type": ["string", "null"], "title": "пояснение под заголовком" },
+        "updated": { "type": ["string", "null"], "title": "дата последнего обновления" }
+      }
+    },
+    "faq": {
+      "type": "array",
+      "title": "вопросы и ответы",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["q", "a"],
+        "additionalProperties": false,
+        "properties": {
+          "q": { "type": "string", "minLength": 5, "title": "вопрос" },
+          "a": { "type": "string", "minLength": 20, "title": "ответ" }
+        }
+      }
+    },
+    "cta": {
+      "type": "object",
+      "title": "блок «не нашли ответ»",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": ["string", "null"], "title": "заголовок" },
+        "text": { "type": ["string", "null"], "title": "пояснение" },
+        "button": { "type": ["string", "null"], "title": "надпись на кнопке" },
+        "url": { "type": ["string", "null"], "title": "адрес кнопки: бот, чат или мессенджер" }
+      }
+    },
+    "contacts": {
+      "type": "object",
+      "title": "контакты",
+      "additionalProperties": false,
+      "description": "Заполните хотя бы один контакт, иначе человеку некуда обратиться. Это проверяет сборщик.",
+      "properties": {
+        "telegram": { "type": ["string", "null"], "title": "телеграм" },
+        "phone": { "type": ["string", "null"], "title": "телефон" },
+        "whatsapp": { "type": ["string", "null"], "title": "whatsapp" },
+        "email": { "type": ["string", "null"], "title": "почта" },
+        "hours": { "type": ["string", "null"], "title": "часы работы" }
+      }
+    },
+    "design": {
+      "type": "object",
+      "title": "оформление",
+      "additionalProperties": false,
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "title": "светлая или тёмная страница",
+          "enum": ["light", "dark"],
+          "default": "light"
+        },
+        "accent": {
+          "type": ["string", "null"],
+          "title": "акцентный цвет под сайт клиента",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        },
+        "font": {
+          "type": "string",
+          "title": "шрифтовая пара",
+          "enum": ["sans", "serif"],
+          "default": "sans"
+        },
+        "radius": {
+          "type": "string",
+          "title": "скругления",
+          "enum": ["sharp", "soft", "round"],
+          "default": "soft"
+        }
+      }
+    },
+    "legal": {
+      "type": "object",
+      "title": "реквизиты",
+      "additionalProperties": false,
+      "properties": {
+        "entity": { "type": ["string", "null"], "title": "название лица" },
+        "inn": { "type": ["string", "null"], "title": "ИНН" }
+      }
+    }
+  }
+}

@@ -33,12 +33,24 @@ from faq_module import (  # noqa: E402  (путь настраивается в�
     normalize_faq,
     plural,
 )
+from faq_module.schema_check import (  # noqa: E402
+    DataError,
+    Naming,
+    check as check_schema,
+    human_path,
+    load_json,
+)
 
 __all__ = [
     "AI_FAQ_DIR",
+    "DataError",
     "FAQ_TEMPLATE_DIR",
+    "Naming",
     "PRODUCT_DIR",
     "FaqItem",
+    "check_schema",
+    "human_path",
+    "load_json",
     "faq_jsonld",
     "faq_script",
     "faq_styles",
