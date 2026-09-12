@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Megaphone, Send } from "lucide-react";
-import { CHANNEL_LINKS } from "@/lib/telegram-channel";
+import { channelHref } from "@/lib/telegram-channel";
 import { ymGoal } from "@/components/site/YandexMetrika";
 
 export function Footer() {
@@ -26,7 +26,7 @@ export function Footer() {
                 но в другой колонке — так они не читаются как два равных
                 варианта одного действия. */}
             <a
-              href={CHANNEL_LINKS.site}
+              href={channelHref("site", "footer")}
               target="_blank"
               rel="noreferrer"
               aria-label="Открыть Telegram-канал про AI"
@@ -40,10 +40,26 @@ export function Footer() {
           <div>
             <div className="text-sm font-semibold mb-3">Навигация</div>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/services" className="hover:text-foreground">Услуги</Link></li>
-              <li><Link to="/cases" className="hover:text-foreground">Кейсы</Link></li>
-              <li><Link to="/contact" className="hover:text-foreground">Контакты</Link></li>
-              <li><Link to="/privacy" className="hover:text-foreground">Политика обработки персональных данных</Link></li>
+              <li>
+                <Link to="/services" className="hover:text-foreground">
+                  Услуги
+                </Link>
+              </li>
+              <li>
+                <Link to="/cases" className="hover:text-foreground">
+                  Кейсы
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-foreground">
+                  Контакты
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:text-foreground">
+                  Политика обработки персональных данных
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -59,7 +75,6 @@ export function Footer() {
               <Send className="h-4 w-4" /> Написать в Telegram
             </a>
           </div>
-
         </div>
 
         <div className="mt-10 border-t border-border/40 pt-6 text-xs text-muted-foreground flex flex-col md:flex-row justify-between gap-2">

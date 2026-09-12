@@ -22,6 +22,7 @@ import { Route as AvitoRouteImport } from './routes/avito'
 import { Route as AiWebsitesRouteImport } from './routes/ai-websites'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as GoTgRouteImport } from './routes/go/tg'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -92,6 +93,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GoTgRoute = GoTgRouteImport.update({
+  id: '/go/tg',
+  path: '/go/tg',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/go/tg': typeof GoTgRoute
   '/blog/': typeof BlogIndexRoute
   '/api/telegram/partner': typeof ApiTelegramPartnerRoute
 }
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/go/tg': typeof GoTgRoute
   '/blog': typeof BlogIndexRoute
   '/api/telegram/partner': typeof ApiTelegramPartnerRoute
 }
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/go/tg': typeof GoTgRoute
   '/blog/': typeof BlogIndexRoute
   '/api/telegram/partner': typeof ApiTelegramPartnerRoute
 }
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/lead'
     | '/blog/$slug'
+    | '/go/tg'
     | '/blog/'
     | '/api/telegram/partner'
   fileRoutesByTo: FileRoutesByTo
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/lead'
     | '/blog/$slug'
+    | '/go/tg'
     | '/blog'
     | '/api/telegram/partner'
   id:
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/lead'
     | '/blog/$slug'
+    | '/go/tg'
     | '/blog/'
     | '/api/telegram/partner'
   fileRoutesById: FileRoutesById
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ApiLeadRoute: typeof ApiLeadRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  GoTgRoute: typeof GoTgRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiTelegramPartnerRoute: typeof ApiTelegramPartnerRoute
 }
@@ -344,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/go/tg': {
+      id: '/go/tg'
+      path: '/go/tg'
+      fullPath: '/go/tg'
+      preLoaderRoute: typeof GoTgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/blog/$slug'
@@ -391,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ApiLeadRoute: ApiLeadRoute,
   BlogSlugRoute: BlogSlugRoute,
+  GoTgRoute: GoTgRoute,
   BlogIndexRoute: BlogIndexRoute,
   ApiTelegramPartnerRoute: ApiTelegramPartnerRoute,
 }

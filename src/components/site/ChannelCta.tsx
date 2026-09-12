@@ -1,13 +1,14 @@
 import { Megaphone, Send } from "lucide-react";
-import { CHANNEL_LINKS, CHANNEL_NAME } from "@/lib/telegram-channel";
+import { CHANNEL_NAME, channelHref } from "@/lib/telegram-channel";
 import { ymGoal } from "@/components/site/YandexMetrika";
 
 /**
  * Блок с приглашением в Telegram-канал в конце статьи блога.
  *
- * Ведёт прямо в канал, а не на посадочную /tg: та нужна, чтобы прогреть
- * холодного человека с рекламы, а читатель статьи уже прогрет, и лишний
- * шаг только теряет часть таких людей.
+ * Ведёт в канал, а не на посадочную /tg: та нужна, чтобы прогреть холодного
+ * человека с рекламы, а читатель статьи уже прогрет, и лишний шаг только
+ * теряет часть таких людей. Переход идёт через `/go/tg`, чтобы бесплатные
+ * подписчики из блога не смешивались в отчёте с платными.
  */
 export function ChannelCta() {
   return (
@@ -23,7 +24,7 @@ export function ChannelCta() {
             постов в неделю, без спама.
           </p>
           <a
-            href={CHANNEL_LINKS.site}
+            href={channelHref("blog", "blog_post")}
             target="_blank"
             rel="noreferrer"
             onClick={() => ymGoal("tg_channel_click", { place: "blog_post" })}

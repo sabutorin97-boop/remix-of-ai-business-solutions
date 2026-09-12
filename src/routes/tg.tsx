@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Gift, Radar, Send, Sparkles, Zap } from "lucide-react";
 import { ymGoal } from "@/components/site/YandexMetrika";
-import { CHANNEL_LINKS, CHANNEL_NAME } from "@/lib/telegram-channel";
+import { CHANNEL_NAME, channelHref } from "@/lib/telegram-channel";
 
 /**
  * Подписная страница под рекламу (Яндекс.Директ, VK Ads).
@@ -9,10 +9,11 @@ import { CHANNEL_LINKS, CHANNEL_NAME } from "@/lib/telegram-channel";
  * «Спросить Макса» на этом маршруте скрыты (см. __root.tsx).
  */
 
-// Ссылки на канал живут в одном месте на весь сайт, см. src/lib/telegram-channel.ts.
-// Здесь берём вариант для платного трафика, чтобы подписчиков из рекламы можно
-// было отделить от бесплатных, которые приходят из подвала и блога.
-const CHANNEL_URL = CHANNEL_LINKS.ads;
+// Кнопки ведут не прямо в Telegram, а на свой адрес-редирект `/go/tg`: он
+// считает переход на сервере и отделяет платный трафик от бесплатного. Прямая
+// ссылка так не работает — Метрика грузится только после согласия в баннере,
+// поэтому часть кликов из рекламы в ней не видна (см. src/routes/go/tg.ts).
+const SOURCE = "ads";
 
 // Бонус выдаёт сам бот PixSpark AI (@pixsparkbot_bot), не «Азимут» — это
 // прояснили и проверили вживую 2026-09-03 (см. CLAUDE.md, было записано
@@ -58,7 +59,10 @@ const VALUE_POINTS = [
 const TITLE = "AI Продажи — Telegram-канал про нейросети в бизнесе";
 const DESCRIPTION =
   "Кейсы внедрения AI, готовые промпты и инструменты, новости рынка без шума. Бесплатный Telegram-канал для тех, кто применяет нейросети в работе.";
-const OG_IMAGE = "https://aiprofigrup.ru/cases/own-site.jpg";
+// Своя картинка превью с названием канала: раньше подставлялся снимок с
+// главной страницы, и в пересылках было непонятно, куда ведёт ссылка.
+// Исходник — tools/og-tg.html, там же команда пересборки.
+const OG_IMAGE = "https://aiprofigrup.ru/og/tg.jpg";
 
 export const Route = createFileRoute("/tg")({
   head: () => ({
@@ -70,6 +74,12 @@ export const Route = createFileRoute("/tg")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://aiprofigrup.ru/tg" },
       { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Telegram-канал «AI Продажи» — нейросети в бизнесе без шума",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
@@ -83,7 +93,7 @@ export const Route = createFileRoute("/tg")({
 function SubscribeButton({ place, className = "" }: { place: string; className?: string }) {
   return (
     <a
-      href={CHANNEL_URL}
+      href={channelHref(SOURCE, place)}
       target="_blank"
       rel="noreferrer"
       onClick={() => ymGoal("tg_subscribe_click", { place })}

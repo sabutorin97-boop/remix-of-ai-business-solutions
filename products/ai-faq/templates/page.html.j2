@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ meta.title }}</title>
+  <meta name="description" content="{{ meta.description }}">
+  {% if meta.url %}
+  <link rel="canonical" href="{{ meta.url }}">
+  {% endif %}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ meta.title }}">
+  <meta property="og:description" content="{{ meta.description }}">
+  <meta property="og:locale" content="ru_RU">
+  {% if brand.logo %}
+  <link rel="icon" href="{{ brand.logo }}">
+  {% endif %}
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">{{ jsonld | safe }}</script>
+</head>
+<body>
+  <a class="skip" href="#main">К содержанию</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="topbar__brand" href="{{ brand.site_url or '#main' }}">
+        {% if brand.logo %}<img class="topbar__logo" src="{{ brand.logo }}" alt="" width="28" height="28">{% endif %}
+        <span>{{ brand.name }}</span>
+      </a>
+      {% if brand.site_url %}
+      <nav class="topbar__nav" aria-label="Разделы сайта">
+        <a href="{{ brand.site_url }}">На сайт</a>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="intro">
+      <div class="wrap">
+        <h1 class="intro__headline">{{ intro.headline }}</h1>
+        {% if intro.text %}
+        <p class="intro__text">{{ intro.text }}</p>
+        {% endif %}
+        {% if intro.updated %}
+        <p class="intro__updated">Обновлено: {{ intro.updated }}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {% include "faq.html.j2" %}
+
+    <section class="section section--help" id="help" aria-labelledby="help-title">
+      <div class="wrap help">
+        <div class="help__text">
+          <h2 class="section__title" id="help-title">{{ cta.title }}</h2>
+          <p class="help__lead">{{ cta.text }}</p>
+          {% if cta.url %}
+          <p class="help__action">
+            <a class="button button--primary" href="{{ cta.url }}">{{ cta.button }}</a>
+          </p>
+          {% endif %}
+        </div>
+        {% if contacts.channels %}
+        <ul class="contacts">
+          {% for item in contacts.channels %}
+          <li class="contacts__item">
+            <a class="link" href="{{ item.url }}">{{ item.text }}</a>
+            <span class="contacts__label">{{ item.label }}</span>
+          </li>
+          {% endfor %}
+          {% if contacts.hours %}
+          <li class="contacts__item contacts__item--plain">{{ contacts.hours }}</li>
+          {% endif %}
+        </ul>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <p class="footer__name">{{ brand.name }}</p>
+      {% if brand.tagline %}<p>{{ brand.tagline }}</p>{% endif %}
+      {% if legal.entity %}<p>{{ legal.entity }}{% if legal.inn %}, ИНН {{ legal.inn }}{% endif %}</p>{% endif %}
+      <p class="footer__year">© {{ year }}</p>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
