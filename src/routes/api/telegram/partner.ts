@@ -24,8 +24,8 @@ import {
  * и любой желающий смог бы прислать апдейт от имени чужого партнёра. Поэтому
  * при незаданном секрете роут отвечает 503, а не работает «пока без проверки».
  *
- * GET — настройка: `?secret=<секрет>&action=set` ставит вебхук и команды бота,
- * `action=info` показывает текущее состояние. Сделано роутом, потому что
+ * GET — настройка: `?secret=<секрет>&action=set` ставит вебхук и команды бота
+ * по адресу из `SITE_BASE_URL`, `action=info` показывает текущее состояние. Сделано роутом, потому что
  * api.telegram.org с прод-IP Timeweb доступен только через релей
  * TELEGRAM_API_BASE — с ноутбука тот же setWebhook пришлось бы звать вручную.
  */
@@ -110,9 +110,14 @@ export const Route = createFileRoute("/api/telegram/partner")({
         }
         try {
           if (action === "set") {
-            const base = url.searchParams.get("url") || process.env.SITE_BASE_URL;
-            if (!base)
-              return json({ error: "Укажите ?url=https://... или задайте SITE_BASE_URL" }, 400);
+            // Адрес вебхука берётся только из настроек приложения. Раньше его
+            // можно было передать параметром `?url=`, и тогда утечка секрета
+            // (скриншот, история браузера, чужие глаза за спиной) позволяла
+            // переставить вебхук бота на посторонний сервер и читать переписку
+            // партнёрского кабинета. Теперь для смены адреса нужен доступ к
+            // переменным окружения, а не просто знание секрета.
+            const base = process.env.SITE_BASE_URL;
+            if (!base) return json({ error: "Задайте SITE_BASE_URL в переменных окружения" }, 400);
             const webhookUrl = `${base.replace(/\/$/, "")}/api/telegram/partner`;
             await setTelegramWebhook(webhookUrl, {
               token,
