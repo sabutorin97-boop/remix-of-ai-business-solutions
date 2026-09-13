@@ -1,25 +1,28 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { getPostBySlug } from "@/lib/blog";
+import { getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import { ChannelCta } from "@/components/site/ChannelCta";
+import { RelatedPosts } from "@/components/site/RelatedPosts";
+import { SharePost } from "@/components/site/SharePost";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: ({ params }) => {
     const post = getPostBySlug(params.slug);
     if (!post) throw notFound();
-    return post;
+    return { post, related: getRelatedPosts(params.slug) };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return {};
-    const url = `https://aiprofigrup.ru/blog/${loaderData.slug}`;
-    const image = loaderData.cover.startsWith("http")
-      ? loaderData.cover
-      : `https://aiprofigrup.ru${loaderData.cover}`;
+    const { post } = loaderData;
+    const url = `https://aiprofigrup.ru/blog/${post.slug}`;
+    const image = post.cover.startsWith("http")
+      ? post.cover
+      : `https://aiprofigrup.ru${post.cover}`;
     return {
       meta: [
-        { title: `${loaderData.title} — AI-Profigrup` },
-        { name: "description", content: loaderData.excerpt },
-        { property: "og:title", content: loaderData.title },
-        { property: "og:description", content: loaderData.excerpt },
+        { title: `${post.title} — AI-Profigrup` },
+        { name: "description", content: post.excerpt },
+        { property: "og:title", content: post.title },
+        { property: "og:description", content: post.excerpt },
         { property: "og:url", content: url },
         { property: "og:type", content: "article" },
         { property: "og:image", content: image },
@@ -32,9 +35,9 @@ export const Route = createFileRoute("/blog/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BlogPosting",
-            headline: loaderData.title,
-            description: loaderData.excerpt,
-            datePublished: loaderData.date,
+            headline: post.title,
+            description: post.excerpt,
+            datePublished: post.date,
             image,
             url,
             author: { "@type": "Organization", name: "AI-Profigrup" },
@@ -47,7 +50,8 @@ export const Route = createFileRoute("/blog/$slug")({
 });
 
 function RouteComponent() {
-  const post = Route.useLoaderData();
+  const { post, related } = Route.useLoaderData();
+  const url = `https://aiprofigrup.ru/blog/${post.slug}`;
   return (
     <section className="container mx-auto px-4 md:px-6 py-20 max-w-3xl">
       <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground">
@@ -59,7 +63,9 @@ function RouteComponent() {
         className="glass rounded-3xl p-6 md:p-8 mt-10 blog-content"
         dangerouslySetInnerHTML={{ __html: post.html }}
       />
+      <SharePost url={url} title={post.title} />
       <ChannelCta />
+      <RelatedPosts posts={related} />
     </section>
   );
 }

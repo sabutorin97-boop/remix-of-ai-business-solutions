@@ -80,3 +80,11 @@ export function getPostBySlug(slug: string): BlogPost | undefined {
   const { draft: _draft, ...rest } = post;
   return rest;
 }
+
+// Другие статьи для блока «Читайте также» под постом: все, кроме текущей,
+// свежие сверху, ограничиваем количеством (по умолчанию 3).
+export function getRelatedPosts(slug: string, limit = 3): BlogPostMeta[] {
+  return getAllPosts()
+    .filter((p) => p.slug !== slug)
+    .slice(0, limit);
+}
