@@ -170,10 +170,14 @@ def build_faq(page: dict, target: Path) -> list[str]:
         work = Path(tmp)
         data = work / "faq.json"
         data.write_text((DEMO_DIR / page["file"]).read_text(encoding="utf-8"), encoding="utf-8")
+        # Картинка превью лежит рядом со сборщиком, а генератор ищет её рядом
+        # с данными — кладём копию под тем именем, что указано в JSON.
+        shutil.copy2(DEMO_DIR / "faq-og.jpg", work / "og.jpg")
         result = faq_product.build(data, work / "out")
 
-        for name in ("style.css", "script.js"):
-            shutil.copy2(result.out_dir / name, target / name)
+        for name in ("style.css", "script.js", "og.jpg"):
+            if (result.out_dir / name).is_file():
+                shutil.copy2(result.out_dir / name, target / name)
         page_html = (result.out_dir / "index.html").read_text(encoding="utf-8")
         (target / "index.html").write_text(assemble(page_html, page["slug"], None), encoding="utf-8")
 

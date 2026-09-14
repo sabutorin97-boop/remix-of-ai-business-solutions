@@ -105,6 +105,24 @@ def prepare_contacts(raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def absolute_url(page_url: str, path: str) -> str:
+    """Достроить относительный путь до абсолютного адреса страницы."""
+
+    if not path:
+        return ""
+    if path.startswith(("http://", "https://")):
+        return path
+    if not page_url:
+        return ""
+    if page_url.endswith("/"):
+        base = page_url.rstrip("/")
+    else:
+        last = page_url.rsplit("/", 1)[-1]
+        # Точка в последнем куске означает файл (faq.html), а не каталог.
+        base = page_url.rsplit("/", 1)[0] if "." in last else page_url
+    return f"{base}/{path.lstrip('/')}"
+
+
 def build_jsonld(context: dict[str, Any], items: list[Any]) -> str:
     """Собрать JSON-LD: организация и FAQPage. Экранирование — через json.dumps."""
 
@@ -143,6 +161,7 @@ def build_context(data: dict[str, Any], warnings: list[str]) -> dict[str, Any]:
         "title": data["meta"]["title"],
         "description": data["meta"]["description"],
         "url": str(data["meta"].get("url") or "").strip(),
+        "image": str(data["meta"].get("image") or "").strip(),
         "lang": data["meta"].get("lang") or "ru",
     }
     brand = {
@@ -191,6 +210,9 @@ def build_context(data: dict[str, Any], warnings: list[str]) -> dict[str, Any]:
         "faq_help_text": None,
         "faq_help_url": None,
         "faq_help_link_text": None,
+        # Соцсети читают только абсолютные адреса картинок, поэтому
+        # относительный путь достраиваем адресом страницы.
+        "og_image": absolute_url(meta["url"], meta["image"]),
         "year": date.today().year,
     }
     context["jsonld"] = build_jsonld(context, items)
@@ -348,14 +370,25 @@ def build(data_path: Path, out_dir: Path) -> Build:
     (out_dir / "index.html").write_text(html, encoding="utf-8")
     (out_dir / "style.css").write_text(build_styles(design), encoding="utf-8")
     (out_dir / "script.js").write_text(faq_script(), encoding="utf-8")
-    if context["brand"]["logo"]:
-        logo = data_path.parent / context["brand"]["logo"]
-        if logo.is_file():
-            target = out_dir / context["brand"]["logo"]
+    for what, relative in (
+        ("логотип", context["brand"]["logo"]),
+        ("картинка превью", context["meta"]["image"]),
+    ):
+        if not relative or relative.startswith(("http://", "https://")):
+            continue
+        source = data_path.parent / relative
+        if source.is_file():
+            target = out_dir / relative
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(logo, target)
+            shutil.copy2(source, target)
         else:
-            warnings.append(f"логотип {context['brand']['logo']} не найден — страница соберётся без него")
+            warnings.append(f"{what} {relative} не найдена рядом с данными — страница соберётся без неё")
+
+    if context["meta"]["image"] and not context["meta"]["url"]:
+        warnings.append(
+            "задана картинка превью, но не задан meta.url — соцсети не поймут "
+            "относительный адрес, превью не покажется"
+        )
 
     page_bytes = sum(
         (out_dir / name).stat().st_size for name in ("index.html", "style.css", "script.js")

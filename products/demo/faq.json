@@ -2,8 +2,9 @@
   "meta": {
     "title": "Вопросы и ответы — студия «Эстетика»",
     "description": "Сколько стоит окрашивание, как записаться, есть ли гарантия и сколько занимает визит. Ответы на частые вопросы студии красоты «Эстетика».",
-    "url": "https://example.com/faq",
-    "lang": "ru"
+    "url": "https://sabutorin97-boop.github.io/remix-of-ai-business-solutions/faq/",
+    "lang": "ru",
+    "image": "og.jpg"
   },
   "brand": {
     "name": "Студия «Эстетика»",

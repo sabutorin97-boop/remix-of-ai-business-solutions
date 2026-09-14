@@ -12,6 +12,14 @@
   <meta property="og:title" content="{{ meta.title }}">
   <meta property="og:description" content="{{ meta.description }}">
   <meta property="og:locale" content="ru_RU">
+  {% if meta.url %}
+  <meta property="og:url" content="{{ meta.url }}">
+  {% endif %}
+  {% if og_image %}
+  <meta property="og:image" content="{{ og_image }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ og_image }}">
+  {% endif %}
   {% if brand.logo %}
   <link rel="icon" href="{{ brand.logo }}">
   {% endif %}
