@@ -95,7 +95,7 @@ def build_context(data: dict[str, Any], theme: str, warnings: list[str]) -> dict
     meta = {
         "title": data["meta"]["title"],
         "description": data["meta"]["description"],
-        "domain": str(data["meta"].get("domain") or "").rstrip("/"),
+        "domain": str(data["meta"].get("domain") or "").strip(),
         "lang": data["meta"].get("lang") or "ru",
     }
     brand = {
@@ -260,7 +260,7 @@ def absolute_url(domain: str, path: str | None) -> str:
         return path
     if not domain:
         return ""
-    return f"{domain}/{path.lstrip('/')}"
+    return f"{domain.rstrip('/')}/{path.lstrip('/')}"
 
 
 def prepare_cases(raw: list[dict[str, Any]]) -> list[dict[str, Any]]:

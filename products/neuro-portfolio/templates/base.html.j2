@@ -12,6 +12,9 @@
   <meta property="og:title" content="{{ meta.title }}">
   <meta property="og:description" content="{{ meta.description }}">
   <meta property="og:locale" content="ru_RU">
+  {% if meta.domain %}
+  <meta property="og:url" content="{{ meta.domain }}">
+  {% endif %}
   {% if og_image %}
   <meta property="og:image" content="{{ og_image }}">
   {% endif %}

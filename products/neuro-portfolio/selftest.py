@@ -86,6 +86,11 @@ def main() -> int:
         missing = [text for text in texts if text not in visible]
         check("текст разметки совпадает с видимым", not missing, "; ".join(missing[:2]))
 
+        print("\nПревью для соцсетей")
+        check("адрес страницы указан", 'property="og:url"' in html)
+        check("картинка превью указана", 'property="og:image"' in html)
+        check("описание для выдачи на месте", 'name="description"' in html)
+
         print("\nКириллица")
         check("кавычки-ёлочки в HTML", "«Эстетика»" in html)
         check("кавычки-ёлочки в разметке", "«Эстетика»" in markup["@graph"][0]["name"])
