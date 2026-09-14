@@ -68,6 +68,25 @@ def main() -> int:
         problems = check_markup_matches_page(html, block.group(1))
         check("текст разметки совпадает с видимым", not problems, "; ".join(problems[:2]))
 
+        print("\nПревью для соцсетей")
+        check("адрес страницы указан", 'property="og:url"' in html)
+        check("картинка превью не выдумывается", 'property="og:image"' not in html)
+
+        preview = json.loads(EXAMPLE.read_text(encoding="utf-8"))
+        preview["meta"]["url"] = "https://example.com/faq/"
+        preview["meta"]["image"] = "og.jpg"
+        path = work / "preview.json"
+        path.write_text(json.dumps(preview, ensure_ascii=False), encoding="utf-8")
+        result = run(str(path), str(work / "preview"))
+        check("сборка с картинкой проходит", result.returncode == 0, result.stderr)
+        with_image = (work / "preview" / "index.html").read_text(encoding="utf-8")
+        check(
+            "адрес картинки абсолютный",
+            'content="https://example.com/faq/og.jpg"' in with_image,
+            with_image[:0],
+        )
+        check("ненайденная картинка вызывает замечание", "картинка превью" in result.stdout)
+
         print("\nОформление")
         check("атрибуты оформления на html", 'data-scheme="light"' in html and 'data-font="serif"' in html)
         styles = (out / "style.css").read_text(encoding="utf-8")

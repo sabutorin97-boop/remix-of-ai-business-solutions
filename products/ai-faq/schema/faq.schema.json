@@ -29,6 +29,11 @@
           "title": "адрес страницы на сайте клиента",
           "examples": ["https://estetika-studio.ru/faq"]
         },
+        "image": {
+          "type": ["string", "null"],
+          "title": "картинка превью для соцсетей (1200x630)",
+          "examples": ["og.jpg", "https://example.com/og.jpg"]
+        },
         "lang": { "type": "string", "title": "язык страницы", "default": "ru" }
       }
     },
