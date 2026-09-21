@@ -28,7 +28,7 @@ export function Footer() {
             <a
               href={channelHref("site", "footer")}
               target="_blank"
-              rel="noreferrer"
+              rel="noreferrer nofollow"
               aria-label="Открыть Telegram-канал про AI"
               onClick={() => ymGoal("tg_channel_click", { place: "footer" })}
               className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
@@ -68,7 +68,7 @@ export function Footer() {
             <a
               href="https://t.me/AiProfiGrup_bot"
               target="_blank"
-              rel="noreferrer"
+              rel="noreferrer nofollow"
               aria-label="Написать в Telegram"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
             >

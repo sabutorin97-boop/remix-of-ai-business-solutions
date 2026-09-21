@@ -109,6 +109,10 @@ export const Route = createFileRoute("/go/tg")({
             // того же человека мы уже не увидим.
             "Cache-Control": "no-store",
             "Referrer-Policy": "no-referrer",
+            // Переход — не страница. Запрет в robots.txt уже не пускает сюда
+            // бота, но адрес мог попасть в индекс раньше: заголовок убирает
+            // его из выдачи и из отчёта об индексировании.
+            "X-Robots-Tag": "noindex, nofollow",
           },
         });
       },
