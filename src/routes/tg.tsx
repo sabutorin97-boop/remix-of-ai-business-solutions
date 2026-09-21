@@ -95,7 +95,7 @@ function SubscribeButton({ place, className = "" }: { place: string; className?:
     <a
       href={channelHref(SOURCE, place)}
       target="_blank"
-      rel="noreferrer"
+      rel="noreferrer nofollow"
       onClick={() => ymGoal("tg_subscribe_click", { place })}
       className={`inline-flex h-14 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-brand px-6 text-base font-semibold text-primary-foreground shadow-glow transition-all duration-300 hover:scale-[1.02] hover:opacity-95 active:scale-[0.98] sm:w-auto sm:px-8 sm:text-lg ${className}`}
     >
@@ -184,7 +184,7 @@ function TgLanding() {
                   <a
                     href={PIXSPARK_BONUS_URL}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noreferrer nofollow"
                     onClick={() => ymGoal("tg_bonus_claim_click", { place: "bonus_block" })}
                     className="mt-4 inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-primary/40 px-5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
                   >

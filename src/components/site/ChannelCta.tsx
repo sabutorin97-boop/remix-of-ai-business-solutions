@@ -26,7 +26,7 @@ export function ChannelCta() {
           <a
             href={channelHref("blog", "blog_post")}
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer nofollow"
             onClick={() => ymGoal("tg_channel_click", { place: "blog_post" })}
             className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
           >
