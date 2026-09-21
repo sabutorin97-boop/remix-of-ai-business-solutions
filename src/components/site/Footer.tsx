@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border/40 mt-24">
       <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid gap-10 md:grid-cols-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-brand text-sm font-bold text-primary-foreground">
@@ -38,11 +38,45 @@ export function Footer() {
           </div>
 
           <div>
+            {/* Страницы услуг: до этого ссылки на них были только в блоке
+                «Услуги» на главной, и поисковик подолгу не доходил до них
+                вглубь. Подвал стоит на каждой странице — путь стал короче. */}
+            <div className="text-sm font-semibold mb-3">Услуги</div>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link to="/ai-websites" className="hover:text-foreground">
+                  AI-сайты
+                </Link>
+              </li>
+              <li>
+                <Link to="/telegram-bots" className="hover:text-foreground">
+                  Telegram-боты
+                </Link>
+              </li>
+              <li>
+                <Link to="/crm" className="hover:text-foreground">
+                  CRM для компании
+                </Link>
+              </li>
+              <li>
+                <Link to="/geo" className="hover:text-foreground">
+                  GEO/AIO-оптимизация
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
             <div className="text-sm font-semibold mb-3">Навигация</div>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link to="/services" className="hover:text-foreground">
-                  Услуги
+                  Все услуги
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="hover:text-foreground">
+                  Блог
                 </Link>
               </li>
               <li>
