@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Политика конфиденциальности — Nexus Assistant</title>
+<meta name="description" content="Как приложение Nexus Assistant обрабатывает данные Google-аккаунта: какие разрешения запрашивает, зачем, где хранит токены и как отозвать доступ.">
+<meta name="robots" content="noindex, follow">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1c1f;
+    --muted: #5c6370;
+    --rule: #e4e7ec;
+    --accent: #2563eb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #e8eaed;
+      --muted: #9aa3af;
+      --rule: #2a2e35;
+      --accent: #7aa2f7;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 3rem 16px 5rem;
+  }
+  h1 {
+    font-size: 1.9rem;
+    line-height: 1.25;
+    margin: 0 0 .5rem;
+    letter-spacing: -0.01em;
+  }
+  h2 {
+    font-size: 1.15rem;
+    margin: 2.25rem 0 .6rem;
+    letter-spacing: -0.005em;
+  }
+  .updated {
+    color: var(--muted);
+    font-size: .9rem;
+    margin: 0 0 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  ul { padding-left: 1.2rem; }
+  li { margin-bottom: .5rem; }
+  a { color: var(--accent); }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: .9rem;
+  }
+  @media (max-width: 480px) {
+    main { padding-top: 2rem; }
+    h1 { font-size: 1.55rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Политика конфиденциальности Nexus Assistant</h1>
+  <p class="updated">Дата последнего обновления: 11 октября 2026 г.</p>
+
+  <p>Этот документ описывает, какие данные обрабатывает приложение <strong>Nexus Assistant</strong> и как они используются. Приложение представляет собой персонального AI-ассистента, которым владелец сайта aiprofigrup.ru пользуется для управления собственным календарём, почтой и документами. Приложение не является публичным сервисом и не предоставляется третьим лицам.</p>
+
+  <h2>Какие данные обрабатываются</h2>
+  <p>Приложение получает доступ к данным аккаунта Google только после явного разрешения владельца этого аккаунта, выданного через стандартный экран согласия Google. Запрашиваются следующие разрешения:</p>
+  <ul>
+    <li><strong>Google Календарь</strong> (создание, чтение и изменение событий) — чтобы вести расписание владельца по его текстовым и голосовым запросам.</li>
+    <li><strong>Gmail</strong> (чтение, изменение и отправка писем) — чтобы готовить и отправлять письма по прямому поручению владельца.</li>
+    <li><strong>Google Диск, Документы, Таблицы, Презентации</strong> — чтобы создавать и редактировать рабочие файлы по поручению владельца.</li>
+  </ul>
+  <p>Данные других пользователей приложение не запрашивает и не собирает.</p>
+
+  <h2>Как используются данные</h2>
+  <p>Исключительно для выполнения задач, которые владелец аккаунта ставит ассистенту напрямую. Данные не продаются, не передаются третьим лицам, не используются для рекламы, профилирования или обучения моделей машинного обучения.</p>
+  <p>Использование информации, полученной через Google API, соответствует <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Политике Google API Services User Data</a>, включая требования раздела Limited Use.</p>
+
+  <h2>Где хранятся данные</h2>
+  <p>Токены доступа хранятся в файле с ограниченными правами доступа на частном сервере владельца и не передаются никуда, кроме серверов Google при выполнении запросов к их API. Содержимое календаря, писем и файлов не копируется в отдельное хранилище.</p>
+  <p>Для обработки естественного языка текст запроса и необходимый для ответа фрагмент данных могут передаваться поставщику языковой модели, используемой ассистентом. Такие данные передаются только в объёме, нужном для выполнения конкретной задачи.</p>
+
+  <h2>Как отозвать доступ</h2>
+  <p>Владелец аккаунта может в любой момент отозвать выданные разрешения на странице <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Сторонние приложения с доступом к аккаунту</a>. После отзыва приложение немедленно теряет доступ к данным, а хранящиеся токены становятся недействительными.</p>
+
+  <h2>Хранение и удаление</h2>
+  <p>Приложение не ведёт собственной базы пользовательских данных. Для удаления токенов доступа достаточно отозвать разрешения по ссылке выше либо обратиться по контакту ниже.</p>
+
+  <h2>Контакт</h2>
+  <p>Вопросы по обработке данных: <a href="mailto:nexus.assistant.sergey@gmail.com">nexus.assistant.sergey@gmail.com</a></p>
+
+  <footer>Nexus Assistant — внутренний AI-ассистент проекта AI-Profigrup, aiprofigrup.ru</footer>
+</main>
+</body>
+</html>
