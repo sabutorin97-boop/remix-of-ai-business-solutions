@@ -139,7 +139,7 @@ function accessOpenToAll(): boolean {
  * версия реально запущена, — панель Timeweb показывает коммит ненадёжно.
  * Обновляется вручную при заметных изменениях поведения.
  */
-export const BOT_VERSION = "2026-09-08 · приглашения и разговор";
+export const BOT_VERSION = "2026-10-31 · рассылка партнёрам";
 
 /**
  * Часовой пояс для дат в таблице и карточках партнёров. Сервер живёт в UTC, и
@@ -919,7 +919,118 @@ async function handlePending(
     return true;
   }
 
+  if (pending.kind === "broadcast") {
+    // На шаге подтверждения ждём кнопку, но если пришёл текст — считаем его
+    // новой версией и показываем предпросмотр заново.
+    await broadcastPreview(ctx, partner, text);
+    return true;
+  }
+
   return false;
+}
+
+// --- Рассылка партнёрам -----------------------------------------------------
+
+/** Показывает владельцу текст и просит подтверждение перед отправкой. */
+async function broadcastPreview(ctx: Ctx, partner: Partner, body: string): Promise<void> {
+  const text = body.trim();
+  if (!text) {
+    return reply(ctx, "Пустой текст — пришлите сообщение для рассылки.", []);
+  }
+  if (text.length > 3800) {
+    return reply(
+      ctx,
+      `Слишком длинный текст: ${text.length} символов. Telegram пропускает до 4096, лучше держаться в пределах 3500.`,
+      [],
+    );
+  }
+
+  const partners = await listPartners();
+  const active = partners.filter((p) => p.status === "active" && p.telegramId !== ctx.chatId);
+  const blocked = partners.filter((p) => p.status === "blocked").length;
+
+  if (!active.length) {
+    partner.pending = null;
+    await savePartner(partner);
+    return reply(ctx, "Активных партнёров нет — рассылать некому.", []);
+  }
+
+  partner.pending = { kind: "broadcast", step: "confirm", text };
+  await savePartner(partner);
+
+  const lines = [
+    "📣 <b>Проверьте перед отправкой</b>",
+    "",
+    text,
+    "",
+    `Получателей: <b>${active.length}</b> активных партнёров.`,
+  ];
+  if (blocked) lines.push(`Заблокированных пропустим: ${blocked}.`);
+  lines.push("", "Отправляем?");
+
+  try {
+    await reply(ctx, lines.join("\n"), [
+      [
+        { text: `✅ Отправить ${active.length}`, callback_data: "bc_send" },
+        { text: "Отмена", callback_data: "bc_cancel" },
+      ],
+    ]);
+  } catch (err) {
+    // Telegram отклоняет кривой HTML — не оставляем владельца без ответа.
+    partner.pending = null;
+    await savePartner(partner);
+    console.warn("[partner-bot] Предпросмотр рассылки не отправился:", err);
+    await reply(
+      ctx,
+      "Похоже, в тексте сломана HTML-разметка: Telegram не смог его показать. Проверьте теги или пришлите текст без HTML — тогда уйдёт как есть.",
+      [],
+    );
+  }
+}
+
+/** Отправляет подтверждённый текст всем активным партнёрам. */
+async function performBroadcast(ctx: Ctx, partner: Partner, body: string): Promise<void> {
+  partner.pending = null;
+  await savePartner(partner);
+
+  const partners = await listPartners();
+  const targets = partners.filter((p) => p.status === "active" && p.telegramId !== ctx.chatId);
+  if (!targets.length) {
+    return reply(ctx, "Активных партнёров нет — рассылать некому.", []);
+  }
+
+  const seconds = Math.max(1, Math.ceil((targets.length * 60) / 1000));
+  await reply(ctx, `📤 Отправляю ${targets.length} партнёрам. Это займёт около ${seconds} сек.`, []);
+
+  let sent = 0;
+  const failed: string[] = [];
+  for (const p of targets) {
+    try {
+      await sendTelegramMessage(p.telegramId, body, {
+        token: ctx.token,
+        disableWebPagePreview: true,
+      });
+      sent += 1;
+    } catch (err) {
+      const who = p.label ?? p.username ?? String(p.telegramId);
+      failed.push(who);
+      console.warn("[partner-bot] Рассылка не дошла:", p.telegramId, err);
+    }
+    // Telegram терпит около 30 сообщений в секунду; 60 мс — безопасный запас.
+    await new Promise((resolve) => setTimeout(resolve, 60));
+  }
+
+  const lines = [
+    "📣 <b>Рассылка завершена</b>",
+    "",
+    `✅ Доставлено: <b>${sent}</b> из ${targets.length}`,
+  ];
+  if (failed.length) {
+    lines.push("", `⚠️ Не дошло: ${failed.length}`);
+    for (const name of failed.slice(0, 10)) lines.push(`• ${escapeHtml(name)}`);
+    if (failed.length > 10) lines.push(`…и ещё ${failed.length - 10}`);
+  }
+  await reply(ctx, lines.join("\n"), []);
 }
 
 // --- Роутинг кнопок ---------------------------------------------------------
@@ -956,6 +1067,21 @@ async function handleCallbackData(ctx: Ctx, partner: Partner, data: string): Pro
     partner.pending = null;
     await savePartner(partner);
     return show(ctx, "Отменено.", MENU_KEYBOARD.inline_keyboard);
+  }
+  if (data === "bc_send") {
+    if (
+      partner.pending?.kind === "broadcast" &&
+      partner.pending.step === "confirm" &&
+      partner.pending.text
+    ) {
+      return performBroadcast(ctx, partner, partner.pending.text);
+    }
+    return showMenu(ctx, partner);
+  }
+  if (data === "bc_cancel") {
+    partner.pending = null;
+    await savePartner(partner);
+    return show(ctx, "Рассылка отменена.", MENU_KEYBOARD.inline_keyboard);
   }
   if (data === "ask") {
     partner.pending = { kind: "ask" };
@@ -1032,7 +1158,7 @@ async function handleText(ctx: Ctx, partner: Partner, rawText: string): Promise<
   const text = rawText.trim();
 
   if (isOwner(partner.telegramId) && text.startsWith("/")) {
-    const handled = await handleOwnerCommand(ctx, text);
+    const handled = await handleOwnerCommand(ctx, partner, text);
     if (handled) return;
   }
 
@@ -1132,6 +1258,7 @@ const OWNER_HELP = [
   "/block код — закрыть доступ (история сохраняется)",
   "/unblock код — вернуть доступ",
   "/sync — дослать в Google-таблицу строки, которые не ушли",
+  "/broadcast — рассылка всем активным партнёрам",
   "/admin — эта подсказка",
   "",
   "Вместо кода можно указать @username или числовой id партнёра.",
@@ -1181,7 +1308,7 @@ function partnerCard(p: Partner): string {
 }
 
 /** Возвращает true, если сообщение было командой владельца и уже обработано. */
-async function handleOwnerCommand(ctx: Ctx, text: string): Promise<boolean> {
+async function handleOwnerCommand(ctx: Ctx, partner: Partner, text: string): Promise<boolean> {
   const [command, ...rest] = text.split(/\s+/);
   const arg = rest.join(" ").trim();
 
@@ -1189,6 +1316,27 @@ async function handleOwnerCommand(ctx: Ctx, text: string): Promise<boolean> {
     case "/admin":
       await reply(ctx, OWNER_HELP, []);
       return true;
+
+    case "/broadcast": {
+      if (arg) {
+        await broadcastPreview(ctx, partner, arg);
+        return true;
+      }
+      partner.pending = { kind: "broadcast", step: "text" };
+      await savePartner(partner);
+      await reply(
+        ctx,
+        [
+          "📣 <b>Рассылка партнёрам</b>",
+          "",
+          "Пришлите текст следующим сообщением. Понимаю HTML: <b>жирный</b>, <i>курсив</i>, <code>код</code>, <a href=\"https://example.com\">ссылка</a>.",
+          "",
+          "Перед отправкой покажу предпросмотр и спрошу подтверждение. Отмена — /cancel.",
+        ].join("\n"),
+        [],
+      );
+      return true;
+    }
 
     case "/invite": {
       if (!arg) {
