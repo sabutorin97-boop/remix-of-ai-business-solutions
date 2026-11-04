@@ -1014,6 +1014,78 @@ async function broadcastPreview(
   }
 }
 
+/**
+ * Рассылка без чата: тот же список активных партнёров и те же правила, но
+ * запускается админ-роутом `/api/partner/broadcast`, а не кнопкой в боте.
+ * Нужна, чтобы пост уходил партнёрам без ручных нажатий владельца.
+ */
+export async function broadcastToPartners(options: {
+  text: string;
+  photo?: string;
+  dryRun?: boolean;
+}): Promise<{ targets: number; sent: number; failed: string[]; dryRun: boolean }> {
+  const token = partnerBotToken();
+  if (!token) throw new Error("TELEGRAM_PARTNER_BOT_TOKEN не задан");
+
+  const text = (options.text ?? "").trim();
+  const photo = options.photo?.trim() || undefined;
+  if (!text && !photo) throw new Error("Нужен текст или фото");
+  if (photo && text.length > 1024) {
+    throw new Error(`Подпись к фото: ${text.length} символов, Telegram принимает не больше 1024`);
+  }
+  if (!photo && text.length > 4096) {
+    throw new Error(`Текст: ${text.length} символов, Telegram принимает не больше 4096`);
+  }
+
+  const owner = process.env.TELEGRAM_OWNER_CHAT_ID?.trim();
+  const partners = await listPartners();
+  const targets = partners.filter(
+    (p) => p.status === "active" && String(p.telegramId) !== owner,
+  );
+
+  if (options.dryRun) {
+    return { targets: targets.length, sent: 0, failed: [], dryRun: true };
+  }
+
+  let sent = 0;
+  const failed: string[] = [];
+  for (const p of targets) {
+    try {
+      if (photo) {
+        await sendTelegramPhoto(p.telegramId, photo, text, { token });
+      } else {
+        await sendTelegramMessage(p.telegramId, text, {
+          token,
+          disableWebPagePreview: true,
+        });
+      }
+      sent += 1;
+    } catch (err) {
+      // Фото могло не уйти (битый file_id, URL, размер) — текст всё равно важен.
+      if (photo && text) {
+        try {
+          await sendTelegramMessage(p.telegramId, text, {
+            token,
+            disableWebPagePreview: true,
+          });
+          sent += 1;
+          await new Promise((resolve) => setTimeout(resolve, 60));
+          continue;
+        } catch {
+          /* падаем в общий список ниже */
+        }
+      }
+      const who = p.label ?? p.username ?? String(p.telegramId);
+      failed.push(who);
+      console.warn("[partner-bot] Рассылка не дошла:", p.telegramId, err);
+    }
+    // Telegram терпит около 30 сообщений в секунду; 60 мс — безопасный запас.
+    await new Promise((resolve) => setTimeout(resolve, 60));
+  }
+
+  return { targets: targets.length, sent, failed, dryRun: false };
+}
+
 /** Отправляет подтверждённое сообщение всем активным партнёрам. */
 async function performBroadcast(
   ctx: Ctx,
