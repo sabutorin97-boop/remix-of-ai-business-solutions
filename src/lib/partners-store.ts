@@ -25,7 +25,13 @@ export type PendingAction =
   | { kind: "search" }
   | { kind: "access_code" }
   /** Рассылка владельца: ждём текст, затем подтверждение перед отправкой. */
-  | { kind: "broadcast"; step: "text" | "confirm"; text?: string };
+  | {
+      kind: "broadcast";
+      step: "text" | "confirm";
+      text?: string;
+      /** Если задан — рассылка идёт фото с подписью, а не одним текстом. */
+      photoFileId?: string;
+    };
 
 /** Реплика диалога с AI-наставником: хранится, чтобы бот помнил контекст. */
 export interface ChatTurn {

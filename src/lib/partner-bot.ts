@@ -26,6 +26,7 @@ import {
   escapeHtml,
   sendChatAction,
   sendTelegramMessage,
+  sendTelegramPhoto,
 } from "@/lib/telegram";
 import {
   createInvite,
@@ -91,6 +92,9 @@ interface TgMessage {
   from?: TgUser;
   chat: { id: number; type: string };
   text?: string;
+  /** Фото приходит массивом размеров, последний — самый крупный. */
+  photo?: { file_id: string; width: number; height: number }[];
+  caption?: string;
 }
 
 interface TgCallbackQuery {
@@ -931,16 +935,29 @@ async function handlePending(
 
 // --- Рассылка партнёрам -----------------------------------------------------
 
-/** Показывает владельцу текст и просит подтверждение перед отправкой. */
-async function broadcastPreview(ctx: Ctx, partner: Partner, body: string): Promise<void> {
+/**
+ * Показывает владельцу текст (или фото с подписью) и просит подтверждение.
+ * photoFileId приходит, если владелец прислал картинку: тогда рассылка уйдёт
+ * фотографией, а текст станет подписью.
+ */
+async function broadcastPreview(
+  ctx: Ctx,
+  partner: Partner,
+  body: string,
+  photoFileId?: string,
+): Promise<void> {
   const text = body.trim();
-  if (!text) {
+  if (!text && !photoFileId) {
     return reply(ctx, "Пустой текст — пришлите сообщение для рассылки.", []);
   }
-  if (text.length > 3800) {
+  // Подпись к фото Telegram режет на 1024 символах, текст — на 4096.
+  const limit = photoFileId ? 1024 : 3800;
+  if (text.length > limit) {
     return reply(
       ctx,
-      `Слишком длинный текст: ${text.length} символов. Telegram пропускает до 4096, лучше держаться в пределах 3500.`,
+      photoFileId
+        ? `Подпись к фото: ${text.length} символов, а Telegram принимает не больше 1024. Сократите текст.`
+        : `Слишком длинный текст: ${text.length} символов. Telegram пропускает до 4096, лучше держаться в пределах 3500.`,
       [],
     );
   }
@@ -955,26 +972,34 @@ async function broadcastPreview(ctx: Ctx, partner: Partner, body: string): Promi
     return reply(ctx, "Активных партнёров нет — рассылать некому.", []);
   }
 
-  partner.pending = { kind: "broadcast", step: "confirm", text };
+  partner.pending = { kind: "broadcast", step: "confirm", text, photoFileId };
   await savePartner(partner);
 
-  const lines = [
-    "📣 <b>Проверьте перед отправкой</b>",
-    "",
-    text,
-    "",
-    `Получателей: <b>${active.length}</b> активных партнёров.`,
+  const buttons = [
+    [
+      { text: `✅ Отправить ${active.length}`, callback_data: "bc_send" },
+      { text: "Отмена", callback_data: "bc_cancel" },
+    ],
   ];
-  if (blocked) lines.push(`Заблокированных пропустим: ${blocked}.`);
-  lines.push("", "Отправляем?");
+
+  // С фото показываем ровно то, что получат партнёры, а условия отправки —
+  // отдельным коротким сообщением: подпись ограничена 1024 символами.
+  const tail = [
+    `Получателей: <b>${active.length}</b> активных партнёров.`,
+    blocked ? `Заблокированных пропустим: ${blocked}.` : "",
+    "",
+    "Отправляем?",
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
-    await reply(ctx, lines.join("\n"), [
-      [
-        { text: `✅ Отправить ${active.length}`, callback_data: "bc_send" },
-        { text: "Отмена", callback_data: "bc_cancel" },
-      ],
-    ]);
+    if (photoFileId) {
+      await sendTelegramPhoto(ctx.chatId, photoFileId, text, { token: ctx.token });
+      await reply(ctx, `📣 <b>Проверьте перед отправкой</b>\n\n${tail}`, buttons);
+    } else {
+      await reply(ctx, `📣 <b>Проверьте перед отправкой</b>\n\n${text}\n\n${tail}`, buttons);
+    }
   } catch (err) {
     // Telegram отклоняет кривой HTML — не оставляем владельца без ответа.
     partner.pending = null;
@@ -988,8 +1013,13 @@ async function broadcastPreview(ctx: Ctx, partner: Partner, body: string): Promi
   }
 }
 
-/** Отправляет подтверждённый текст всем активным партнёрам. */
-async function performBroadcast(ctx: Ctx, partner: Partner, body: string): Promise<void> {
+/** Отправляет подтверждённое сообщение всем активным партнёрам. */
+async function performBroadcast(
+  ctx: Ctx,
+  partner: Partner,
+  body: string,
+  photoFileId?: string,
+): Promise<void> {
   partner.pending = null;
   await savePartner(partner);
 
@@ -1006,10 +1036,14 @@ async function performBroadcast(ctx: Ctx, partner: Partner, body: string): Promi
   const failed: string[] = [];
   for (const p of targets) {
     try {
-      await sendTelegramMessage(p.telegramId, body, {
-        token: ctx.token,
-        disableWebPagePreview: true,
-      });
+      if (photoFileId) {
+        await sendTelegramPhoto(p.telegramId, photoFileId, body, { token: ctx.token });
+      } else {
+        await sendTelegramMessage(p.telegramId, body, {
+          token: ctx.token,
+          disableWebPagePreview: true,
+        });
+      }
       sent += 1;
     } catch (err) {
       const who = p.label ?? p.username ?? String(p.telegramId);
@@ -1074,7 +1108,12 @@ async function handleCallbackData(ctx: Ctx, partner: Partner, data: string): Pro
       partner.pending.step === "confirm" &&
       partner.pending.text
     ) {
-      return performBroadcast(ctx, partner, partner.pending.text);
+      return performBroadcast(
+        ctx,
+        partner,
+        partner.pending.text,
+        partner.pending.photoFileId,
+      );
     }
     return showMenu(ctx, partner);
   }
@@ -1573,6 +1612,14 @@ export async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
     }
     const ctx: Ctx = { ...baseCtx, messageId: cq.message?.message_id };
     await handleCallbackData(ctx, partner, cq.data ?? "menu");
+    return;
+  }
+
+  // Владелец прислал картинку — это баннер для рассылки, подпись станет текстом.
+  const photos = update.message?.photo;
+  if (photos?.length && isOwner(from.id)) {
+    const largest = photos[photos.length - 1];
+    await broadcastPreview(baseCtx, partner, update.message?.caption ?? "", largest.file_id);
     return;
   }
 

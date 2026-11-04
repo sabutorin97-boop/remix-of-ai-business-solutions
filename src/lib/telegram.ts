@@ -84,6 +84,30 @@ export function sendTelegramMessage(
 }
 
 /**
+ * Фотография с подписью. Рассылка партнёрам идёт картинкой с текстом под
+ * ней: file_id, который Telegram выдал при загрузке, живёт бессрочно, поэтому
+ * повторная отправка не требует файла.
+ */
+export function sendTelegramPhoto(
+  chatId: number | string,
+  photoFileId: string,
+  caption: string,
+  options?: TelegramCallOptions & { replyMarkup?: unknown },
+) {
+  return callTelegram(
+    "sendPhoto",
+    {
+      chat_id: chatId,
+      photo: photoFileId,
+      caption: caption || undefined,
+      parse_mode: "HTML",
+      reply_markup: options?.replyMarkup,
+    },
+    options,
+  );
+}
+
+/**
  * Перерисовывает уже отправленное сообщение. Так меню бота живёт в одном
  * сообщении вместо десятка новых после каждого нажатия.
  */
