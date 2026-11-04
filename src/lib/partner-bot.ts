@@ -925,8 +925,9 @@ async function handlePending(
 
   if (pending.kind === "broadcast") {
     // На шаге подтверждения ждём кнопку, но если пришёл текст — считаем его
-    // новой версией и показываем предпросмотр заново.
-    await broadcastPreview(ctx, partner, text);
+    // новой версией и показываем предпросмотр заново. Фото, присланное
+    // раньше, остаётся картинкой рассылки.
+    await broadcastPreview(ctx, partner, text, pending.photoFileId);
     return true;
   }
 
@@ -1620,7 +1621,20 @@ export async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
   const photos = update.message?.photo;
   if (photos?.length && isOwner(from.id)) {
     const largest = photos[photos.length - 1];
-    await broadcastPreview(baseCtx, partner, update.message?.caption ?? "", largest.file_id);
+    const caption = update.message?.caption?.trim() ?? "";
+    if (!caption) {
+      // Картинку запоминаем и просим текст: партнёры не должны получить
+      // баннер без слов.
+      partner.pending = { kind: "broadcast", step: "text", photoFileId: largest.file_id };
+      await savePartner(partner);
+      await sendTelegramMessage(
+        chatId,
+        "🖼 Баннер получен. Теперь пришлите текст — он станет подписью к фото (до 1024 символов).",
+        { token },
+      );
+      return;
+    }
+    await broadcastPreview(baseCtx, partner, caption, largest.file_id);
     return;
   }
 
