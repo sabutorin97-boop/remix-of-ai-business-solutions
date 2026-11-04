@@ -1741,3 +1741,4 @@ export const PARTNER_BOT_COMMANDS = [
   { command: "reset", description: "Начать разговор заново" },
   { command: "help", description: "Как пользоваться ботом" },
 ];
+export { listPartners, savePartner } from "@/lib/partners-store";

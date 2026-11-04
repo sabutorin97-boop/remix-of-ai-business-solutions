@@ -42,6 +42,40 @@ export const Route = createFileRoute("/api/partner/broadcast")({
         }
 
         try {
+          const action = typeof body.action === "string" ? body.action : "broadcast";
+
+          if (action === "list") {
+            // Вернуть всех активных партнёров (кроме владельца).
+            const { listPartners } = await import("@/lib/partner-bot");
+            const owner = process.env.TELEGRAM_OWNER_CHAT_ID?.trim();
+            const partners = await listPartners();
+            const list = partners
+              .filter(
+                (p: any) =>
+                  p.status === "active" && String(p.telegramId) !== owner,
+              )
+              .map((p: any) => ({
+                id: p.telegramId,
+                label: p.label,
+                username: p.username,
+                phone: p.phone,
+              }));
+            return json({ ok: true, count: list.length, partners: list });
+          }
+
+          if (action === "remove") {
+            const id = Number(body.telegramId);
+            if (!id) return json({ error: "telegramId (number) обязателен" }, 400);
+            const { listPartners, savePartner } = await import("@/lib/partner-bot");
+            const partners = await listPartners();
+            const idx = partners.findIndex((p: any) => Number(p.telegramId) === id);
+            if (idx === -1) return json({ error: "Партнёр не найден" }, 404);
+            partners[idx].status = "blocked";
+            await savePartner(partners[idx]);
+            return json({ ok: true, removed: id, label: partners[idx].label });
+          }
+
+          // По умолчанию — рассылка.
           const result = await broadcastToPartners({
             text: typeof body.text === "string" ? body.text : "",
             photo: typeof body.photo === "string" ? body.photo : undefined,
