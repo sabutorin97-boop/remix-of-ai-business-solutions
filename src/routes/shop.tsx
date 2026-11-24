@@ -31,7 +31,7 @@ const modes: { id: Mode; label: string }[] = [
 function Shop() {
   const [mode, setMode] = useState<Mode>("custom");
   const [selected, setSelected] = useState<PackageCode[]>([]);
-  const { rows, total, checkout } = shopOrder(mode, selected);
+  const { rows, total, checkout, sku } = shopOrder(mode, selected);
   const showPacks = mode === "custom" || mode === "addons";
 
   function toggle(code: PackageCode) {
@@ -136,6 +136,11 @@ function Shop() {
               <button type="button" onClick={() => setMode("all")} className="mt-3 text-left text-sm font-semibold text-primary underline underline-offset-4">
                 Перейти на «Всё включено» и сэкономить {money(total - packagePrices.all)}
               </button>
+            )}
+            {checkout && mode !== "updates" && (
+              <a href={"/api/shop-transfer?sku=" + encodeURIComponent(sku)} className="mt-3 flex items-center justify-center rounded-xl border border-border px-4 py-3 font-semibold">
+                Оплата наличными
+              </a>
             )}
             {checkout ? (
               <a href={checkout} target="_blank" rel="noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center font-semibold text-primary-foreground hover:opacity-90">
