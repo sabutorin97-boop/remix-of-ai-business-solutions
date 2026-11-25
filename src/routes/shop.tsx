@@ -47,7 +47,10 @@ function Shop() {
             <p className="mb-3 text-sm font-semibold tracking-wide text-primary">Магазин AI-Profigrup</p>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">Нейросотрудник</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">ИИ-сотрудник в вашем Telegram. Пишет тексты, ищет информацию и помогает с маркетингом. Добавьте навыки под задачи вашего бизнеса.</p>
-            <a href="#catalog" className="mt-7 inline-flex rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-sm hover:opacity-90">Выбрать комплектацию</a>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href="#catalog" className="inline-flex min-h-12 items-center rounded-full border border-primary/60 px-6 py-3 font-semibold text-primary hover:bg-primary/10">Выбрать комплектацию</a>
+              <a href="#payment" className="inline-flex min-h-12 items-center rounded-full bg-primary px-7 py-3 font-bold text-primary-foreground shadow-sm hover:opacity-90">Оплатить</a>
+            </div>
           </div>
           <div className="rounded-3xl border border-border bg-background/90 p-6 sm:p-7">
             <p className="text-sm font-medium text-muted-foreground">Базовый набор</p>
@@ -72,7 +75,7 @@ function Shop() {
           ))}
         </div>
 
-        <div className="mt-7 grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_350px]">
+        <div className="mt-7 grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_390px]">
           <div className="space-y-4">
             {mode === "custom" && (
               <article className="rounded-2xl border border-border bg-secondary/30 p-5 sm:p-6">
@@ -120,8 +123,8 @@ function Shop() {
             )}
           </div>
 
-          <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6 lg:sticky lg:top-24">
-            <h3 className="text-xl font-bold">Ваш заказ</h3>
+          <aside id="payment" aria-labelledby="payment-title" className="scroll-mt-24 rounded-3xl border border-primary/50 bg-card p-6 shadow-xl shadow-primary/10 ring-1 ring-primary/15 target:ring-2 target:ring-primary/60 sm:p-8 lg:sticky lg:top-24">
+            <h3 id="payment-title" className="text-2xl font-bold">Ваш заказ</h3>
             <div aria-live="polite">
               {rows.length ? (
                 <ul className="mt-5 space-y-3 text-sm">
@@ -129,7 +132,7 @@ function Shop() {
                 </ul>
               ) : <p className="mt-4 text-sm text-muted-foreground">Выберите хотя бы одно дополнение.</p>}
               <div className="mt-5 flex items-baseline justify-between gap-2 border-t border-border pt-4">
-                <span className="font-medium">Итого</span><strong className="text-3xl tracking-tight">{money(total)}</strong>
+                <span className="font-medium">Итого</span><strong className="text-4xl tracking-tight">{money(total)}</strong>
               </div>
             </div>
             {mode === "custom" && total > packagePrices.all && (
@@ -138,12 +141,12 @@ function Shop() {
               </button>
             )}
             {checkout && mode !== "updates" && (
-              <a href={"/api/shop-transfer?sku=" + encodeURIComponent(sku)} className="mt-3 flex items-center justify-center rounded-xl border border-border px-4 py-3 font-semibold">
+              <a href={"/api/shop-transfer?sku=" + encodeURIComponent(sku)} className="mt-5 flex min-h-14 items-center justify-center rounded-xl bg-primary px-5 py-4 text-center text-lg font-bold text-primary-foreground shadow-sm hover:opacity-90">
                 Оплата наличными
               </a>
             )}
             {checkout ? (
-              <a href={checkout} target="_blank" rel="noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center font-semibold text-primary-foreground hover:opacity-90">
+              <a href={checkout} target="_blank" rel="noreferrer" className={"mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 py-3 text-center font-semibold " + (mode === "updates" ? "bg-primary text-primary-foreground hover:opacity-90" : "border border-border text-foreground hover:bg-secondary/50")}>
                 <Send className="size-4" aria-hidden /> Оформить в Telegram
               </a>
             ) : (
