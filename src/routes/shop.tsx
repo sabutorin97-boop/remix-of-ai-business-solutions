@@ -89,7 +89,7 @@ function Shop() {
                 {packages.map(({ code, name, price, icon: Icon, description, items }) => {
                   const checked = selected.includes(code);
                   return (
-                    <label key={code} className={"flex cursor-pointer flex-col rounded-2xl border p-5 transition-colors sm:p-6 " + (checked ? "border-primary bg-primary/5" : "border-border bg-background hover:bg-secondary/30")}>
+                    <label key={code} className={"flex cursor-pointer flex-col rounded-2xl border p-5 ring-1 transition-[background-color,border-color,box-shadow] focus-within:ring-2 focus-within:ring-primary/80 sm:p-6 " + (checked ? "border-primary bg-primary/15 shadow-md shadow-primary/15 ring-primary/45" : "border-primary/30 bg-card ring-primary/10 hover:border-primary/60 hover:bg-primary/10")}>
                       <div className="flex items-start justify-between gap-3">
                         <Icon aria-hidden className="size-6 text-primary" />
                         <input type="checkbox" checked={checked} onChange={() => toggle(code)} aria-label={"Добавить " + name} className="size-5 shrink-0 accent-primary" />
