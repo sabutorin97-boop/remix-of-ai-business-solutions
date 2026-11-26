@@ -34,3 +34,29 @@ Existing bundle price 24,900 RUB; individual total 31,500 RUB.
 
 ## Current blockers
 Production database/hosting and merchant account configuration not verified. Live payments and report generation not connected. This branch is a development foundation, not a launch-ready store.
+
+## Neural employee product integration (2026-11-26)
+The customer-facing OpenClaw distribution and five separately maintained package repositories are private, according to the owner. The sales/support bot is a separate local Git repository with no configured remote, according to the owner. Current GitHub connection cannot read the six private repositories (404); actual dependency graph, licenses, installation scripts and release mechanisms remain unverified. Keep private repository identifiers and operational details in restricted documentation, not this public repository.
+
+### SKU mapping (commercial catalog, not verified installation dependencies)
+- base: Base, 9,900 RUB
+- photo: Photo, 4,900 RUB
+- video: Video, 6,900 RUB
+- design: Design, 3,900 RUB
+- dev: Dev, 5,900 RUB
+- all: all five packages, 24,900 RUB (individual total 31,500 RUB)
+- updates: 1,490 RUB / month; confirm scope and whether extension applies to existing purchased packages only.
+The main customer distribution is not an extra paid SKU. Confirm whether each package requires access to it and Base before automating fulfillment.
+
+### Fulfillment workstream (P0)
+1. Audit private READMEs, installation scripts, dependency manifests, licenses and release tags; verify the exact package/access matrix.
+2. Keep the commerce app authoritative for paid orders and entitlements. Snapshot purchased SKU and release version. Use verified payment settlement, including audited manual payments, to enqueue idempotent fulfillment jobs.
+3. Link customer GitHub identity by verified ownership, not a free-text username alone. Grant only necessary access; start with manual fulfillment. Evaluate restricted GitHub App permissions or authenticated package delivery in staging. No broad organization membership or tokens in client code.
+4. Distinguish pending invitation, accepted access, fulfillment failure and retry; record external IDs and audit events. Never automatically grant all packages for an add-on purchase. Check Base prerequisite and update rights first.
+5. Keep purchased version rights separate from update expiration. On refunds or expiry, apply contractual policy, check overlapping valid purchases and avoid removing unrelated access. Repository access cannot erase copies already downloaded.
+6. Audit the local sales/support bot before linking to the order API. Back up the local repository, review .gitignore and history for secrets; only then consider a private remote with owner approval. Do not duplicate the existing partner bot or mix support privileges with payment administration.
+7. Test duplicate payment events, failed invitations, repeated jobs, partial fulfillment, overlapping licenses, refunds, update renewal and unauthorized requests. Do not activate automatic grants until these pass.
+8. Add account UI for purchased modules, install instructions, access status, update expiry and support ticket link. No public links to restricted artifacts.
+
+### Access blocker
+Authorize the GitHub connection for the studio account and selected six private repositories, or supply sanitized READMEs and repository trees. The local support bot cannot be inspected through GitHub until an authorized source is supplied. No private code or repository permissions changed.
