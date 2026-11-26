@@ -12,18 +12,22 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TgRouteImport } from './routes/tg'
 import { Route as TelegramBotsRouteImport } from './routes/telegram-bots'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ProfiMarketPreviewRouteImport } from './routes/profi-market-preview'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as GeoRouteImport } from './routes/geo'
 import { Route as CrmRouteImport } from './routes/crm'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CasesRouteImport } from './routes/cases'
+import { Route as BotboxRouteImport } from './routes/botbox'
 import { Route as AvitoRouteImport } from './routes/avito'
 import { Route as AiWebsitesRouteImport } from './routes/ai-websites'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as GoTgRouteImport } from './routes/go/tg'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiShopTransferRouteImport } from './routes/api/shop-transfer'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTelegramPartnerRouteImport } from './routes/api/telegram/partner'
@@ -44,9 +48,19 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfiMarketPreviewRoute = ProfiMarketPreviewRouteImport.update({
+  id: '/profi-market-preview',
+  path: '/profi-market-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -72,6 +86,11 @@ const ContactRoute = ContactRouteImport.update({
 const CasesRoute = CasesRouteImport.update({
   id: '/cases',
   path: '/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BotboxRoute = BotboxRouteImport.update({
+  id: '/botbox',
+  path: '/botbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvitoRoute = AvitoRouteImport.update({
@@ -104,6 +123,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiShopTransferRoute = ApiShopTransferRouteImport.update({
+  id: '/api/shop-transfer',
+  path: '/api/shop-transfer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiLeadRoute = ApiLeadRouteImport.update({
   id: '/api/lead',
   path: '/api/lead',
@@ -129,17 +153,21 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-websites': typeof AiWebsitesRoute
   '/avito': typeof AvitoRoute
+  '/botbox': typeof BotboxRoute
   '/cases': typeof CasesRoute
   '/contact': typeof ContactRoute
   '/crm': typeof CrmRoute
   '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
+  '/profi-market-preview': typeof ProfiMarketPreviewRoute
   '/services': typeof ServicesRoute
+  '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telegram-bots': typeof TelegramBotsRoute
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/go/tg': typeof GoTgRoute
   '/blog/': typeof BlogIndexRoute
@@ -150,17 +178,21 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-websites': typeof AiWebsitesRoute
   '/avito': typeof AvitoRoute
+  '/botbox': typeof BotboxRoute
   '/cases': typeof CasesRoute
   '/contact': typeof ContactRoute
   '/crm': typeof CrmRoute
   '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
+  '/profi-market-preview': typeof ProfiMarketPreviewRoute
   '/services': typeof ServicesRoute
+  '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telegram-bots': typeof TelegramBotsRoute
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/go/tg': typeof GoTgRoute
   '/blog': typeof BlogIndexRoute
@@ -172,17 +204,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-websites': typeof AiWebsitesRoute
   '/avito': typeof AvitoRoute
+  '/botbox': typeof BotboxRoute
   '/cases': typeof CasesRoute
   '/contact': typeof ContactRoute
   '/crm': typeof CrmRoute
   '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
+  '/profi-market-preview': typeof ProfiMarketPreviewRoute
   '/services': typeof ServicesRoute
+  '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/telegram-bots': typeof TelegramBotsRoute
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/go/tg': typeof GoTgRoute
   '/blog/': typeof BlogIndexRoute
@@ -195,17 +231,21 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-websites'
     | '/avito'
+    | '/botbox'
     | '/cases'
     | '/contact'
     | '/crm'
     | '/geo'
     | '/privacy'
+    | '/profi-market-preview'
     | '/services'
+    | '/shop'
     | '/sitemap.xml'
     | '/telegram-bots'
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/shop-transfer'
     | '/blog/$slug'
     | '/go/tg'
     | '/blog/'
@@ -216,17 +256,21 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-websites'
     | '/avito'
+    | '/botbox'
     | '/cases'
     | '/contact'
     | '/crm'
     | '/geo'
     | '/privacy'
+    | '/profi-market-preview'
     | '/services'
+    | '/shop'
     | '/sitemap.xml'
     | '/telegram-bots'
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/shop-transfer'
     | '/blog/$slug'
     | '/go/tg'
     | '/blog'
@@ -237,17 +281,21 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-websites'
     | '/avito'
+    | '/botbox'
     | '/cases'
     | '/contact'
     | '/crm'
     | '/geo'
     | '/privacy'
+    | '/profi-market-preview'
     | '/services'
+    | '/shop'
     | '/sitemap.xml'
     | '/telegram-bots'
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/shop-transfer'
     | '/blog/$slug'
     | '/go/tg'
     | '/blog/'
@@ -259,17 +307,21 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiWebsitesRoute: typeof AiWebsitesRoute
   AvitoRoute: typeof AvitoRoute
+  BotboxRoute: typeof BotboxRoute
   CasesRoute: typeof CasesRoute
   ContactRoute: typeof ContactRoute
   CrmRoute: typeof CrmRoute
   GeoRoute: typeof GeoRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProfiMarketPreviewRoute: typeof ProfiMarketPreviewRoute
   ServicesRoute: typeof ServicesRoute
+  ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TelegramBotsRoute: typeof TelegramBotsRoute
   TgRoute: typeof TgRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLeadRoute: typeof ApiLeadRoute
+  ApiShopTransferRoute: typeof ApiShopTransferRoute
   BlogSlugRoute: typeof BlogSlugRoute
   GoTgRoute: typeof GoTgRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -300,11 +352,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profi-market-preview': {
+      id: '/profi-market-preview'
+      path: '/profi-market-preview'
+      fullPath: '/profi-market-preview'
+      preLoaderRoute: typeof ProfiMarketPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -340,6 +406,13 @@ declare module '@tanstack/react-router' {
       path: '/cases'
       fullPath: '/cases'
       preLoaderRoute: typeof CasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/botbox': {
+      id: '/botbox'
+      path: '/botbox'
+      fullPath: '/botbox'
+      preLoaderRoute: typeof BotboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/avito': {
@@ -384,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/shop-transfer': {
+      id: '/api/shop-transfer'
+      path: '/api/shop-transfer'
+      fullPath: '/api/shop-transfer'
+      preLoaderRoute: typeof ApiShopTransferRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/lead': {
       id: '/api/lead'
       path: '/api/lead'
@@ -419,17 +499,21 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiWebsitesRoute: AiWebsitesRoute,
   AvitoRoute: AvitoRoute,
+  BotboxRoute: BotboxRoute,
   CasesRoute: CasesRoute,
   ContactRoute: ContactRoute,
   CrmRoute: CrmRoute,
   GeoRoute: GeoRoute,
   PrivacyRoute: PrivacyRoute,
+  ProfiMarketPreviewRoute: ProfiMarketPreviewRoute,
   ServicesRoute: ServicesRoute,
+  ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TelegramBotsRoute: TelegramBotsRoute,
   TgRoute: TgRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLeadRoute: ApiLeadRoute,
+  ApiShopTransferRoute: ApiShopTransferRoute,
   BlogSlugRoute: BlogSlugRoute,
   GoTgRoute: GoTgRoute,
   BlogIndexRoute: BlogIndexRoute,
