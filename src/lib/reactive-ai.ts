@@ -16,18 +16,39 @@ export const reactiveSystem = `Ты специалист по возврату �
 Не выдумывай скидки, дедлайны, отзывы, гарантии, наличие товара или результаты.
 Не обещай рост продаж. Используй только разрешённое предложение.
 Не включай персональные данные. Отправка только при наличии законного основания и необходимых согласий. Прекращай касания при отказе.
-Верни JSON: segments (3), messages (15 с целью, каналом, текстом и сегментом), schedule (план 14 дней с условиями остановки), objections (8 с ответами), offers (3 без выдуманных условий), metrics (поля таблицы контроля), nextSteps (5).
+Верни JSON: segments (3), messages (15 с целью, каналом, текстом и точным названием сегмента), schedule (по одной записи для каждого дня от 1 до 14 с условиями остановки, включая дни без касаний), objections (8 с ответами), offers (3 без выдуманных условий), metrics (поля таблицы контроля), nextSteps (5).
 Пиши конкретно, без спама, давления и ложного дефицита.`;
 export function buildReactiveRequest(raw: unknown) {
   const brief = reactiveBrief.parse(raw);
   return { system: reactiveSystem, prompt: JSON.stringify(brief) };
 }
+const shortText = z.string().trim().min(1).max(160);
+const detailText = z.string().trim().min(1).max(1200);
+
 export const reactiveReport = z.object({
-  segments: z.array(z.string().min(1)).length(3),
-  messages: z.array(z.object({goal:z.string(),channel:z.string(),text:z.string(),segment:z.string()})).length(15),
-  schedule: z.array(z.object({day:z.number().int().min(1).max(14),action:z.string(),stopCondition:z.string()})).min(1).max(14),
-  objections: z.array(z.object({objection:z.string(),answer:z.string()})).length(8),
-  offers: z.array(z.string()).length(3),
-  metrics: z.array(z.string()).min(3),
-  nextSteps: z.array(z.string()).length(5),
+  segments: z.array(shortText).length(3),
+  messages: z.array(z.object({
+    goal: shortText,
+    channel: shortText,
+    text: detailText,
+    segment: shortText,
+  })).length(15),
+  schedule: z.array(z.object({
+    day: z.number().int().min(1).max(14),
+    action: detailText,
+    stopCondition: detailText,
+  })).length(14),
+  objections: z.array(z.object({ objection: detailText, answer: detailText })).length(8),
+  offers: z.array(detailText).length(3),
+  metrics: z.array(shortText).min(3).max(20),
+  nextSteps: z.array(detailText).length(5),
+}).refine(({ schedule }) => new Set(schedule.map(({ day }) => day)).size === 14, {
+  path: ["schedule"],
+  message: "В плане должны быть все 14 дней без повторов.",
+}).refine(({ segments, messages }) => {
+  const knownSegments = new Set(segments);
+  return knownSegments.size === 3 && messages.every(({ segment }) => knownSegments.has(segment));
+}, {
+  path: ["messages"],
+  message: "Сообщения должны ссылаться на три разных сегмента из отчёта.",
 });
