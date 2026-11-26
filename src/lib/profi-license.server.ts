@@ -1,7 +1,13 @@
 import { addonCodes } from "./shop-catalog";
 
 const supportedModules = ["base", ...addonCodes] as const;
-type LicenseModule = (typeof supportedModules)[number];
+export type LicenseModule = (typeof supportedModules)[number];
+
+export interface LicenseAccessAdapter {
+  listManagedModules(verifiedAccount: string): Promise<readonly LicenseModule[]>;
+  grant(verifiedAccount: string, module: LicenseModule): Promise<void>;
+  revoke(verifiedAccount: string, module: LicenseModule): Promise<void>;
+}
 
 /** Сравнивает купленные права только с доступами, которыми управляет Profi License. */
 export function planLicenseChanges(
@@ -23,4 +29,18 @@ export function planLicenseChanges(
     grant: supportedModules.filter((module) => desired.has(module) && !assigned.has(module)),
     revoke: supportedModules.filter((module) => assigned.has(module) && !desired.has(module)),
   };
+}
+
+/** Сверяет один подтверждённый аккаунт. При повторе читает фактическое состояние адаптера. */
+export async function reconcileLicenseAssignments(
+  verifiedAccount: string,
+  activePurchaseSkus: readonly string[],
+  adapter: LicenseAccessAdapter,
+) {
+  const managed = await adapter.listManagedModules(verifiedAccount);
+  const changes = planLicenseChanges(activePurchaseSkus, managed);
+
+  for (const module of changes.revoke) await adapter.revoke(verifiedAccount, module);
+  for (const module of changes.grant) await adapter.grant(verifiedAccount, module);
+  return changes;
 }

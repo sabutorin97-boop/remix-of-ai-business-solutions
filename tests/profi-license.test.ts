@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { planLicenseChanges } from "../src/lib/profi-license.server";
+import {
+  planLicenseChanges,
+  reconcileLicenseAssignments,
+  type LicenseAccessAdapter,
+  type LicenseModule,
+} from "../src/lib/profi-license.server";
 
 describe("права на пакеты Нейросотрудника", () => {
   it("выдаёт все пять модулей за комплект", () => {
@@ -29,5 +34,32 @@ describe("права на пакеты Нейросотрудника", () => {
       grant: [],
       revoke: [],
     });
+  });
+
+  it("повторяет только оставшиеся действия после сбоя выдачи", async () => {
+    const assignments = new Set<LicenseModule>();
+    let failPhoto = true;
+    const adapter: LicenseAccessAdapter = {
+      async listManagedModules() { return Array.from(assignments); },
+      async grant(_, module) {
+        if (module === "photo" && failPhoto) throw new Error("Временный сбой");
+        assignments.add(module);
+      },
+      async revoke(_, module) { assignments.delete(module); },
+    };
+
+    await assert.rejects(reconcileLicenseAssignments("verified-account", ["base", "photo"], adapter));
+    assert.deepEqual([...assignments], ["base"]);
+
+    failPhoto = false;
+    assert.deepEqual(await reconcileLicenseAssignments("verified-account", ["base", "photo"], adapter), {
+      grant: ["photo"],
+      revoke: [],
+    });
+    assert.deepEqual(await reconcileLicenseAssignments("verified-account", ["base"], adapter), {
+      grant: [],
+      revoke: ["photo"],
+    });
+    assert.deepEqual([...assignments], ["base"]);
   });
 });
