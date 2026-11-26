@@ -25,6 +25,28 @@ export function radarQueries(raw: unknown) {
     "Что известно о компании " + b.business + " (" + b.website + ")?",
   ];
 }
+
+export function radarAuditQueries(raw: unknown) {
+  const { business, website, city, category } = radarBrief.parse(raw);
+  const market = `${category.slice(0, 220)} в городе ${city.slice(0, 120)}`;
+  const domain = new URL(website).hostname.slice(0, 253);
+  const brand = `${business} (${domain})`;
+
+  return [
+    { kind: "market", query: `Где заказать ${market}?` },
+    { kind: "market", query: `Какие компании предлагают ${market}?` },
+    { kind: "market", query: `Как выбрать поставщика для категории «${market}»?` },
+    { kind: "market", query: `Какие сайты стоит посмотреть, если нужны ${market}?` },
+    { kind: "market", query: `Как сравнить цены и условия, если нужны ${market}?` },
+    { kind: "market", query: `На какие документы обратить внимание, выбирая ${market}?` },
+    { kind: "market", query: `Какие критерии стоит проверить перед заказом ${market}?` },
+    { kind: "brand", query: `Что известно о компании ${brand}?` },
+    { kind: "brand", query: `Какой сайт указан для компании ${business} в городе ${city.slice(0, 120)}?` },
+    { kind: "brand", query: `Какие товары или услуги предлагает компания ${brand}?` },
+    { kind: "brand", query: `Какие источники подтверждают сведения о компании ${brand}?` },
+    { kind: "brand", query: `Что можно проверить перед обращением в компанию ${brand}?` },
+  ] as const;
+}
 export function radarEvidence(rawBrief: unknown, rawObservations: unknown) {
   const brief = radarBrief.parse(rawBrief);
   const observations = z.array(observation).min(1).max(60).parse(rawObservations);
