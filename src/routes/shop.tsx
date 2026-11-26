@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Camera, Check, Clapperboard, Code2, Layers3, Send } from "lucide-react";
 import { useState } from "react";
+import { microProducts } from "@/lib/profi-market-policy";
 import { bundleSavings, money, packagePrices, productNames, shopOrder, type Mode, type PackageCode } from "@/lib/shop-catalog";
 
 export const Route = createFileRoute("/shop")({
@@ -61,6 +62,22 @@ function Shop() {
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8" aria-labelledby="micro-title">
+        <p className="text-sm font-semibold text-primary">Profi Market</p>
+        <h2 id="micro-title" className="mt-2 text-3xl font-bold">AI-инструменты для конкретных задач</h2>
+        <p className="mt-3 text-muted-foreground">Новые продукты готовятся к запуску. Оплата пока недоступна.</p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {microProducts.map((product) => (
+            <article key={product.sku} className="flex flex-col rounded-2xl border border-border bg-card p-5">
+              <span className="text-xs font-semibold text-muted-foreground">Скоро</span>
+              <h3 className="mt-3 text-xl font-bold">{product.name}</h3>
+              <p className="mt-3 text-2xl font-semibold">{money(product.price / 100)}</p>
+              <p className="mt-4 text-sm text-muted-foreground">Планируемая цена</p>
+            </article>
+          ))}
         </div>
       </section>
 
