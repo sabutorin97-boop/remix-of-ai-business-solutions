@@ -3,6 +3,15 @@ import { createCheckoutHandler, createPostgresCheckoutStore } from "./profi-chec
 import { createSessionVerifier } from "./profi-session.server";
 
 let handler: ReturnType<typeof createCheckoutHandler> | undefined;
+let database: ReturnType<typeof postgres> | undefined;
+
+export function getProfiDatabase() {
+  const url = process.env.PROFI_DATABASE_URL;
+  if (!url) throw new Error("База Profi Market не настроена");
+  return database ??= postgres(url, {
+    max: 5, idle_timeout: 30, connect_timeout: 5, prepare: false,
+  });
+}
 
 export async function handleProfiCheckout(request: Request) {
   if (process.env.PROFI_CHECKOUT_ENABLED !== "1") {
@@ -11,19 +20,13 @@ export async function handleProfiCheckout(request: Request) {
 
   try {
     if (!handler) {
-      const databaseUrl = process.env.PROFI_DATABASE_URL;
       const configuredOrigin = process.env.PROFI_CHECKOUT_ORIGIN;
-      if (!databaseUrl || !configuredOrigin) throw new Error("Оформление заказа не настроено");
+      if (!configuredOrigin) throw new Error("Оформление заказа не настроено");
       const origin = new URL(configuredOrigin);
       if (origin.protocol !== "https:" && !(origin.protocol === "http:" && origin.hostname === "127.0.0.1")) {
         throw new Error("Для оформления заказа нужен HTTPS");
       }
-      const sql = postgres(databaseUrl, {
-        max: 5,
-        idle_timeout: 30,
-        connect_timeout: 5,
-        prepare: false,
-      });
+      const sql = getProfiDatabase();
       handler = createCheckoutHandler({
         origin: origin.origin,
         verifySession: createSessionVerifier(async (statement, [hash]) => ({

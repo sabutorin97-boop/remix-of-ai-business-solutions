@@ -81,3 +81,20 @@ Authorize the GitHub connection for the studio account and selected six private 
 Запрос JSON принимает `requestKey` и `skus`. Один ключ следует повторно использовать
 при сетевом сбое для той же корзины. Ответ содержит `orderId`. Создание заказа
 не подтверждает платёж и не запускает выдачу.
+
+## Вход через Telegram
+
+На тестовом HTTPS-домене в BotFather зарегистрируйте точный адрес
+`/api/profi-login/telegram/callback`. На сервере задайте
+`PROFI_TELEGRAM_LOGIN_ENABLED=1`, `PROFI_TELEGRAM_CLIENT_ID`,
+`PROFI_TELEGRAM_CLIENT_SECRET`, `PROFI_CHECKOUT_ORIGIN` и `PROFI_DATABASE_URL`.
+Начало входа — `GET /api/profi-login/telegram/`.
+
+Покупатель должен уже существовать с `auth_subject` вида `telegram:<OIDC sub>`.
+Привязку создают по подтверждённой личности из Telegram Login. Telegram ID из бота,
+логин, имя и почту нельзя использовать как замену OIDC sub. Автоматического
+объединения учётных записей нет.
+
+Резервный вход будет принимать одноразовый код, отправленный на заранее
+подтверждённую почту того же покупателя. GitHub используется отдельно для
+подтверждения аккаунта при выдаче доступа к репозиториям.
