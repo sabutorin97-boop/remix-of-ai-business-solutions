@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { it } from "node:test";
-import { createEmailCodeService } from "../src/lib/profi-email-code.server";
+import { createEmailCodeService, createPostgresEmailCodeStore } from "../src/lib/profi-email-code.server";
 
 it("связывает отправленный код с запросом и выдаёт сессию по подтверждённому ответу хранилища", async () => {
   let challenge: { email: string; id: string; digest: string } | undefined;
@@ -23,6 +23,26 @@ it("связывает отправленный код с запросом и в
   assert.equal(await service.confirmCode(id, "invalid"), null);
   assert.equal(await service.confirmCode(id, message), "session-cookie");
   assert.equal(await service.confirmCode(id, message), null);
+});
+
+it("передаёт значения в PostgreSQL отдельно от запроса и различает результат списания", async () => {
+  const id = "801d2ebf-f673-48ba-9f9e-b51fa9710a19";
+  const digest = "a".repeat(64);
+  let calls = 0;
+  const store = createPostgresEmailCodeStore(async (statement, values) => {
+    calls++;
+    if (calls === 1) {
+      assert.match(statement, /save_email_code\(\$1, \$2, \$3\)/);
+      assert.deepEqual(values, ["buyer@example.test", id, digest]);
+      return [{ saved: true }];
+    }
+    assert.match(statement, /consume_email_code\(\$1, \$2\)/);
+    assert.deepEqual(values, [id, digest]);
+    return [{ subject: calls === 2 ? "known-buyer" : null }];
+  });
+  assert.equal(await store.save({ email: "buyer@example.test", id, digest }), true);
+  assert.equal(await store.consume(id, digest), "known-buyer");
+  assert.equal(await store.consume(id, digest), null);
 });
 
 it("отвечает одинаково для неизвестного адреса и не отправляет письмо", async () => {

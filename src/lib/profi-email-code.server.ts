@@ -12,6 +12,27 @@ type EmailCodeDependencies = {
   issue(subject: string): Promise<string | null>;
 };
 
+type EmailCodeQuery = (statement: string, parameters: string[]) => Promise<
+  readonly { saved?: boolean; subject?: string | null }[]
+>;
+
+export function createPostgresEmailCodeStore(query: EmailCodeQuery): Pick<EmailCodeDependencies, "save" | "consume"> {
+  return {
+    async save({ email, id, digest }) {
+      const [result] = await query(
+        "SELECT profi_market.save_email_code($1, $2, $3) AS saved", [email, id, digest],
+      );
+      return result?.saved === true;
+    },
+    async consume(id, digest) {
+      const [result] = await query(
+        "SELECT profi_market.consume_email_code($1, $2) AS subject", [id, digest],
+      );
+      return result?.subject ?? null;
+    },
+  };
+}
+
 export function createEmailCodeService({ secret, save, consume, send, issue }: EmailCodeDependencies) {
   if (Buffer.byteLength(secret) < 32) throw new Error("Нужен отдельный ключ для кодов входа");
   const sign = (id: string, code: string) => createHmac("sha256", secret)
