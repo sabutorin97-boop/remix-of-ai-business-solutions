@@ -76,16 +76,19 @@ export async function verifyTelegramIdentity(
   return "telegram:" + payload.sub;
 }
 
-export function createTelegramExchange(clientId: string, secret: string, callback: string) {
+export function createTelegramExchange(
+  clientId: string, secret: string, callback: string, fetchToken: typeof fetch = fetch,
+) {
   return async (code: string, verifier: string, nonce: string) => {
-    const response = await fetch(issuer + "/token", {
+    const response = await fetchToken(issuer + "/token", {
       method: "POST", redirect: "error", signal: AbortSignal.timeout(8000),
       headers: {
         Authorization: "Basic " + Buffer.from(clientId + ":" + secret).toString("base64"),
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        grant_type: "authorization_code", code, redirect_uri: callback, code_verifier: verifier,
+        grant_type: "authorization_code", code, client_id: clientId,
+        redirect_uri: callback, code_verifier: verifier,
       }),
     });
     if (!response.ok) throw new Error("Telegram отклонил обмен кода");

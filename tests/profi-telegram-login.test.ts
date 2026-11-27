@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { it } from "node:test";
 import { generateKeyPair, SignJWT } from "jose";
-import { createTelegramLogin, verifyTelegramIdentity } from "../src/lib/profi-telegram-login.server";
+import { createTelegramExchange, createTelegramLogin, verifyTelegramIdentity } from "../src/lib/profi-telegram-login.server";
 
 it("связывает начало и завершение входа с браузером и выдаёт сессию только подтверждённому покупателю", async () => {
   const origin = "https://shop.example.test";
@@ -49,4 +49,18 @@ it("проверяет подпись, получателя и nonce токен�
   await assert.rejects(verifyTelegramIdentity(token, "123", "wrong", key));
   const otherKey = async () => (await generateKeyPair("ES256")).publicKey;
   await assert.rejects(verifyTelegramIdentity(token, "123", "expected-nonce", otherKey));
+});
+
+it("отправляет идентификатор клиента вместе с кодом и проверкой PKCE", async () => {
+  const callback = "https://shop.example.test/api/profi-login/telegram/callback";
+  let sent: URLSearchParams | undefined;
+  const exchange = createTelegramExchange("123", "test-secret", callback,
+    async (_url, options) => {
+      sent = options?.body as URLSearchParams;
+      return new Response(null, { status: 400 });
+    });
+  await assert.rejects(exchange("fixture-code", "fixture-verifier", "fixture-nonce"));
+  assert.equal(sent?.get("client_id"), "123");
+  assert.equal(sent?.get("redirect_uri"), callback);
+  assert.equal(sent?.get("code_verifier"), "fixture-verifier");
 });
