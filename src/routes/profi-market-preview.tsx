@@ -3,7 +3,8 @@ import { useState, type FormEvent } from "react";
 import { ProfiAccountPreview } from "@/components/site/ProfiAccountPreview";
 import { ProfiAdminPreview } from "@/components/site/ProfiAdminPreview";
 import { ReactiveBriefPreview } from "@/components/site/ReactiveBriefPreview";
-import { radarAuditQueries, radarBrief } from "@/lib/ai-radar";
+import { RadarObservationPreview } from "@/components/site/RadarObservationPreview";
+import { radarAuditQueries, radarBrief, type RadarBrief } from "@/lib/ai-radar";
 import { addonCodes, productNames } from "@/lib/shop-catalog";
 
 export const Route = createFileRoute("/profi-market-preview")({
@@ -54,12 +55,14 @@ const radarFields = [
 function RadarPreview() {
   const [queries, setQueries] = useState<string[]>([]);
   const [error, setError] = useState("");
+  const [reportBrief, setReportBrief] = useState<RadarBrief>();
 
   function prepareQueries(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.currentTarget));
     const result = radarBrief.safeParse(data);
     setQueries(result.success ? radarAuditQueries(result.data).map(({ query }) => query) : []);
+    setReportBrief(result.success ? result.data : undefined);
     setError(result.success ? "" : "Проверьте поля анкеты. Укажите полный адрес сайта с http:// или https://.");
   }
 
@@ -100,6 +103,7 @@ function RadarPreview() {
           )}
         </div>
       </form>
+      {reportBrief && <RadarObservationPreview key={JSON.stringify(reportBrief)} brief={reportBrief} />}
     </section>
   );
 }
