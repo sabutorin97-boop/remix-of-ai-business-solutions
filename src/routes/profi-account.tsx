@@ -19,7 +19,7 @@ export const Route = createFileRoute("/profi-account")({
 });
 
 type Account = {
-  orders: { id: string; status: keyof typeof statuses; created_at: string; amount_minor: string; items: string[] | null }[];
+  orders: { id: string; status: keyof typeof statuses; created_at: string; amount_minor: string; materials_ready: boolean; items: string[] | null }[];
   products: { sku: string; name: string; amount_minor: string }[];
 };
 
@@ -152,6 +152,10 @@ function AccountPage() {
                 <div>
                   <p className="font-medium">{money(entry.amount_minor)}</p>
                   <p className="text-sm text-muted-foreground">{statuses[entry.status]}</p>
+                  {entry.materials_ready && (
+                    <a className="mt-2 inline-block text-sm font-medium text-primary underline"
+                      href={`/api/profi-account?results=${entry.id}`} download>Скачать материалы</a>
+                  )}
                 </div>
               </li>)}
             </ul>}

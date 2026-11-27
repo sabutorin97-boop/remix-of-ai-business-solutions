@@ -23,6 +23,9 @@ export async function handleProfiAccount(request: Request) {
         rows: await sql.unsafe<{ auth_subject: string }[]>(statement, args),
       })),
       load: createPostgresAccountStore(async (statement, args) => sql.unsafe(statement, args)),
+      readResults: (subject, orderId) => sql.unsafe(
+        "SELECT sku, payload FROM profi_market.read_paid_product_results($1, $2::uuid)", [subject, orderId],
+      ),
       revoke: createSessionRevoker(async (statement, args) => sql.unsafe(statement, args)),
     });
     return await handler(request);
