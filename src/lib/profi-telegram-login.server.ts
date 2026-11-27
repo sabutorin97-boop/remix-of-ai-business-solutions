@@ -11,9 +11,10 @@ type LoginOptions = {
   callback: string;
   exchange(code: string, verifier: string, nonce: string): Promise<string>;
   issue(subject: string): Promise<string | null>;
+  successPath?: "/shop" | "/profi-account";
 };
 
-export function createTelegramLogin({ clientId, callback, exchange, issue }: LoginOptions) {
+export function createTelegramLogin({ clientId, callback, exchange, issue, successPath = "/shop" }: LoginOptions) {
   return {
     start() {
       const state = random();
@@ -52,7 +53,7 @@ export function createTelegramLogin({ clientId, callback, exchange, issue }: Log
         const cookie = await issue(subject);
         if (!cookie) return new Response("Учётная запись покупателя не найдена.", { status: 403, headers });
         headers.append("Set-Cookie", cookie);
-        headers.set("Location", "/shop");
+        headers.set("Location", successPath);
         return new Response(null, { status: 303, headers });
       } catch {
         return new Response("Не удалось завершить вход.", { status: 502, headers });

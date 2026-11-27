@@ -111,3 +111,14 @@ Authorize the GitHub connection for the studio account and selected six private 
 отдельные от уведомлений сайта: `PROFI_EMAIL_SMTP_HOST`, `PROFI_EMAIL_SMTP_PORT`,
 `PROFI_EMAIL_SMTP_USER`, `PROFI_EMAIL_SMTP_PASSWORD`. SMTP использует TLS.
 Хеширование кодов требует отдельного `PROFI_EMAIL_CODE_SECRET`.
+
+## Тестовый кабинет покупателя
+
+`PROFI_ACCOUNT_TEST_ENABLED=1` открывает `/profi-account` и `/api/profi-account`
+в отдельном тестовом окружении. Для оформления заказа нужен также
+`PROFI_CHECKOUT_ENABLED=1`. История последних 50 заказов определяется только
+сессией покупателя. Выход отзывает текущую сессию в базе.
+
+Кнопка заказа сохраняет ключ повторной попытки для выбранного товара до
+подтверждённого ответа. Повтор после потерянного ответа возвращает тот же заказ.
+Создание заказа из кабинета не инициирует оплату.

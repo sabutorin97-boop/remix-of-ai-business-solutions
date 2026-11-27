@@ -17,6 +17,7 @@ export async function handleTelegramLogin(request: Request, step: "start" | "com
     const sql = getProfiDatabase();
     const login = createTelegramLogin({
       clientId, callback,
+      successPath: process.env.PROFI_ACCOUNT_TEST_ENABLED === "1" ? "/profi-account" : "/shop",
       exchange: createTelegramExchange(clientId, secret, callback),
       issue: createSessionIssuer(async (statement, parameters) => ({
         rows: await sql.unsafe<{ token_hash: string }[]>(statement, parameters),

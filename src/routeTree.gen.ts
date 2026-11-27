@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ProfiMarketPreviewRouteImport } from './routes/profi-market-preview'
+import { Route as ProfiAccountRouteImport } from './routes/profi-account'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as GeoRouteImport } from './routes/geo'
 import { Route as CrmRouteImport } from './routes/crm'
@@ -29,6 +30,7 @@ import { Route as GoTgRouteImport } from './routes/go/tg'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiShopTransferRouteImport } from './routes/api/shop-transfer'
 import { Route as ApiProfiCheckoutRouteImport } from './routes/api/profi-checkout'
+import { Route as ApiProfiAccountRouteImport } from './routes/api/profi-account'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTelegramPartnerRouteImport } from './routes/api/telegram/partner'
@@ -66,6 +68,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const ProfiMarketPreviewRoute = ProfiMarketPreviewRouteImport.update({
   id: '/profi-market-preview',
   path: '/profi-market-preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfiAccountRoute = ProfiAccountRouteImport.update({
+  id: '/profi-account',
+  path: '/profi-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -138,6 +145,11 @@ const ApiProfiCheckoutRoute = ApiProfiCheckoutRouteImport.update({
   path: '/api/profi-checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiProfiAccountRoute = ApiProfiAccountRouteImport.update({
+  id: '/api/profi-account',
+  path: '/api/profi-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiLeadRoute = ApiLeadRouteImport.update({
   id: '/api/lead',
   path: '/api/lead',
@@ -193,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/crm': typeof CrmRoute
   '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
+  '/profi-account': typeof ProfiAccountRoute
   '/profi-market-preview': typeof ProfiMarketPreviewRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -201,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/profi-account': typeof ApiProfiAccountRoute
   '/api/profi-checkout': typeof ApiProfiCheckoutRoute
   '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -223,6 +237,7 @@ export interface FileRoutesByTo {
   '/crm': typeof CrmRoute
   '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
+  '/profi-account': typeof ProfiAccountRoute
   '/profi-market-preview': typeof ProfiMarketPreviewRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -231,6 +246,7 @@ export interface FileRoutesByTo {
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/profi-account': typeof ApiProfiAccountRoute
   '/api/profi-checkout': typeof ApiProfiCheckoutRoute
   '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -254,6 +270,7 @@ export interface FileRoutesById {
   '/crm': typeof CrmRoute
   '/geo': typeof GeoRoute
   '/privacy': typeof PrivacyRoute
+  '/profi-account': typeof ProfiAccountRoute
   '/profi-market-preview': typeof ProfiMarketPreviewRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -262,6 +279,7 @@ export interface FileRoutesById {
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/profi-account': typeof ApiProfiAccountRoute
   '/api/profi-checkout': typeof ApiProfiCheckoutRoute
   '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -286,6 +304,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/geo'
     | '/privacy'
+    | '/profi-account'
     | '/profi-market-preview'
     | '/services'
     | '/shop'
@@ -294,6 +313,7 @@ export interface FileRouteTypes {
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/profi-account'
     | '/api/profi-checkout'
     | '/api/shop-transfer'
     | '/blog/$slug'
@@ -316,6 +336,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/geo'
     | '/privacy'
+    | '/profi-account'
     | '/profi-market-preview'
     | '/services'
     | '/shop'
@@ -324,6 +345,7 @@ export interface FileRouteTypes {
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/profi-account'
     | '/api/profi-checkout'
     | '/api/shop-transfer'
     | '/blog/$slug'
@@ -346,6 +368,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/geo'
     | '/privacy'
+    | '/profi-account'
     | '/profi-market-preview'
     | '/services'
     | '/shop'
@@ -354,6 +377,7 @@ export interface FileRouteTypes {
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/profi-account'
     | '/api/profi-checkout'
     | '/api/shop-transfer'
     | '/blog/$slug'
@@ -377,6 +401,7 @@ export interface RootRouteChildren {
   CrmRoute: typeof CrmRoute
   GeoRoute: typeof GeoRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProfiAccountRoute: typeof ProfiAccountRoute
   ProfiMarketPreviewRoute: typeof ProfiMarketPreviewRoute
   ServicesRoute: typeof ServicesRoute
   ShopRoute: typeof ShopRoute
@@ -385,6 +410,7 @@ export interface RootRouteChildren {
   TgRoute: typeof TgRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLeadRoute: typeof ApiLeadRoute
+  ApiProfiAccountRoute: typeof ApiProfiAccountRoute
   ApiProfiCheckoutRoute: typeof ApiProfiCheckoutRoute
   ApiShopTransferRoute: typeof ApiShopTransferRoute
   BlogSlugRoute: typeof BlogSlugRoute
@@ -440,6 +466,13 @@ declare module '@tanstack/react-router' {
       path: '/profi-market-preview'
       fullPath: '/profi-market-preview'
       preLoaderRoute: typeof ProfiMarketPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profi-account': {
+      id: '/profi-account'
+      path: '/profi-account'
+      fullPath: '/profi-account'
+      preLoaderRoute: typeof ProfiAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -540,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiProfiCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/profi-account': {
+      id: '/api/profi-account'
+      path: '/api/profi-account'
+      fullPath: '/api/profi-account'
+      preLoaderRoute: typeof ApiProfiAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/lead': {
       id: '/api/lead'
       path: '/api/lead'
@@ -609,6 +649,7 @@ const rootRouteChildren: RootRouteChildren = {
   CrmRoute: CrmRoute,
   GeoRoute: GeoRoute,
   PrivacyRoute: PrivacyRoute,
+  ProfiAccountRoute: ProfiAccountRoute,
   ProfiMarketPreviewRoute: ProfiMarketPreviewRoute,
   ServicesRoute: ServicesRoute,
   ShopRoute: ShopRoute,
@@ -617,6 +658,7 @@ const rootRouteChildren: RootRouteChildren = {
   TgRoute: TgRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLeadRoute: ApiLeadRoute,
+  ApiProfiAccountRoute: ApiProfiAccountRoute,
   ApiProfiCheckoutRoute: ApiProfiCheckoutRoute,
   ApiShopTransferRoute: ApiShopTransferRoute,
   BlogSlugRoute: BlogSlugRoute,
