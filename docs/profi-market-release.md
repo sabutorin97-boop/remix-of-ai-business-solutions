@@ -98,3 +98,16 @@ Authorize the GitHub connection for the studio account and selected six private 
 Резервный вход будет принимать одноразовый код, отправленный на заранее
 подтверждённую почту того же покупателя. GitHub используется отдельно для
 подтверждения аккаунта при выдаче доступа к репозиториям.
+
+## Тестовый вход по почте
+
+`POST /api/profi-login/email/request` принимает `{email}`, а
+`POST /api/profi-login/email/confirm` принимает `{code}`. Идентификатор
+запроса хранится в защищённом cookie браузера и очищается при входе.
+
+Маршруты выключены по умолчанию. Для теста требуется `PROFI_EMAIL_TEST_ENABLED=1`
+и один явно заданный адрес `PROFI_EMAIL_TEST_RECIPIENT`, предварительно
+внесённый в тестовую таблицу подтверждённых адресов. Настройки отправки
+отдельные от уведомлений сайта: `PROFI_EMAIL_SMTP_HOST`, `PROFI_EMAIL_SMTP_PORT`,
+`PROFI_EMAIL_SMTP_USER`, `PROFI_EMAIL_SMTP_PASSWORD`. SMTP использует TLS.
+Хеширование кодов требует отдельного `PROFI_EMAIL_CODE_SECRET`.

@@ -35,6 +35,8 @@ import { Route as ApiTelegramPartnerRouteImport } from './routes/api/telegram/pa
 import { Route as ApiPartnerBroadcastRouteImport } from './routes/api/partner/broadcast'
 import { Route as ApiProfiLoginTelegramIndexRouteImport } from './routes/api/profi-login/telegram/index'
 import { Route as ApiProfiLoginTelegramCallbackRouteImport } from './routes/api/profi-login/telegram/callback'
+import { Route as ApiProfiLoginEmailRequestRouteImport } from './routes/api/profi-login/email/request'
+import { Route as ApiProfiLoginEmailConfirmRouteImport } from './routes/api/profi-login/email/confirm'
 
 const TgRoute = TgRouteImport.update({
   id: '/tg',
@@ -168,6 +170,18 @@ const ApiProfiLoginTelegramCallbackRoute =
     path: '/api/profi-login/telegram/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiProfiLoginEmailRequestRoute =
+  ApiProfiLoginEmailRequestRouteImport.update({
+    id: '/api/profi-login/email/request',
+    path: '/api/profi-login/email/request',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiProfiLoginEmailConfirmRoute =
+  ApiProfiLoginEmailConfirmRouteImport.update({
+    id: '/api/profi-login/email/confirm',
+    path: '/api/profi-login/email/confirm',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -194,6 +208,8 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/api/partner/broadcast': typeof ApiPartnerBroadcastRoute
   '/api/telegram/partner': typeof ApiTelegramPartnerRoute
+  '/api/profi-login/email/confirm': typeof ApiProfiLoginEmailConfirmRoute
+  '/api/profi-login/email/request': typeof ApiProfiLoginEmailRequestRoute
   '/api/profi-login/telegram/callback': typeof ApiProfiLoginTelegramCallbackRoute
   '/api/profi-login/telegram/': typeof ApiProfiLoginTelegramIndexRoute
 }
@@ -222,6 +238,8 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/api/partner/broadcast': typeof ApiPartnerBroadcastRoute
   '/api/telegram/partner': typeof ApiTelegramPartnerRoute
+  '/api/profi-login/email/confirm': typeof ApiProfiLoginEmailConfirmRoute
+  '/api/profi-login/email/request': typeof ApiProfiLoginEmailRequestRoute
   '/api/profi-login/telegram/callback': typeof ApiProfiLoginTelegramCallbackRoute
   '/api/profi-login/telegram': typeof ApiProfiLoginTelegramIndexRoute
 }
@@ -251,6 +269,8 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/api/partner/broadcast': typeof ApiPartnerBroadcastRoute
   '/api/telegram/partner': typeof ApiTelegramPartnerRoute
+  '/api/profi-login/email/confirm': typeof ApiProfiLoginEmailConfirmRoute
+  '/api/profi-login/email/request': typeof ApiProfiLoginEmailRequestRoute
   '/api/profi-login/telegram/callback': typeof ApiProfiLoginTelegramCallbackRoute
   '/api/profi-login/telegram/': typeof ApiProfiLoginTelegramIndexRoute
 }
@@ -281,6 +301,8 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/api/partner/broadcast'
     | '/api/telegram/partner'
+    | '/api/profi-login/email/confirm'
+    | '/api/profi-login/email/request'
     | '/api/profi-login/telegram/callback'
     | '/api/profi-login/telegram/'
   fileRoutesByTo: FileRoutesByTo
@@ -309,6 +331,8 @@ export interface FileRouteTypes {
     | '/blog'
     | '/api/partner/broadcast'
     | '/api/telegram/partner'
+    | '/api/profi-login/email/confirm'
+    | '/api/profi-login/email/request'
     | '/api/profi-login/telegram/callback'
     | '/api/profi-login/telegram'
   id:
@@ -337,6 +361,8 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/api/partner/broadcast'
     | '/api/telegram/partner'
+    | '/api/profi-login/email/confirm'
+    | '/api/profi-login/email/request'
     | '/api/profi-login/telegram/callback'
     | '/api/profi-login/telegram/'
   fileRoutesById: FileRoutesById
@@ -366,6 +392,8 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   ApiPartnerBroadcastRoute: typeof ApiPartnerBroadcastRoute
   ApiTelegramPartnerRoute: typeof ApiTelegramPartnerRoute
+  ApiProfiLoginEmailConfirmRoute: typeof ApiProfiLoginEmailConfirmRoute
+  ApiProfiLoginEmailRequestRoute: typeof ApiProfiLoginEmailRequestRoute
   ApiProfiLoginTelegramCallbackRoute: typeof ApiProfiLoginTelegramCallbackRoute
   ApiProfiLoginTelegramIndexRoute: typeof ApiProfiLoginTelegramIndexRoute
 }
@@ -554,6 +582,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiProfiLoginTelegramCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/profi-login/email/request': {
+      id: '/api/profi-login/email/request'
+      path: '/api/profi-login/email/request'
+      fullPath: '/api/profi-login/email/request'
+      preLoaderRoute: typeof ApiProfiLoginEmailRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/profi-login/email/confirm': {
+      id: '/api/profi-login/email/confirm'
+      path: '/api/profi-login/email/confirm'
+      fullPath: '/api/profi-login/email/confirm'
+      preLoaderRoute: typeof ApiProfiLoginEmailConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -582,6 +624,8 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ApiPartnerBroadcastRoute: ApiPartnerBroadcastRoute,
   ApiTelegramPartnerRoute: ApiTelegramPartnerRoute,
+  ApiProfiLoginEmailConfirmRoute: ApiProfiLoginEmailConfirmRoute,
+  ApiProfiLoginEmailRequestRoute: ApiProfiLoginEmailRequestRoute,
   ApiProfiLoginTelegramCallbackRoute: ApiProfiLoginTelegramCallbackRoute,
   ApiProfiLoginTelegramIndexRoute: ApiProfiLoginTelegramIndexRoute,
 }

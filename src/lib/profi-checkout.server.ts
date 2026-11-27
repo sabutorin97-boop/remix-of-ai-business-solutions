@@ -1,6 +1,6 @@
 import { z } from "zod";
+import { isProfiJson, readProfiJson } from "./profi-json.server";
 
-const maxBodyBytes = 4096;
 const checkoutInput = z.object({
   requestKey: z.string().regex(/^[A-Za-z0-9_-]{8,128}$/),
   skus: z.array(z.string().regex(/^[a-z0-9-]{1,64}$/)).min(1).max(5)
@@ -48,7 +48,7 @@ export function createCheckoutHandler(dependencies: CheckoutDependencies) {
   return async (request: Request): Promise<Response> => {
     if (request.method !== "POST") return reply(405, { error: "method_not_allowed" });
     if (request.headers.get("origin") !== origin) return reply(403, { error: "invalid_origin" });
-    if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
+    if (!isProfiJson(request)) {
       return reply(415, { error: "unsupported_media_type" });
     }
 
@@ -56,32 +56,11 @@ export function createCheckoutHandler(dependencies: CheckoutDependencies) {
       const session = await dependencies.verifySession(request);
       if (!session?.subject.trim()) return reply(401, { error: "sign_in_required" });
 
-      const reader = request.body?.getReader();
-      if (!reader) return reply(400, { error: "invalid_order" });
-      const buffer = new Uint8Array(maxBodyBytes);
-      let length = 0;
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          if (length + value.length > maxBodyBytes) {
-            void reader.cancel().catch(() => {});
-            return reply(413, { error: "body_too_large" });
-          }
-          buffer.set(value, length);
-          length += value.length;
-        }
-      } finally {
-        reader.releaseLock();
-      }
-
-      let body: unknown;
-      try {
-        body = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer.subarray(0, length)));
-      } catch {
-        return reply(400, { error: "invalid_order" });
-      }
-      const input = checkoutInput.safeParse(body);
+      const body = await readProfiJson(request);
+      if ("error" in body) return reply(body.error, {
+        error: body.error === 413 ? "body_too_large" : "invalid_order",
+      });
+      const input = checkoutInput.safeParse(body.value);
       if (!input.success) return reply(400, { error: "invalid_order" });
       const orderId = await dependencies.createOrder({ ...input.data, subject: session.subject });
       return orderId ? reply(200, { orderId }) : reply(422, { error: "order_rejected" });
