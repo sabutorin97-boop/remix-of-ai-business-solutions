@@ -28,6 +28,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as GoTgRouteImport } from './routes/go/tg'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiShopTransferRouteImport } from './routes/api/shop-transfer'
+import { Route as ApiProfiCheckoutRouteImport } from './routes/api/profi-checkout'
 import { Route as ApiLeadRouteImport } from './routes/api/lead'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTelegramPartnerRouteImport } from './routes/api/telegram/partner'
@@ -128,6 +129,11 @@ const ApiShopTransferRoute = ApiShopTransferRouteImport.update({
   path: '/api/shop-transfer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiProfiCheckoutRoute = ApiProfiCheckoutRouteImport.update({
+  id: '/api/profi-checkout',
+  path: '/api/profi-checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiLeadRoute = ApiLeadRouteImport.update({
   id: '/api/lead',
   path: '/api/lead',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/profi-checkout': typeof ApiProfiCheckoutRoute
   '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/go/tg': typeof GoTgRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/profi-checkout': typeof ApiProfiCheckoutRoute
   '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/go/tg': typeof GoTgRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/tg': typeof TgRoute
   '/api/chat': typeof ApiChatRoute
   '/api/lead': typeof ApiLeadRoute
+  '/api/profi-checkout': typeof ApiProfiCheckoutRoute
   '/api/shop-transfer': typeof ApiShopTransferRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/go/tg': typeof GoTgRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/profi-checkout'
     | '/api/shop-transfer'
     | '/blog/$slug'
     | '/go/tg'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/profi-checkout'
     | '/api/shop-transfer'
     | '/blog/$slug'
     | '/go/tg'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/tg'
     | '/api/chat'
     | '/api/lead'
+    | '/api/profi-checkout'
     | '/api/shop-transfer'
     | '/blog/$slug'
     | '/go/tg'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   TgRoute: typeof TgRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLeadRoute: typeof ApiLeadRoute
+  ApiProfiCheckoutRoute: typeof ApiProfiCheckoutRoute
   ApiShopTransferRoute: typeof ApiShopTransferRoute
   BlogSlugRoute: typeof BlogSlugRoute
   GoTgRoute: typeof GoTgRoute
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiShopTransferRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/profi-checkout': {
+      id: '/api/profi-checkout'
+      path: '/api/profi-checkout'
+      fullPath: '/api/profi-checkout'
+      preLoaderRoute: typeof ApiProfiCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/lead': {
       id: '/api/lead'
       path: '/api/lead'
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   TgRoute: TgRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLeadRoute: ApiLeadRoute,
+  ApiProfiCheckoutRoute: ApiProfiCheckoutRoute,
   ApiShopTransferRoute: ApiShopTransferRoute,
   BlogSlugRoute: BlogSlugRoute,
   GoTgRoute: GoTgRoute,

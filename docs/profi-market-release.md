@@ -60,3 +60,20 @@ The main customer distribution is not an extra paid SKU. Confirm whether each pa
 
 ### Access blocker
 Authorize the GitHub connection for the studio account and selected six private repositories, or supply sanitized READMEs and repository trees. The local support bot cannot be inspected through GitHub until an authorized source is supplied. No private code or repository permissions changed.
+# Подключение оформления заказа
+
+Маршрут `POST /api/profi-checkout` включается только при `PROFI_CHECKOUT_ENABLED=1`.
+Для изолированной проверки задайте `PROFI_DATABASE_URL` тестовой базы и
+`PROFI_CHECKOUT_ORIGIN` с точным адресом сайта. Для HTTP разрешён только
+`127.0.0.1`. Примените миграции 001–004 только к тестовой базе.
+
+Поставщик входа должен подтвердить личность покупателя и выпустить случайный
+32-байтовый токен с ограниченным сроком. В PostgreSQL сохраняется SHA-256 токена,
+ссылка на покупателя и срок действия. В браузер отправляется
+`__Host-profi_session` с атрибутами `Secure`, `HttpOnly`, `Path=/` и `SameSite=Lax`,
+без `Domain`. При выходе или отзыве заполните `revoked_at`. Сам маршрут
+оформления токены не выпускает.
+
+Запрос JSON принимает `requestKey` и `skus`. Один ключ следует повторно использовать
+при сетевом сбое для той же корзины. Ответ содержит `orderId`. Создание заказа
+не подтверждает платёж и не запускает выдачу.
