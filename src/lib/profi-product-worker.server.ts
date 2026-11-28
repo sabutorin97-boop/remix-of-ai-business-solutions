@@ -42,20 +42,26 @@ export async function fulfillNextProductOrder(store: WorkerStore) {
   try {
     const skus = await store.items(job.order_id);
     if (!skus.length) throw new Error("В заказе нет товаров");
-    const results = await Promise.all(skus.map(async (sku) =>
-      buildProductResult(sku, await store.input(job.order_id, sku)),
-    ));
+    const results: ProductResult[] = [];
+    for (const sku of skus) {
+      results.push(buildProductResult(sku, await store.input(job.order_id, sku)));
+    }
     return await store.save(job, results) ? "completed" : "lease_lost";
   } catch {
     return await store.retry(job) ? "retry_recorded" : "lease_lost";
   }
 }
 
-export function createPostgresProductWorkerStore(sql: Sql, input: WorkerStore["input"]): WorkerStore {
+export function createPostgresProductWorkerStore(sql: Sql): WorkerStore {
   return {
-    input,
+    async input(orderId, sku) {
+      const [row] = await sql<{ payload: unknown }[]> `
+        SELECT payload FROM profi_market.product_inputs WHERE order_id = ${orderId}::uuid AND sku = ${sku}
+      `;
+      return row?.payload;
+    },
     async claim() {
-      const [job] = await sql<Job[]> `SELECT order_id, lease_token FROM profi_market.claim_fulfillment_job()`;
+      const [job] = await sql<Job[]> `SELECT order_id, lease_token FROM profi_market.claim_prepared_fulfillment_job()`;
       return job;
     },
     async items(orderId) {

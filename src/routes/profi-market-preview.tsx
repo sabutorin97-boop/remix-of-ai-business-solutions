@@ -1,10 +1,8 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
 import { ProfiAccountPreview } from "@/components/site/ProfiAccountPreview";
 import { ProfiAdminPreview } from "@/components/site/ProfiAdminPreview";
 import { ReactiveBriefPreview } from "@/components/site/ReactiveBriefPreview";
-import { RadarObservationPreview } from "@/components/site/RadarObservationPreview";
-import { radarAuditQueries, radarBrief, type RadarBrief } from "@/lib/ai-radar";
+import { RadarPreview } from "@/components/site/RadarObservationPreview";
 import { addonCodes, productNames } from "@/lib/shop-catalog";
 
 export const Route = createFileRoute("/profi-market-preview")({
@@ -42,69 +40,6 @@ function ProfiMarketPreview() {
       <div id="account"><ProfiAccountPreview /></div>
       <div id="admin"><ProfiAdminPreview /></div>
     </div>
-  );
-}
-
-const radarFields = [
-  { name: "business", label: "Компания", limit: 160 },
-  { name: "website", label: "Сайт", limit: 500 },
-  { name: "city", label: "Город", limit: 160 },
-  { name: "category", label: "Товар или услуга", limit: 300 },
-] as const;
-
-function RadarPreview() {
-  const [queries, setQueries] = useState<string[]>([]);
-  const [error, setError] = useState("");
-  const [reportBrief, setReportBrief] = useState<RadarBrief>();
-
-  function prepareQueries(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = Object.fromEntries(new FormData(event.currentTarget));
-    const result = radarBrief.safeParse(data);
-    setQueries(result.success ? radarAuditQueries(result.data).map(({ query }) => query) : []);
-    setReportBrief(result.success ? result.data : undefined);
-    setError(result.success ? "" : "Проверьте поля анкеты. Укажите полный адрес сайта с http:// или https://.");
-  }
-
-  return (
-    <section id="radar" aria-labelledby="radar-title" className="mx-auto max-w-3xl px-5 py-12 sm:px-8">
-      <h2 id="radar-title" className="text-3xl font-bold">AI-Радар</h2>
-      <p className="mt-2 text-muted-foreground">
-        Подготовьте вопросы для проверки видимости компании. Запросы остаются в браузере.
-      </p>
-      <form onSubmit={prepareQueries} className="mt-6 grid gap-4 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2">
-        {radarFields.map(({ name, label, limit }) => (
-          <label key={name} className="block text-sm font-medium">
-            {label}
-            <input
-              name={name}
-              type={name === "website" ? "url" : "text"}
-              minLength={2}
-              maxLength={limit}
-              required
-              className="mt-1 w-full rounded-lg border border-border bg-background p-3"
-            />
-          </label>
-        ))}
-        <div className="sm:col-span-2">
-          <button type="submit" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground">
-            Подготовить вопросы
-          </button>
-        </div>
-        {error && <p role="alert" className="sm:col-span-2">{error}</p>}
-        <div aria-live="polite" className="sm:col-span-2">
-          {queries.length > 0 && (
-            <>
-              <h3 className="font-semibold">Вопросы для ручной проверки</h3>
-              <ol className="mt-2 list-decimal space-y-2 ps-5 [overflow-wrap:anywhere]">
-                {queries.map((query) => <li key={query}>{query}</li>)}
-              </ol>
-            </>
-          )}
-        </div>
-      </form>
-      {reportBrief && <RadarObservationPreview key={JSON.stringify(reportBrief)} brief={reportBrief} />}
-    </section>
   );
 }
 

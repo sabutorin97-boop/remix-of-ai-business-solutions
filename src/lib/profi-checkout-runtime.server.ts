@@ -32,8 +32,10 @@ export async function handleProfiCheckout(request: Request) {
         verifySession: createSessionVerifier(async (statement, [hash]) => ({
           rows: await sql.unsafe<{ auth_subject: string }[]>(statement, [hash]),
         })),
-        createOrder: createPostgresCheckoutStore(async (statement, [subject, key, skus]) => ({
-          rows: await sql.unsafe<{ order_id: string }[]>(statement, [subject, key, sql.array(skus, 25)]),
+        createOrder: createPostgresCheckoutStore(async (statement, [subject, key, skus, inputs]) => ({
+          rows: await sql.unsafe<{ order_id: string }[]>(statement, inputs === undefined
+          ? [subject, key, sql.array(skus, 25)]
+          : [subject, key, sql.array(skus, 25), inputs]),
         })),
       });
     }

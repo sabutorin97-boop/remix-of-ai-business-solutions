@@ -1,3 +1,5 @@
+import { ReactiveBriefPreview } from "@/components/site/ReactiveBriefPreview";
+import { RadarPreview } from "@/components/site/RadarObservationPreview";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -70,18 +72,23 @@ function AccountPage() {
     }
   }
 
-  function order(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function order(input?: object) {
     if (!sku) return;
     void perform(async () => {
-      const requestKey = requestKeys.current.get(sku) ?? crypto.randomUUID();
-      requestKeys.current.set(sku, requestKey);
+      const requestBody = { skus: [sku], ...(input ? { inputs: { [sku]: input } } : {}) };
+      const fingerprint = JSON.stringify(requestBody);
+      const requestKey = requestKeys.current.get(fingerprint) ?? crypto.randomUUID();
+      requestKeys.current.set(fingerprint, requestKey);
       const response = await fetch("/api/profi-checkout", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requestKey, skus: [sku] }),
+        body: JSON.stringify({ requestKey, ...requestBody }),
       });
       if (response.status === 401) {
         setAccount(null);
+        return;
+      }
+      if (response.status === 400 || response.status === 413) {
+        setNotice("Проверь длину и заполнение анкеты.");
         return;
       }
       if (response.status === 422) {
@@ -90,7 +97,7 @@ function AccountPage() {
       }
       if (!response.ok) throw new Error("Не удалось оформить заказ");
       setAccount(await readAccount());
-      requestKeys.current.delete(sku);
+      requestKeys.current.delete(fingerprint);
       setSku("");
       setNotice("Тестовый заказ создан.");
     });
@@ -105,6 +112,8 @@ function AccountPage() {
       setAccount(null);
     });
   }
+
+  const needsBrief = sku === "reactive-ai" || sku === "ai-radar";
 
   return (
     <section className="mx-auto max-w-4xl space-y-7 px-5 py-12">
@@ -122,7 +131,7 @@ function AccountPage() {
           href="/api/profi-login/telegram/">Войти через Telegram</a>
       )}
       {account && <>
-        <form onSubmit={order} className="grid gap-3 rounded-2xl border bg-card p-5">
+        <form onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); if (!needsBrief) order(); }} className="grid gap-3 rounded-2xl border bg-card p-5">
           <h2 className="text-xl font-semibold">Новый заказ</h2>
           {account.products.length === 0 ? <p>Тестовых товаров пока нет.</p> : <>
             <label htmlFor="profi-account-sku">Товар</label>
@@ -133,12 +142,14 @@ function AccountPage() {
                 {product.name} · {money(product.amount_minor)}
               </option>)}
             </select>
-            <button type="submit" disabled={busy || !sku}
+            {!needsBrief && <button type="submit" disabled={busy || !sku}
               className="justify-self-start rounded-lg bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50">
               Создать тестовый заказ
-            </button>
+            </button>}
           </>}
         </form>
+        {sku === "reactive-ai" && <ReactiveBriefPreview onOrder={order} busy={busy} />}
+        {sku === "ai-radar" && <RadarPreview onOrder={order} busy={busy} />}
         <section aria-labelledby="profi-orders-title">
           <h2 id="profi-orders-title" className="text-xl font-semibold">Мои заказы</h2>
           {account.orders.length === 0 ? <p className="mt-2">У тебя пока нет заказов.</p> :

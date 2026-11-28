@@ -2,12 +2,12 @@ export function isProfiJson(request: Request) {
   return request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() === "application/json";
 }
 
-export async function readProfiJson(request: Request): Promise<
-  { value: unknown } | { error: 400 | 413 }
+export async function readProfiJson(request: Request, limit = 4096): Promise<
+  { value: unknown; bytes: number } | { error: 400 | 413 }
 > {
   const reader = request.body?.getReader();
   if (!reader) return { error: 400 };
-  const buffer = new Uint8Array(4096);
+  const buffer = new Uint8Array(limit);
   let length = 0;
   try {
     while (true) {
@@ -24,7 +24,7 @@ export async function readProfiJson(request: Request): Promise<
     reader.releaseLock();
   }
   try {
-    return { value: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer.subarray(0, length))) };
+    return { value: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer.subarray(0, length))), bytes: length };
   } catch {
     return { error: 400 };
   }

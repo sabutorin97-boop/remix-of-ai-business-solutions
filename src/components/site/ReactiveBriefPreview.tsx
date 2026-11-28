@@ -3,7 +3,9 @@ import { reactiveBrief, type ReactiveBrief } from "@/lib/reactive-ai";
 import { buildReactiveDemo, reactiveKitText } from "@/lib/reactive-kit";
 
 const defaults: ReactiveBrief = {business:"",offer:"",averageCheck:0,objections:"",lastContact:"month",permittedOffer:"",tone:"professional"};
-export function ReactiveBriefPreview() {
+export function ReactiveBriefPreview({ onOrder, busy }: {
+  onOrder?: (input: { brief: ReactiveBrief }) => void; busy?: boolean;
+} = {}) {
   const [brief,setBrief] = useState<ReactiveBrief>(defaults);
   const [message,setMessage] = useState("");
   const [report, setReport] = useState("");
@@ -19,13 +21,17 @@ export function ReactiveBriefPreview() {
   return <section className="mx-auto max-w-3xl px-5 py-12 sm:px-8">
     <p className="text-sm font-semibold text-primary">РеАктив AI · демонстрационная анкета</p>
     <h2 className="mt-2 text-3xl font-bold">Верните клиентов, которые не купили</h2>
-    <p className="mt-3 text-muted-foreground">Получите пример комплекта в браузере. Данные никуда не отправляются. Внешний AI и отправка сообщений выключены.</p>
+    <p className="mt-3 text-muted-foreground">{onOrder ? "Анкета сохранится вместе с тестовым заказом." : "Получите пример комплекта в браузере. Данные остаются в браузере."}</p>
     <form className="mt-6 space-y-4 rounded-2xl border border-border bg-card p-5" onSubmit={e=>{
       e.preventDefault();
       const result=reactiveBrief.safeParse(brief);
       if (!result.success) {
         setReport("");
         setMessage("Проверьте обязательные поля и ограничения длины.");
+        return;
+      }
+      if (onOrder) {
+        onOrder({ brief: result.data });
         return;
       }
       setReport(reactiveKitText(buildReactiveDemo(result.data)));
@@ -39,7 +45,7 @@ export function ReactiveBriefPreview() {
       <label className="block text-sm">Допустимые предложения и акции<textarea maxLength={1000} value={brief.permittedOffer} onChange={e=>change("permittedOffer",e.target.value)} className="mt-1 w-full rounded-lg border border-border bg-background p-3"/></label>
       <label className="block text-sm">Стиль общения<select value={brief.tone} onChange={e=>change("tone",e.target.value as ReactiveBrief["tone"])} className="mt-1 w-full rounded-lg border border-border bg-background p-3"><option value="friendly">Дружелюбный</option><option value="professional">Деловой</option><option value="concise">Краткий</option></select></label>
       <p className="text-xs text-muted-foreground">Не вводите имена, телефоны и другие персональные данные покупателей.</p>
-      <button type="submit" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground">Собрать локальный образец</button>
+      <button type="submit" disabled={busy} className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground">{onOrder ? "Создать тестовый заказ с анкетой" : "Собрать локальный образец"}</button>
       {message && <p role="status" className="text-sm">{message}</p>}
     </form>
     {report && <section className="mt-6 rounded-2xl border border-border bg-card p-5" aria-labelledby="reactive-report">

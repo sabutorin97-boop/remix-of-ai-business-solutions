@@ -57,3 +57,20 @@ it("отклоняет запросы без сессии, с чужого са�
   assert.equal((await handle(request({ ...order, price: 1 }))).status, 400);
   assert.equal((await handle(request({ ...order, skus: ["a".repeat(5000)] }))).status, 413);
 });
+
+it("привязывает анкету к заказу проверенного покупателя и отклоняет чужой SKU", async () => {
+  const inputs = { "reactive-ai": { brief: {
+    business: "Мастерская", offer: "Ремонт мебели", averageCheck: 2500, objections: "",
+    lastContact: "month", permittedOffer: "", tone: "friendly",
+  } } };
+  const handle = createCheckoutHandler({
+    origin, verifySession: async () => ({ subject: "buyer-from-session" }),
+    createOrder: async (input) => {
+      assert.deepEqual(input, { ...order, subject: "buyer-from-session", inputs });
+      return orderId;
+    },
+  });
+  assert.equal((await handle(request({ ...order, inputs }))).status, 200);
+  assert.equal((await handle(request({ ...order, inputs: { "ai-radar": inputs["reactive-ai"] } }))).status, 400);
+  assert.equal((await handle(request({ ...order, inputs: { "reactive-ai": { brief: {} } } }))).status, 400);
+});
